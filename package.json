@@ -40,6 +40,8 @@
     "vscode-test": "^1.2.2"
   },
   "dependencies": {
+    "@types/eslint-visitor-keys": "^1.0.0",
+    "@typescript-eslint/typescript-estree": "^2.15.0",
     "toml": "^3.0.0"
   }
 }
