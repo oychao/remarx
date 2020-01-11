@@ -12,17 +12,18 @@ export async function main() {
     const enterFileBuffer = await fs.promises.readFile(enterPath);
     const enterFileStr = enterFileBuffer.toString();
 
-    const astStr = JSON.stringify(parser.parse(enterFileStr));
+    const astStr = JSON.stringify(parser.parse(enterFileStr), null, 2);
 
-    const astFolder = path.resolve(config.root, config.debug.ast);
-    try {
-      await fs.promises.access(astFolder);
-    } catch (error) {
-      fs.promises.mkdir(astFolder);
+    if (config.debug) {
+      const astFolder = path.resolve(config.root, config.debug.ast);
+      try {
+        await fs.promises.access(astFolder);
+      } catch (error) {
+        fs.promises.mkdir(astFolder);
+      }
+      const astDir = path.resolve(astFolder, 'index.json');
+      await fs.promises.writeFile(astDir, astStr);
     }
-    const astDir = path.resolve(astFolder, 'index.json');
-
-    await fs.promises.writeFile(astDir, astStr);
 
     vscode.window.showInformationMessage('done');
   } catch (error) {
