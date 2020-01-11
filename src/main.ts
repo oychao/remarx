@@ -8,10 +8,23 @@ import { parseConfig } from './configParser';
 export async function main() {
   const config = await parseConfig();
   try {
-    const enterPath = path.resolve(config.root, config.main.dir, config.main.index);
+    const enterPath = path.resolve(config.root, config.source.dir, config.source.index);
     const enterFileBuffer = await fs.promises.readFile(enterPath);
     const enterFileStr = enterFileBuffer.toString();
-    vscode.window.showInformationMessage(JSON.stringify(parser.parse(enterFileStr)));
+
+    const astStr = JSON.stringify(parser.parse(enterFileStr));
+
+    const astFolder = path.resolve(config.root, config.debug.ast);
+    try {
+      await fs.promises.access(astFolder);
+    } catch (error) {
+      fs.promises.mkdir(astFolder);
+    }
+    const astDir = path.resolve(astFolder, 'index.json');
+
+    await fs.promises.writeFile(astDir, astStr);
+
+    vscode.window.showInformationMessage('done');
   } catch (error) {
     vscode.window.showErrorMessage(error.toString());
   }
