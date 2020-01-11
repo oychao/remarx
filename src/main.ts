@@ -14,8 +14,8 @@ export async function main() {
 
     const astStr = JSON.stringify(parser.parse(enterFileStr), null, 2);
 
-    if (config.debug) {
-      const astFolder = path.resolve(config.root, config.debug.ast);
+    if (config.debug.ast) {
+      const astFolder = path.resolve(config.root, config.debug.output);
       try {
         await fs.promises.access(astFolder);
       } catch (error) {

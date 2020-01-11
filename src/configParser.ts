@@ -3,13 +3,19 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as toml from 'toml';
 
+const defaultConfig = {
+  ast: false,
+  output: './ast',
+};
+
 export async function parseConfig() {
   const rootPath = (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri.fsPath;
   const configFilePath = path.resolve(rootPath, '.remarx.toml');
   const configBuffer = await fs.promises.readFile(configFilePath);
-  const configObj = toml.parse(configBuffer.toString());
+  const customConfigObj = toml.parse(configBuffer.toString());
+  customConfigObj.root = rootPath;
 
-  configObj.root = rootPath;
+  const configObj = { ...defaultConfig, ...customConfigObj };
 
   return configObj;
 }
