@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as toml from 'toml';
+import * as extend from 'xtend';
 
 const defaultConfig = {
   ast: false,
@@ -15,7 +16,7 @@ export async function parseConfig() {
   const customConfigObj = toml.parse(configBuffer.toString());
   customConfigObj.root = rootPath;
 
-  const configObj = { ...defaultConfig, ...customConfigObj };
+  const configObj = extend(defaultConfig, customConfigObj);
 
   return configObj;
 }

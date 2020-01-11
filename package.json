@@ -41,7 +41,9 @@
   },
   "dependencies": {
     "@types/eslint-visitor-keys": "^1.0.0",
+    "@types/xtend": "^4.0.2",
     "@typescript-eslint/typescript-estree": "^2.15.0",
-    "toml": "^3.0.0"
+    "toml": "^3.0.0",
+    "xtend": "^4.0.2"
   }
 }
