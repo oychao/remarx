@@ -30,8 +30,8 @@ class ConcreteNode implements AbsNode {
 abstract class AbsVisitor {
   public visit(element: ConcreteNode, path: AbsNode[] = []): void {
     path.push(element);
-    if (this[`visit${element.cate}`]) {
-      this[`visit${element.cate}`](element, path);
+    if ((this as any)[`visit${element.cate}`]) {
+      (this as any)[`visit${element.cate}`](element, path);
     }
     (element.children || []).forEach(node => {
       node.accept(this, path);
@@ -108,7 +108,7 @@ const obj: AbsNode = {
     {
       cate: Category.DivideType,
       value: 4,
-      children: null,
+      children: [],
     },
     {
       cate: Category.MinusType,
@@ -117,7 +117,7 @@ const obj: AbsNode = {
         {
           cate: Category.MultiplyType,
           value: 3,
-          children: null,
+          children: [],
         },
       ],
     },
