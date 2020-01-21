@@ -1,8 +1,6 @@
-[source]
-dir="./src"
-index="index.ts"
-comp="App"
+[main]
+sourceFolder="."
+entranceFile="index.tsx"
 
-[debug]
-ast=true
-output="./ast"
+# [debug]
+# astDir="./remarx_ast"
