@@ -1,0 +1,8 @@
+[source]
+dir="./src"
+index="index.ts"
+comp="App"
+
+[debug]
+ast=true
+output="./ast"
