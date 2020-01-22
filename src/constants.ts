@@ -43,3 +43,7 @@ export interface AstNode {
     };
   };
 }
+
+export const PARSE_CONFIG = {
+  jsx: true,
+};

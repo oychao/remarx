@@ -2,5 +2,5 @@
 sourceFolder="."
 entranceFile="index.tsx"
 
-# [debug]
-# astDir="./remarx_ast"
+[debug]
+astDir="./remarx_ast"
