@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import { StoreDispatchContext } from '../../store';
+import { StoreDispatchContext, ACTION_SET_EDITING_PRODUCT, ACTION_DELETE } from '../../store';
 
 /**
  * List Component
  */
 export const List = () => {
-  const { store } = React.useContext(StoreDispatchContext);
+  const { store, dispatch } = React.useContext(StoreDispatchContext);
+
   return (
     <table>
       <thead>
@@ -14,6 +15,7 @@ export const List = () => {
           <th>ID</th>
           <th>Name</th>
           <th>Price</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -22,6 +24,28 @@ export const List = () => {
             <td>{id}</td>
             <td>{name}</td>
             <td>{price}</td>
+            <td>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: ACTION_SET_EDITING_PRODUCT,
+                    payload: { id },
+                  })
+                }
+              >
+                Edit
+              </button>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: ACTION_DELETE,
+                    payload: { id },
+                  })
+                }
+              >
+                Delete
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>

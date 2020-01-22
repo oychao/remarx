@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { initialState, reducer, StoreDispatchContext } from '../../store';
 import { List } from '../List';
-import { CreateForm } from '../CreateForm';
+import { CreateForm, EditForm } from '../Form';
 
 import './style.less';
 
@@ -15,6 +15,7 @@ export const App = () => {
     <div>
       <StoreDispatchContext.Provider value={dispatchContextValue}>
         <CreateForm />
+        <EditForm />
         <hr />
         <List />
       </StoreDispatchContext.Provider>

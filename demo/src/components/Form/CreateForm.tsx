@@ -42,19 +42,28 @@ export const CreateForm = () => {
 
   return (
     <div>
-      <input
-        type='text'
-        value={store.creatingForm.name}
-        placeholder='Please input product name'
-        onChange={handleNameChange}
-      />
-      <input
-        type='number'
-        value={store.creatingForm.price}
-        placeholder='Please input product price'
-        onChange={handlePriceChange}
-      />
-      <button onClick={handleSubmit}>Submit</button>
+      <h3>Create Product</h3>
+      <div>
+        <span>Product Name</span>
+        <input
+          type='text'
+          value={store.creatingForm.name}
+          placeholder='Please input product name'
+          onChange={handleNameChange}
+        />
+      </div>
+      <div>
+        <span>Product Price</span>
+        <input
+          type='number'
+          value={store.creatingForm.price}
+          placeholder='Please input product price'
+          onChange={handlePriceChange}
+        />
+      </div>
+      <div>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
     </div>
   );
 };
