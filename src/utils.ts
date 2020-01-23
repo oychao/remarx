@@ -31,10 +31,20 @@ export async function outputType(ast: object) {
     }
     result.add(node.type);
   });
+  const types = Array.from(result);
   await fs.promises.writeFile(
-    path.resolve(__projectRoot, 'src', 'astTypes.ts'),
-    `export enum AstType {\n${Array.from(result)
-      .map(type => `  ${type} = '${type}'`)
-      .join(',\n')},\n}\n`
+    path.resolve(__projectRoot, 'src', 'parser', 'node', 'astTypes.ts'),
+    `import { ConcreteNode } from './astNode';
+
+export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}
+
+${types
+  .map(
+    type => `export interface Node${type}Visitable {
+  visit${type}(element: ConcreteNode, path: ConcreteNode[]): void;
+}`
+  )
+  .join('\n\n')}
+`
   );
 }

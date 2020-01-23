@@ -6,6 +6,8 @@ import * as parser from '@typescript-eslint/typescript-estree';
 import { config } from './config';
 import { PARSE_CONFIG } from './constants';
 import { simplifyAst, outputType } from './utils';
+import { ConcreteNode } from './parser/node/astNode';
+import { ProgramVisitor } from './parser/visitor/programVisitor';
 
 const fileAstMap = {};
 
@@ -19,11 +21,11 @@ export async function parseProject(): Promise<void> {
     const enterFileStr = enterFileBuffer.toString();
 
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
-    const astStr = JSON.stringify(astObj, null, 2);
 
     outputType(astObj);
 
     if (config.debug?.astDir) {
+      const astStr = JSON.stringify(astObj, null, 2);
       const astFolderPath = path.resolve(config.root, config.debug.astDir);
 
       try {
@@ -35,6 +37,10 @@ export async function parseProject(): Promise<void> {
       const astDir = path.resolve(astFolderPath, `${config.main.entranceFile}.json`);
       await fs.promises.writeFile(astDir, astStr);
     }
+
+    const astRoot = new ConcreteNode(astObj);
+    const programVisitor = new ProgramVisitor();
+    astRoot.accept(programVisitor);
 
     vscode.window.showInformationMessage('done');
   } catch (error) {
