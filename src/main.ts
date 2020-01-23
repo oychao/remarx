@@ -5,7 +5,7 @@ import * as parser from '@typescript-eslint/typescript-estree';
 
 import { config } from './config';
 import { PARSE_CONFIG } from './constants';
-import { simplifyAst } from './utils';
+import { simplifyAst, outputType } from './utils';
 
 const fileAstMap = {};
 
@@ -20,6 +20,8 @@ export async function parseProject(): Promise<void> {
 
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
     const astStr = JSON.stringify(astObj, null, 2);
+
+    outputType(astObj);
 
     if (config.debug?.astDir) {
       const astFolderPath = path.resolve(config.root, config.debug.astDir);

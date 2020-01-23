@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 export function dfsWalk(root: object, cb: (obj: object) => void): void {
   if (!root) {
     return;
@@ -16,4 +19,22 @@ export function simplifyAst<T extends object>(ast: T): T {
     delete (node as any).loc;
   });
   return ast;
+}
+
+// output detected types from ast object into src/astTypes.ts file, meta programming?
+const __projectRoot = path.resolve(__dirname, '..');
+const result: Set<string> = new Set();
+export async function outputType(ast: object) {
+  dfsWalk(ast, (node: any) => {
+    if (!node.type) {
+      return;
+    }
+    result.add(node.type);
+  });
+  await fs.promises.writeFile(
+    path.resolve(__projectRoot, 'src', 'astTypes.ts'),
+    `export enum AstType {\n${Array.from(result)
+      .map(type => `  ${type} = '${type}'`)
+      .join(',\n')},\n}\n`
+  );
 }

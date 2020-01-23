@@ -1,6 +1,4 @@
-export enum AstType {
-  Program = 'Program',
-}
+import { AstType } from './astTypes';
 
 export enum ProgramSourceType {
   script = 'script',
