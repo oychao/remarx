@@ -4,10 +4,10 @@ import * as path from 'path';
 import { Program } from '../program';
 import { ConcreteNode } from '../node/astNode';
 import { NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable } from '../node/astTypes';
-import { AbsVisitor } from './absVisitor';
+import { Visitor } from './visitor';
 import { fileExists } from '../../utils';
 
-export class ProgramVisitor extends AbsVisitor
+export class ProgramVisitor extends Visitor
   implements NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 

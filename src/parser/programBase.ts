@@ -1,4 +1,4 @@
-export abstract class ParserBase {
+export abstract class ProgramBase {
   protected fullPath: string;
   protected dirPath: string;
   protected filename: string;

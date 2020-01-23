@@ -6,14 +6,14 @@ import { config } from '../config';
 import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
-import { ParserBase } from './parserBase';
+import { ProgramBase } from './programBase';
 import { ProgramVisitor } from './visitor/programVisitor';
 
-export class Program extends ParserBase {
+export class Program extends ProgramBase {
   protected fullPath: string;
   private rootAst: ConcreteNode | undefined;
 
-  private programParser: ProgramVisitor = new ProgramVisitor(this.dirPath);
+  private parser: ProgramVisitor = new ProgramVisitor(this.dirPath);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -25,7 +25,9 @@ export class Program extends ParserBase {
     const enterFileStr = enterFileBuffer.toString();
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
 
-    outputType(astObj);
+    if (config?.meta?.type) {
+      outputType(astObj);
+    }
 
     if (config.debug?.on) {
       const astStr = JSON.stringify(astObj, null, 2);
@@ -41,6 +43,6 @@ export class Program extends ParserBase {
     this.rootAst = new ConcreteNode(astObj);
 
     // parse dependencies
-    await this.rootAst.accept(this.programParser);
+    await this.rootAst.accept(this.parser);
   }
 }

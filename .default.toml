@@ -4,3 +4,6 @@ entranceFile="index.tsx"
 # [debug]
 # on=false
 # output="remarx_ast"
+
+# [meta]
+# type=true

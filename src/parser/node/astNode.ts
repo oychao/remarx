@@ -1,6 +1,6 @@
 import { AstType } from './astTypes';
 import { ProgramSourceType, VariableDeclarationType } from './interfaces';
-import { AbsVisitor } from '../visitor/absVisitor';
+import { Visitor } from '../visitor/visitor';
 
 export class ConcreteNode {
   public type: AstType;
@@ -44,7 +44,7 @@ export class ConcreteNode {
     }
   }
 
-  public async accept(visitor: AbsVisitor, path: ConcreteNode[] = []): Promise<void> {
+  public async accept(visitor: Visitor, path: ConcreteNode[] = []): Promise<void> {
     await visitor.visit(this, path);
   }
 }

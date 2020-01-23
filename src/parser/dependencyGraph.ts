@@ -1,7 +1,7 @@
-import { ParserBase } from './parserBase';
+import { ProgramBase } from './programBase';
 import { Program } from './program';
 
-export class DependencyGraph extends ParserBase {
+export class DependencyGraph extends ProgramBase {
   protected fullPath: string;
   private program: Program;
 

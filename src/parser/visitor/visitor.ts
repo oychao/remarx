@@ -4,7 +4,7 @@ import { ConcreteNode } from '../node/astNode';
  * abstract visitor, supply a common visit method, every concrete ast node which accept visitor instance
  * would be visited by specific method of corresponding decent concrete visitor.
  */
-export abstract class AbsVisitor {
+export abstract class Visitor {
   public async visit(element: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
     path.push(element);
     if ((this as any)[`visit${element.type}`]) {

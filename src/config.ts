@@ -13,6 +13,9 @@ export interface Config {
     output: string;
     rootDir: string;
   };
+  meta?: {
+    type: boolean;
+  };
 }
 
 // parse default config
