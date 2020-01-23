@@ -1,10 +1,4 @@
-import * as fs from 'fs';
-import * as parser from '@typescript-eslint/typescript-estree';
-
-import { PARSE_CONFIG } from '../constants';
-import { simplifyAst } from '../utils';
 import { ParserBase } from './parserBase';
-import { ProgramVisitor } from './visitor/programVisitor';
 import { Program } from './program';
 
 export class DependencyGraph extends ParserBase {
@@ -12,7 +6,7 @@ export class DependencyGraph extends ParserBase {
   private program: Program;
 
   constructor(rootPath: string) {
-    super();
+    super(rootPath);
     this.rootPath = rootPath;
     this.program = new Program(this.rootPath);
   }

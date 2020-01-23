@@ -41,10 +41,18 @@ export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')}
 ${types
   .map(
     type => `export interface Node${type}Visitable {
-  visit${type}(element: ConcreteNode, path: ConcreteNode[]): void;
+  visit${type}(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }`
   )
   .join('\n\n')}
 `
   );
+}
+
+export async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    return (await fs.promises.lstat(filePath)).isFile();
+  } catch {
+    return false;
+  }
 }

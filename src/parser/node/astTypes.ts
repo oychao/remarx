@@ -13,52 +13,62 @@ export enum AstType {
   JSXElement = 'JSXElement',
   JSXOpeningElement = 'JSXOpeningElement',
   JSXIdentifier = 'JSXIdentifier',
+  ExportNamedDeclaration = 'ExportNamedDeclaration',
+  ExportSpecifier = 'ExportSpecifier',
 }
 
 export interface NodeProgramVisitable {
-  visitProgram(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitProgram(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeImportDeclarationVisitable {
-  visitImportDeclaration(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitImportDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeLiteralVisitable {
-  visitLiteral(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitLiteral(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeImportNamespaceSpecifierVisitable {
-  visitImportNamespaceSpecifier(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitImportNamespaceSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeIdentifierVisitable {
-  visitIdentifier(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeImportSpecifierVisitable {
-  visitImportSpecifier(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitImportSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeExpressionStatementVisitable {
-  visitExpressionStatement(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitExpressionStatement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeCallExpressionVisitable {
-  visitCallExpression(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitCallExpression(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeMemberExpressionVisitable {
-  visitMemberExpression(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitMemberExpression(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeJSXElementVisitable {
-  visitJSXElement(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitJSXElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeJSXOpeningElementVisitable {
-  visitJSXOpeningElement(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitJSXOpeningElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeJSXIdentifierVisitable {
-  visitJSXIdentifier(element: ConcreteNode, path: ConcreteNode[]): void;
+  visitJSXIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeExportNamedDeclarationVisitable {
+  visitExportNamedDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeExportSpecifierVisitable {
+  visitExportSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }

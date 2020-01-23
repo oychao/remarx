@@ -26,6 +26,7 @@ export class ConcreteNode {
   public source?: ConcreteNode;
   public specifiers?: ConcreteNode[];
   public local?: ConcreteNode;
+  public value?: string;
 
   constructor(node: any) {
     this.type = AstType.Program;

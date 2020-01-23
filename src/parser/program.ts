@@ -11,11 +11,12 @@ import { ProgramVisitor } from './visitor/programVisitor';
 
 export class Program extends ParserBase {
   protected rootPath: string;
-  private visitor: ProgramVisitor = new ProgramVisitor();
   private rootAst: ConcreteNode | undefined;
 
+  private programParser: ProgramVisitor = new ProgramVisitor(this.dirPath);
+
   constructor(rootPath: string) {
-    super();
+    super(rootPath);
     this.rootPath = rootPath;
   }
 
@@ -40,6 +41,8 @@ export class Program extends ParserBase {
       await fs.promises.writeFile(astDir, astStr);
     }
     this.rootAst = new ConcreteNode(astObj);
-    await this.rootAst.accept(this.visitor);
+
+    // parse dependencies
+    await this.rootAst.accept(this.programParser);
   }
 }
