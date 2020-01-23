@@ -1,31 +1,27 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
-import * as parser from '@typescript-eslint/typescript-estree';
 
 import { config } from './config';
+import { DependencyGraph } from './parser/dependencyGraph';
 
-export async function main() {
+export async function parseProject(): Promise<void> {
   try {
-    const enterPath = path.resolve(config.root, config.main.sourceFolder, config.main.entranceFile);
-    const enterFileBuffer = await fs.promises.readFile(enterPath);
-    const enterFileStr = enterFileBuffer.toString();
+    // project source code root directory
+    const projectSourceRootDir = path.resolve(config.rootDir, config.sourceFolder);
+    // entrance file
+    const enterPath = path.resolve(projectSourceRootDir, config.entranceFile);
 
-    const astStr = JSON.stringify(parser.parse(enterFileStr), null, 2);
-
-    if (config.debug?.astDir) {
-      const astFolderPath = path.resolve(config.root, config.debug.astDir);
-      try {
-        await fs.promises.access(astFolderPath);
-      } catch (error) {
-        fs.promises.mkdir(astFolderPath);
-      }
-      const astDir = path.resolve(astFolderPath, 'index.json');
-      await fs.promises.writeFile(astDir, astStr);
-    }
+    const depGraph = new DependencyGraph(enterPath);
+    await depGraph.parse();
+    await depGraph.draw();
 
     vscode.window.showInformationMessage('done');
   } catch (error) {
-    vscode.window.showErrorMessage(error.toString());
+    console.log(error);
+    vscode.window.showErrorMessage(error.message);
   }
+}
+
+export async function main(): Promise<void> {
+  await parseProject();
 }

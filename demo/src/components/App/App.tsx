@@ -6,7 +6,7 @@ import { CreateForm, EditForm } from '../Form';
 
 import './style.less';
 
-export const App = () => {
+const App = () => {
   const [store, dispatch] = React.useReducer(reducer, initialState);
 
   const dispatchContextValue = React.useMemo(() => ({ store, dispatch }), [store]);
@@ -22,3 +22,5 @@ export const App = () => {
     </div>
   );
 };
+
+export default App;

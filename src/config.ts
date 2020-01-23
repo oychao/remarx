@@ -5,13 +5,16 @@ import * as toml from 'toml';
 import * as extend from 'deep-extend';
 
 export interface Config {
-  root: string;
-  main: {
-    sourceFolder: string;
-    entranceFile: string;
-  };
+  rootDir: string;
+  sourceFolder: string;
+  entranceFile: string;
   debug?: {
-    astDir: string;
+    on: boolean;
+    output: string;
+    rootDir: string;
+  };
+  meta?: {
+    type: boolean;
   };
 }
 
@@ -24,16 +27,18 @@ const rootPath = (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])
 const configFilePath = path.resolve(rootPath, '.remarx.toml');
 const configBuffer = fs.readFileSync(configFilePath);
 const customConfigObj = toml.parse(configBuffer.toString());
-customConfigObj.root = rootPath;
+customConfigObj.rootDir = rootPath;
 
 // merge config
 const configObj: Config = {
-  root: rootPath,
-  main: {
-    sourceFolder: '',
-    entranceFile: '',
-  },
+  rootDir: rootPath,
+  sourceFolder: '',
+  entranceFile: '',
 };
 extend(configObj, defaultConfig, customConfigObj);
+
+if (configObj?.debug?.on) {
+  configObj.debug.rootDir = path.resolve(rootPath, configObj.debug.output);
+}
 
 export const config = Object.seal(configObj);

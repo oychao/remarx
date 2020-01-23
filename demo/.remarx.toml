@@ -1,6 +1,9 @@
-[main]
 sourceFolder="."
 entranceFile="index.tsx"
 
-# [debug]
-# astDir="./remarx_ast"
+[debug]
+on=true
+output="remarx_ast"
+
+[meta]
+type=true
