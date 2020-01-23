@@ -7,9 +7,9 @@ import { DependencyGraph } from './parser/dependencyGraph';
 export async function parseProject(): Promise<void> {
   try {
     // project source code root directory
-    const projectSourceRootDir = path.resolve(config.root, config.main.sourceFolder);
+    const projectSourceRootDir = path.resolve(config.rootDir, config.sourceFolder);
     // entrance file
-    const enterPath = path.resolve(projectSourceRootDir, config.main.entranceFile);
+    const enterPath = path.resolve(projectSourceRootDir, config.entranceFile);
 
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();

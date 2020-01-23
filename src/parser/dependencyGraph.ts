@@ -2,13 +2,13 @@ import { ParserBase } from './parserBase';
 import { Program } from './program';
 
 export class DependencyGraph extends ParserBase {
-  protected rootPath: string;
+  protected fullPath: string;
   private program: Program;
 
-  constructor(rootPath: string) {
-    super(rootPath);
-    this.rootPath = rootPath;
-    this.program = new Program(this.rootPath);
+  constructor(fullPath: string) {
+    super(fullPath);
+    this.fullPath = fullPath;
+    this.program = new Program(this.fullPath);
   }
 
   public async parse(): Promise<void> {

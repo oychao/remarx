@@ -10,35 +10,33 @@ import { ParserBase } from './parserBase';
 import { ProgramVisitor } from './visitor/programVisitor';
 
 export class Program extends ParserBase {
-  protected rootPath: string;
+  protected fullPath: string;
   private rootAst: ConcreteNode | undefined;
 
   private programParser: ProgramVisitor = new ProgramVisitor(this.dirPath);
 
-  constructor(rootPath: string) {
-    super(rootPath);
-    this.rootPath = rootPath;
+  constructor(fullPath: string) {
+    super(fullPath);
+    this.fullPath = fullPath;
   }
 
   public async parse(): Promise<void> {
-    const enterFileBuffer = await fs.promises.readFile(this.rootPath);
+    const enterFileBuffer = await fs.promises.readFile(this.fullPath);
     const enterFileStr = enterFileBuffer.toString();
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
 
     outputType(astObj);
 
-    if (config.debug?.astDir) {
+    if (config.debug?.on) {
       const astStr = JSON.stringify(astObj, null, 2);
-      const astFolderPath = path.resolve(config.root, config.debug.astDir);
-
+      const astDir = this.dirPath.replace(config.rootDir, config.debug.rootDir);
       try {
-        await fs.promises.access(astFolderPath);
-      } catch (error) {
-        await fs.promises.mkdir(astFolderPath);
+        await fs.promises.access(astDir);
+      } catch {
+        await fs.promises.mkdir(astDir, { recursive: true });
       }
-
-      const astDir = path.resolve(astFolderPath, `${config.main.entranceFile}.json`);
-      await fs.promises.writeFile(astDir, astStr);
+      const astFullPath = path.resolve(astDir, `${this.filename}.json`);
+      await fs.promises.writeFile(astFullPath, astStr);
     }
     this.rootAst = new ConcreteNode(astObj);
 
