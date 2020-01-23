@@ -3,11 +3,12 @@ import * as path from 'path';
 
 import { Program } from '../program';
 import { ConcreteNode } from '../node/astNode';
-import { NodeImportDeclarationVisitable } from '../node/astTypes';
+import { NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable } from '../node/astTypes';
 import { AbsVisitor } from './absVisitor';
 import { fileExists } from '../../utils';
 
-export class ProgramVisitor extends AbsVisitor implements NodeImportDeclarationVisitable {
+export class ProgramVisitor extends AbsVisitor
+  implements NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
   private dirPath: string;
@@ -19,13 +20,13 @@ export class ProgramVisitor extends AbsVisitor implements NodeImportDeclarationV
     this.dirPath = dirPath;
   }
 
-  public async visitImportDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
-    if (astNode?.source?.value) {
-      if (astNode.source.value.charAt(0) !== '.') {
+  private async asyncImportLiteralSource(sourceValue: string): Promise<void> {
+    if (sourceValue) {
+      if (sourceValue.charAt(0) !== '.') {
         return;
       }
 
-      const originPath = path.resolve(this.dirPath, astNode.source.value);
+      const originPath = path.resolve(this.dirPath, sourceValue);
       let possiblePath = originPath;
       let isFile = await fileExists(possiblePath);
       let i = 0;
@@ -43,6 +44,18 @@ export class ProgramVisitor extends AbsVisitor implements NodeImportDeclarationV
       const dep = new Program(possiblePath);
       await dep.parse();
       this.dependencies.push(dep);
+    }
+  }
+
+  public async visitImportDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
+    if (astNode?.source?.value) {
+      await this.asyncImportLiteralSource(astNode.source.value);
+    }
+  }
+
+  public async visitExportNamedDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
+    if (astNode?.source?.value) {
+      await this.asyncImportLiteralSource(astNode.source.value);
     }
   }
 }
