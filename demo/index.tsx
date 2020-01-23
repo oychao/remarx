@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { App } from './src/components/App';
+import App from './src/components/App';
 
 import './index.less';
 

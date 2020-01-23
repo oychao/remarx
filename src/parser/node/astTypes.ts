@@ -6,7 +6,7 @@ export enum AstType {
   Literal = 'Literal',
   ImportNamespaceSpecifier = 'ImportNamespaceSpecifier',
   Identifier = 'Identifier',
-  ImportSpecifier = 'ImportSpecifier',
+  ImportDefaultSpecifier = 'ImportDefaultSpecifier',
   ExpressionStatement = 'ExpressionStatement',
   CallExpression = 'CallExpression',
   MemberExpression = 'MemberExpression',
@@ -15,6 +15,7 @@ export enum AstType {
   JSXIdentifier = 'JSXIdentifier',
   ExportNamedDeclaration = 'ExportNamedDeclaration',
   ExportSpecifier = 'ExportSpecifier',
+  ImportSpecifier = 'ImportSpecifier',
   VariableDeclaration = 'VariableDeclaration',
   VariableDeclarator = 'VariableDeclarator',
   ArrowFunctionExpression = 'ArrowFunctionExpression',
@@ -28,7 +29,7 @@ export enum AstType {
   JSXMemberExpression = 'JSXMemberExpression',
   JSXAttribute = 'JSXAttribute',
   JSXExpressionContainer = 'JSXExpressionContainer',
-  ImportDefaultSpecifier = 'ImportDefaultSpecifier',
+  ExportDefaultDeclaration = 'ExportDefaultDeclaration',
   TSTypeParameterInstantiation = 'TSTypeParameterInstantiation',
   TSTypeLiteral = 'TSTypeLiteral',
   TSPropertySignature = 'TSPropertySignature',
@@ -69,8 +70,8 @@ export interface NodeIdentifierVisitable {
   visitIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
-export interface NodeImportSpecifierVisitable {
-  visitImportSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+export interface NodeImportDefaultSpecifierVisitable {
+  visitImportDefaultSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeExpressionStatementVisitable {
@@ -103,6 +104,10 @@ export interface NodeExportNamedDeclarationVisitable {
 
 export interface NodeExportSpecifierVisitable {
   visitExportSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeImportSpecifierVisitable {
+  visitImportSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeVariableDeclarationVisitable {
@@ -157,8 +162,8 @@ export interface NodeJSXExpressionContainerVisitable {
   visitJSXExpressionContainer(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
-export interface NodeImportDefaultSpecifierVisitable {
-  visitImportDefaultSpecifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+export interface NodeExportDefaultDeclarationVisitable {
+  visitExportDefaultDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeTSTypeParameterInstantiationVisitable {
