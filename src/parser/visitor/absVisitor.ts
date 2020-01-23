@@ -1,22 +1,23 @@
 import { ConcreteNode } from '../node/astNode';
 
 export abstract class AbsVisitor {
-  public visit(element: ConcreteNode, path: ConcreteNode[] = []): void {
+  public async visit(element: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
     path.push(element);
     if ((this as any)[`visit${element.type}`]) {
-      (this as any)[`visit${element.type}`](element, path);
+      await (this as any)[`visit${element.type}`](element, path);
     }
     for (const key in element) {
       if (element.hasOwnProperty(key)) {
         const value = (element as any)[key];
         if (value instanceof ConcreteNode) {
-          value.accept(this, path);
+          await value.accept(this, path);
         } else if (Array.isArray(value)) {
-          value.forEach(subValue => {
+          for (let i = 0; i < value.length; i++) {
+            const subValue = value[i];
             if (subValue instanceof ConcreteNode) {
-              subValue.accept(this, path);
+              await subValue.accept(this, path);
             }
-          });
+          }
         }
       }
     }

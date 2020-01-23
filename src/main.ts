@@ -40,7 +40,7 @@ export async function parseProject(): Promise<void> {
 
     const astRoot = new ConcreteNode(astObj);
     const programVisitor = new ProgramVisitor();
-    astRoot.accept(programVisitor);
+    await astRoot.accept(programVisitor);
 
     vscode.window.showInformationMessage('done');
   } catch (error) {

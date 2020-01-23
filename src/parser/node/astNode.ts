@@ -44,6 +44,6 @@ export class ConcreteNode {
   }
 
   public async accept(visitor: AbsVisitor, path: ConcreteNode[] = []): Promise<void> {
-    visitor.visit(this, path);
+    await visitor.visit(this, path);
   }
 }
