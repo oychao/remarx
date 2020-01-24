@@ -7,13 +7,28 @@ import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
 import { ProgramBase } from './programBase';
-import { ProgramVisitor } from './visitor/programVisitor';
+import { VisitorDependency } from './visitor/visitorDependency';
+import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
-  protected fullPath: string;
-  private rootAst: ConcreteNode | undefined;
+  public static pool: { [key: string]: Program } = {};
 
-  private parser: ProgramVisitor = new ProgramVisitor(this.dirPath);
+  public static produce(fullPath: string) {
+    let ret: Program | null = Program.pool[fullPath];
+    if (!ret) {
+      ret = new Program(fullPath);
+      Program.pool[fullPath] = ret;
+    }
+    return ret;
+  }
+
+  private initialized: boolean = false;
+
+  public fullPath: string;
+  protected rootAst: ConcreteNode | undefined;
+
+  protected visitorDependency: VisitorDependency = new VisitorDependency(this, this.dirPath);
+  protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -21,6 +36,9 @@ export class Program extends ProgramBase {
   }
 
   public async parse(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
     const enterFileBuffer = await fs.promises.readFile(this.fullPath);
     const enterFileStr = enterFileBuffer.toString();
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
@@ -42,7 +60,20 @@ export class Program extends ProgramBase {
     }
     this.rootAst = new ConcreteNode(astObj);
 
+    // parse top block scope
+    await this.rootAst.accept(this.visitorTopScope);
+
     // parse dependencies
-    await this.rootAst.accept(this.parser);
+    await this.rootAst.accept(this.visitorDependency);
+
+    // mark as initialized
+    this.initialized = true;
+  }
+
+  public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
+    for (let i = 0; i < this.visitorDependency.dependencies.length; i++) {
+      const dep = this.visitorDependency.dependencies[i];
+      cb.call(null, dep, i, this.visitorDependency.dependencies);
+    }
   }
 }

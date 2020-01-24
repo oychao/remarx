@@ -34,10 +34,12 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/dagre": "^0.7.42",
     "@types/deep-extend": "^0.4.31",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.8",
+    "@types/pug": "^2.0.4",
     "@types/vscode": "^1.41.0",
     "glob": "^7.1.6",
     "mocha": "^7.0.0",
@@ -48,7 +50,9 @@
   "dependencies": {
     "@types/eslint-visitor-keys": "^1.0.0",
     "@typescript-eslint/typescript-estree": "^2.16.0",
+    "dagre": "^0.8.5",
     "deep-extend": "^0.6.0",
+    "pug": "^2.0.4",
     "toml": "^3.0.0"
   }
 }

@@ -13,6 +13,7 @@ export enum AstType {
   JSXElement = 'JSXElement',
   JSXOpeningElement = 'JSXOpeningElement',
   JSXIdentifier = 'JSXIdentifier',
+  JSXClosingElement = 'JSXClosingElement',
   ExportNamedDeclaration = 'ExportNamedDeclaration',
   ExportSpecifier = 'ExportSpecifier',
   ImportSpecifier = 'ImportSpecifier',
@@ -25,7 +26,6 @@ export enum AstType {
   Property = 'Property',
   ArrayExpression = 'ArrayExpression',
   ReturnStatement = 'ReturnStatement',
-  JSXClosingElement = 'JSXClosingElement',
   JSXMemberExpression = 'JSXMemberExpression',
   JSXAttribute = 'JSXAttribute',
   JSXExpressionContainer = 'JSXExpressionContainer',
@@ -48,6 +48,16 @@ export enum AstType {
   UpdateExpression = 'UpdateExpression',
   BinaryExpression = 'BinaryExpression',
   ObjectPattern = 'ObjectPattern',
+  ConditionalExpression = 'ConditionalExpression',
+  JSXFragment = 'JSXFragment',
+  JSXOpeningFragment = 'JSXOpeningFragment',
+  JSXClosingFragment = 'JSXClosingFragment',
+  FunctionDeclaration = 'FunctionDeclaration',
+  AssignmentPattern = 'AssignmentPattern',
+  TSBooleanKeyword = 'TSBooleanKeyword',
+  TSTupleType = 'TSTupleType',
+  TSFunctionType = 'TSFunctionType',
+  TSVoidKeyword = 'TSVoidKeyword',
 }
 
 export interface NodeProgramVisitable {
@@ -98,6 +108,10 @@ export interface NodeJSXIdentifierVisitable {
   visitJSXIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
+export interface NodeJSXClosingElementVisitable {
+  visitJSXClosingElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
 export interface NodeExportNamedDeclarationVisitable {
   visitExportNamedDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
@@ -144,10 +158,6 @@ export interface NodeArrayExpressionVisitable {
 
 export interface NodeReturnStatementVisitable {
   visitReturnStatement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
-}
-
-export interface NodeJSXClosingElementVisitable {
-  visitJSXClosingElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeJSXMemberExpressionVisitable {
@@ -236,4 +246,44 @@ export interface NodeBinaryExpressionVisitable {
 
 export interface NodeObjectPatternVisitable {
   visitObjectPattern(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeConditionalExpressionVisitable {
+  visitConditionalExpression(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeJSXFragmentVisitable {
+  visitJSXFragment(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeJSXOpeningFragmentVisitable {
+  visitJSXOpeningFragment(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeJSXClosingFragmentVisitable {
+  visitJSXClosingFragment(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeFunctionDeclarationVisitable {
+  visitFunctionDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeAssignmentPatternVisitable {
+  visitAssignmentPattern(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeTSBooleanKeywordVisitable {
+  visitTSBooleanKeyword(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeTSTupleTypeVisitable {
+  visitTSTupleType(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeTSFunctionTypeVisitable {
+  visitTSFunctionType(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeTSVoidKeywordVisitable {
+  visitTSVoidKeyword(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
