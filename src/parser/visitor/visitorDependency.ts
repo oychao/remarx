@@ -12,7 +12,7 @@ export class VisitorDependency extends Visitor
 
   private dirPath: string;
 
-  private dependencies: Program[] = [];
+  public dependencies: Program[] = [];
 
   private identifierDepMap: { [key: string]: Program } = {};
 

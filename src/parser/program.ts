@@ -24,7 +24,7 @@ export class Program extends ProgramBase {
 
   private initialized: boolean = false;
 
-  protected fullPath: string;
+  public fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
   protected visitorDependency: VisitorDependency = new VisitorDependency(this, this.dirPath);
@@ -68,5 +68,12 @@ export class Program extends ProgramBase {
 
     // mark as initialized
     this.initialized = true;
+  }
+
+  public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
+    for (let i = 0; i < this.visitorDependency.dependencies.length; i++) {
+      const dep = this.visitorDependency.dependencies[i];
+      cb.call(null, dep, i, this.visitorDependency.dependencies);
+    }
   }
 }

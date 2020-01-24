@@ -13,7 +13,7 @@ export async function parseProject(): Promise<void> {
 
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
-    await depGraph.draw();
+    await depGraph.drawFileDepDag();
 
     vscode.window.showInformationMessage('done');
   } catch (error) {
