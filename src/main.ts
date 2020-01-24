@@ -54,15 +54,18 @@ export async function parseProject(): Promise<void> {
     // entrance file
     const enterPath = path.resolve(projectSourceRootDir, config.entranceFile);
 
+    // open panel
+    const panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
+      enableScripts: true,
+    });
+
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
     const graphData = await resolveData(depGraph);
     const htmlDoc = await renderView(graphData);
 
-    const panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
-      enableScripts: true,
-    });
+    // update panel view
     panel.webview.html = htmlDoc;
 
     // vscode.window.showInformationMessage('done');
