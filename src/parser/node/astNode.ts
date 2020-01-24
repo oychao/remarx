@@ -5,6 +5,7 @@ import { Visitor } from '../visitor/visitor';
 export class ConcreteNode {
   public type: AstType;
   public body?: ConcreteNode[];
+  public declaration?: ConcreteNode;
   public declarations?: ConcreteNode[];
   public id?: ConcreteNode;
   public name?: string | ConcreteNode;

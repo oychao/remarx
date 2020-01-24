@@ -48,6 +48,7 @@ export enum AstType {
   UpdateExpression = 'UpdateExpression',
   BinaryExpression = 'BinaryExpression',
   ObjectPattern = 'ObjectPattern',
+  FunctionDeclaration = 'FunctionDeclaration',
 }
 
 export interface NodeProgramVisitable {
@@ -236,4 +237,8 @@ export interface NodeBinaryExpressionVisitable {
 
 export interface NodeObjectPatternVisitable {
   visitObjectPattern(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
+export interface NodeFunctionDeclarationVisitable {
+  visitFunctionDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }

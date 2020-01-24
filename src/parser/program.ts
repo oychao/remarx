@@ -7,13 +7,17 @@ import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
 import { ProgramBase } from './programBase';
-import { VisitorProgram } from './visitor/visitorProgram';
+import { VisitorDependency } from './visitor/visitorDependency';
+import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
+  public static pool: { [key: string]: Program } = {};
+
   protected fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
-  protected visitorProgram: VisitorProgram = new VisitorProgram(this.dirPath);
+  protected visitorDependency: VisitorDependency = new VisitorDependency(this, this.dirPath);
+  protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -42,7 +46,12 @@ export class Program extends ProgramBase {
     }
     this.rootAst = new ConcreteNode(astObj);
 
+    // parse top block scope
+    await this.rootAst.accept(this.visitorTopScope);
+    // console.log(Object.keys(this.visitorTopScope.compMap));
+    // console.log(Object.keys(this.visitorTopScope.hookMap));
+
     // parse dependencies
-    await this.rootAst.accept(this.visitorProgram);
+    await this.rootAst.accept(this.visitorDependency);
   }
 }
