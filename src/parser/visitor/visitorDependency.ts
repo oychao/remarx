@@ -42,7 +42,7 @@ export class VisitorDependency extends Visitor
         return null;
       }
 
-      const dep = new Program(possiblePath);
+      const dep = Program.produce(possiblePath);
       await dep.parse();
       this.dependencies.push(dep);
       return dep;

@@ -13,6 +13,17 @@ import { VisitorTopScope } from './visitor/visitorTopScope';
 export class Program extends ProgramBase {
   public static pool: { [key: string]: Program } = {};
 
+  public static produce(fullPath: string) {
+    let ret: Program | null = Program.pool[fullPath];
+    if (!ret) {
+      ret = new Program(fullPath);
+      Program.pool[fullPath] = ret;
+    }
+    return ret;
+  }
+
+  private initialized: boolean = false;
+
   protected fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
@@ -25,6 +36,9 @@ export class Program extends ProgramBase {
   }
 
   public async parse(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
     const enterFileBuffer = await fs.promises.readFile(this.fullPath);
     const enterFileStr = enterFileBuffer.toString();
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
@@ -48,10 +62,11 @@ export class Program extends ProgramBase {
 
     // parse top block scope
     await this.rootAst.accept(this.visitorTopScope);
-    // console.log(Object.keys(this.visitorTopScope.compMap));
-    // console.log(Object.keys(this.visitorTopScope.hookMap));
 
     // parse dependencies
     await this.rootAst.accept(this.visitorDependency);
+
+    // mark as initialized
+    this.initialized = true;
   }
 }
