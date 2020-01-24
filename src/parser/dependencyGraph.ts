@@ -19,21 +19,31 @@ export class DependencyGraph extends ProgramBase {
   /**
    * output file dependency dag
    */
-  public async drawFileDepDag(): Promise<void> {
+  public async getFileDepDag(): Promise<{ files: string[]; depRelations: [string, string][] }> {
+    const files = new Set<string>();
+    const depRelations: [string, string][] = [];
+
     const queue: Program[] = [this.program];
     let currProgram = queue.pop();
+
     while (currProgram) {
+      files.add(currProgram.fullPath);
       await currProgram.forEachDepFile(async dep => {
         queue.push(dep);
       });
 
       await currProgram.forEachDepFile(async dep => {
         if (currProgram) {
-          console.log(`${currProgram.fullPath} depends on ${dep.fullPath}`);
+          depRelations.push([currProgram.fullPath, dep.fullPath]);
         }
       });
 
       currProgram = queue.pop();
     }
+
+    return {
+      files: Array.from(files),
+      depRelations,
+    };
   }
 }

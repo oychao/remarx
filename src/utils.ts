@@ -22,7 +22,7 @@ export function simplifyAst<T extends object>(ast: T): T {
 }
 
 // output detected types from ast object into src/astTypes.ts file, meta programming?
-const __projectRoot = path.resolve(__dirname, '..');
+export const __projectRoot = path.resolve(__dirname, '..');
 const result: Set<string> = new Set();
 export async function outputType(ast: object): Promise<void> {
   dfsWalk(ast, (node: any) => {
