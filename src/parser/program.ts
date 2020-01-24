@@ -7,13 +7,13 @@ import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
 import { ProgramBase } from './programBase';
-import { ProgramVisitor } from './visitor/programVisitor';
+import { VisitorProgram } from './visitor/visitorProgram';
 
 export class Program extends ProgramBase {
   protected fullPath: string;
-  private rootAst: ConcreteNode | undefined;
+  protected rootAst: ConcreteNode | undefined;
 
-  private parser: ProgramVisitor = new ProgramVisitor(this.dirPath);
+  protected visitorProgram: VisitorProgram = new VisitorProgram(this.dirPath);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -43,6 +43,6 @@ export class Program extends ProgramBase {
     this.rootAst = new ConcreteNode(astObj);
 
     // parse dependencies
-    await this.rootAst.accept(this.parser);
+    await this.rootAst.accept(this.visitorProgram);
   }
 }

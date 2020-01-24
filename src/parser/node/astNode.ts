@@ -7,7 +7,7 @@ export class ConcreteNode {
   public body?: ConcreteNode[];
   public declarations?: ConcreteNode[];
   public id?: ConcreteNode;
-  public name?: string;
+  public name?: string | ConcreteNode;
   public init?: ConcreteNode;
   public kind?: VariableDeclarationType;
   public generator?: boolean;

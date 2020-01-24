@@ -13,6 +13,7 @@ export enum AstType {
   JSXElement = 'JSXElement',
   JSXOpeningElement = 'JSXOpeningElement',
   JSXIdentifier = 'JSXIdentifier',
+  JSXClosingElement = 'JSXClosingElement',
   ExportNamedDeclaration = 'ExportNamedDeclaration',
   ExportSpecifier = 'ExportSpecifier',
   ImportSpecifier = 'ImportSpecifier',
@@ -25,7 +26,6 @@ export enum AstType {
   Property = 'Property',
   ArrayExpression = 'ArrayExpression',
   ReturnStatement = 'ReturnStatement',
-  JSXClosingElement = 'JSXClosingElement',
   JSXMemberExpression = 'JSXMemberExpression',
   JSXAttribute = 'JSXAttribute',
   JSXExpressionContainer = 'JSXExpressionContainer',
@@ -98,6 +98,10 @@ export interface NodeJSXIdentifierVisitable {
   visitJSXIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
+export interface NodeJSXClosingElementVisitable {
+  visitJSXClosingElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
+}
+
 export interface NodeExportNamedDeclarationVisitable {
   visitExportNamedDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
@@ -144,10 +148,6 @@ export interface NodeArrayExpressionVisitable {
 
 export interface NodeReturnStatementVisitable {
   visitReturnStatement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
-}
-
-export interface NodeJSXClosingElementVisitable {
-  visitJSXClosingElement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
 }
 
 export interface NodeJSXMemberExpressionVisitable {

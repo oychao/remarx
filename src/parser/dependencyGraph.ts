@@ -1,14 +1,14 @@
 import { ProgramBase } from './programBase';
-import { Program } from './program';
+import { ProgramRoot } from './programRoot';
 
 export class DependencyGraph extends ProgramBase {
   protected fullPath: string;
-  private program: Program;
+  private program: ProgramRoot;
 
   constructor(fullPath: string) {
     super(fullPath);
     this.fullPath = fullPath;
-    this.program = new Program(this.fullPath);
+    this.program = new ProgramRoot(this.fullPath);
   }
 
   public async parse(): Promise<void> {

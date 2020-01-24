@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import { Program } from '../program';
@@ -7,7 +6,7 @@ import { NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable } f
 import { Visitor } from './visitor';
 import { fileExists } from '../../utils';
 
-export class ProgramVisitor extends Visitor
+export class VisitorProgram extends Visitor
   implements NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
@@ -31,8 +30,8 @@ export class ProgramVisitor extends Visitor
       let isFile = await fileExists(possiblePath);
       let i = 0;
       // determine readable target module full path;
-      while (!isFile && i < ProgramVisitor.POSSIBLE_FILE_SUFFIXES.length) {
-        possiblePath = `${originPath}${ProgramVisitor.POSSIBLE_FILE_SUFFIXES[i++]}`;
+      while (!isFile && i < VisitorProgram.POSSIBLE_FILE_SUFFIXES.length) {
+        possiblePath = `${originPath}${VisitorProgram.POSSIBLE_FILE_SUFFIXES[i++]}`;
         isFile = await fileExists(possiblePath);
       }
 
