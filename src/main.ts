@@ -8,7 +8,7 @@ import { config } from './config';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { __projectRoot } from './utils';
 
-interface GraphView {
+export interface GraphView {
   nodes: dagre.Node[];
   edges: dagre.GraphEdge[];
 }
@@ -37,10 +37,12 @@ export async function resolveData(depGraph: DependencyGraph): Promise<GraphView>
 
 export async function renderView(data: GraphView): Promise<string> {
   const viewDir = path.resolve(__projectRoot, 'src', 'view');
+  const outDir = path.resolve(__projectRoot, 'out', 'view');
   const template = (await fs.promises.readFile(path.resolve(viewDir, 'index.pug'))).toString();
-  const script = (await fs.promises.readFile(path.resolve(viewDir, 'index.js'))).toString();
+  const script = (await fs.promises.readFile(path.resolve(outDir, 'index.js'))).toString();
   const ret = pug.render(template, {
-    filters: { script: () => `const graphData = ${JSON.stringify(data)};${script}` },
+    // declare a `exports` object to mock es module
+    filters: { script: () => `const exports = {};const graphData = ${JSON.stringify(data)};${script}` },
   });
   return ret;
 }
