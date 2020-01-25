@@ -7,7 +7,7 @@ import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
 import { ProgramBase } from './programBase';
-import { VisitorDependency } from './visitor/visitorDependency';
+import { VisitorFileDependency } from './visitor/visitorFileDependency';
 import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
@@ -27,7 +27,7 @@ export class Program extends ProgramBase {
   public fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
-  protected visitorDependency: VisitorDependency = new VisitorDependency(this, this.dirPath);
+  protected visitorDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
   protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
 
   constructor(fullPath: string) {
