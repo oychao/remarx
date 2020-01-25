@@ -1,4 +1,3 @@
-import * as dagre from 'dagre';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as request from 'request-promise';
@@ -7,28 +6,6 @@ import * as vscode from 'vscode';
 import { config } from './config';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { __projectRoot } from './utils';
-
-export async function resolveData(depGraph: DependencyGraph): Promise<GraphView> {
-  const { files, depRelations } = await depGraph.getFileDepDag();
-  const g = new dagre.graphlib.Graph();
-
-  g.setGraph({});
-  g.setDefaultEdgeLabel(() => ({}));
-
-  files.forEach(file => {
-    g.setNode(file, { label: file, width: 50, height: 50 });
-  });
-  depRelations.forEach(([from, to]) => {
-    g.setEdge(from, to);
-  });
-
-  dagre.layout(g);
-
-  return {
-    nodes: g.nodes().map(n => g.node(n)),
-    edges: g.edges().map(e => g.edge(e)),
-  };
-}
 
 export async function parseProject(): Promise<GraphView | null> {
   try {
@@ -40,7 +17,7 @@ export async function parseProject(): Promise<GraphView | null> {
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
-    const graphData = await resolveData(depGraph);
+    const graphData = await depGraph.getFileDepDag();
 
     return graphData;
     // vscode.window.showInformationMessage('done');
