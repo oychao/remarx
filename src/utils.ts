@@ -34,18 +34,7 @@ export async function outputType(ast: object): Promise<void> {
   const types = Array.from(result);
   await fs.promises.writeFile(
     path.resolve(__projectRoot, 'src', 'parser', 'node', 'astTypes.ts'),
-    `import { ConcreteNode } from './astNode';
-
-export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}
-
-${types
-  .map(
-    type => `export interface Node${type}Visitable {
-  visit${type}(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void>;
-}`
-  )
-  .join('\n\n')}
-`
+    `export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}\n`
   );
 }
 
@@ -55,4 +44,9 @@ export async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export function startWithCapitalLetter(str: string): boolean {
+  const charCode = str.charCodeAt(0);
+  return charCode > 64 && charCode < 91;
 }

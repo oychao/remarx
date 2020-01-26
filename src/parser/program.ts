@@ -5,9 +5,9 @@ import * as parser from '@typescript-eslint/typescript-estree';
 import { config } from '../config';
 import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
-import { ConcreteNode } from './node/astNode';
+import { ConcreteNode } from './node/concreteNode';
 import { ProgramBase } from './programBase';
-import { VisitorDependency } from './visitor/visitorDependency';
+import { VisitorFileDependency } from './visitor/visitorFileDependency';
 import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
@@ -22,13 +22,17 @@ export class Program extends ProgramBase {
     return ret;
   }
 
+  public static purge(): void {
+    Program.pool = {};
+  }
+
   private initialized: boolean = false;
 
   public fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
-  protected visitorDependency: VisitorDependency = new VisitorDependency(this, this.dirPath);
-  protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -60,20 +64,20 @@ export class Program extends ProgramBase {
     }
     this.rootAst = new ConcreteNode(astObj);
 
-    // parse top block scope
-    await this.rootAst.accept(this.visitorTopScope);
+    // parse file dependencies
+    await this.rootAst.accept(this.visitorFileDependency);
 
-    // parse dependencies
-    await this.rootAst.accept(this.visitorDependency);
+    // parse top block scope and dependencies
+    await this.rootAst.accept(this.visitorTopScope);
 
     // mark as initialized
     this.initialized = true;
   }
 
   public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
-    for (let i = 0; i < this.visitorDependency.dependencies.length; i++) {
-      const dep = this.visitorDependency.dependencies[i];
-      cb.call(null, dep, i, this.visitorDependency.dependencies);
+    for (let i = 0; i < this.visitorFileDependency.dependencies.length; i++) {
+      const dep = this.visitorFileDependency.dependencies[i];
+      cb.call(null, dep, i, this.visitorFileDependency.dependencies);
     }
   }
 }

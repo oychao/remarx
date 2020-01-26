@@ -1,5 +1,18 @@
 import { Program } from '../program';
-import { ConcreteNode } from '../node/astNode';
+import { ConcreteNode } from '../node/concreteNode';
+import { AstType } from '../node/astTypes';
+
+export type NodeHandler = (
+  path: ConcreteNode[],
+  node: ConcreteNode,
+  parent: ConcreteNode,
+  grantParent: ConcreteNode
+) => Promise<void>;
+
+export type SelectorHandlerMap = {
+  selector: AstType[];
+  handler: NodeHandler;
+};
 
 /**
  * abstract visitor, supply a common visit method, every concrete ast node which accept visitor instance
@@ -8,18 +21,49 @@ import { ConcreteNode } from '../node/astNode';
 export abstract class Visitor {
   protected program: Program;
 
+  protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
+
   constructor(program: Program) {
     this.program = program;
   }
 
-  public async visit(element: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
-    path.push(element);
-    if ((this as any)[`visit${element.type}`]) {
-      await (this as any)[`visit${element.type}`](element, path);
+  private matchSelectors(path: ConcreteNode[]): NodeHandler | null {
+    for (let i = 0; i < this.selectorHandlerMap.length; i++) {
+      const { selector, handler } = this.selectorHandlerMap[i];
+      let j = selector.length - 1;
+      let k = path.length - 1;
+      let currSelector = selector[j];
+      let currPathNode = path[k];
+      let jumpToEnd = false;
+      while (currSelector && currPathNode) {
+        if (currSelector !== currPathNode.type) {
+          jumpToEnd = true;
+          break;
+        }
+        currSelector = selector[--j];
+        currPathNode = path[--k];
+      }
+      if (jumpToEnd) {
+        continue;
+      }
+      if (j === -1) {
+        return handler;
+      }
     }
-    for (const key in element) {
-      if (element.hasOwnProperty(key)) {
-        const value = (element as any)[key];
+    return null;
+  }
+
+  public async visit(node: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
+    path.push(node);
+    const handler = this.matchSelectors(path);
+
+    if (handler) {
+      await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
+    }
+
+    for (const key in node) {
+      if (node.hasOwnProperty(key)) {
+        const value = (node as any)[key];
         if (value instanceof ConcreteNode) {
           await value.accept(this, [...path]);
         } else if (Array.isArray(value)) {

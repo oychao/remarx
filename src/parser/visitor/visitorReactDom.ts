@@ -1,14 +1,27 @@
-import { ConcreteNode } from '../node/astNode';
-import { NodeJSXIdentifierVisitable } from '../node/astTypes';
-import { Visitor } from './visitor';
+import { ConcreteNode } from '../node/concreteNode';
+import { AstType } from '../node/astTypes';
+import { Program } from '../program';
+import { Visitor, SelectorHandlerMap } from './visitor';
+import { startWithCapitalLetter } from '../../utils';
 
-export class VisitorReactDom extends Visitor implements NodeJSXIdentifierVisitable {
+export class VisitorReactDom extends Visitor {
+  protected selectorHandlerMap: SelectorHandlerMap[] = [];
+
   public compTagNames: Set<string> = new Set();
 
-  public async visitJSXIdentifier(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
-    const charCode = (astNode.name as string).charCodeAt(0);
-    if (charCode < 91 && charCode > 64) {
-      this.compTagNames.add(astNode.name as string);
+  constructor(program: Program) {
+    super(program);
+    this.selectorHandlerMap = [
+      {
+        selector: [AstType.JSXIdentifier],
+        handler: this.visitJPath,
+      },
+    ];
+  }
+
+  private async visitJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    if (startWithCapitalLetter(node.name as string)) {
+      this.compTagNames.add(node.name as string);
     }
   }
 }
