@@ -3,9 +3,10 @@ import * as path from 'path';
 import * as request from 'request-promise';
 import * as vscode from 'vscode';
 
-import { config } from './config';
+import { config, readConf } from './config';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { __projectRoot } from './utils';
+import { Program } from './parser/program';
 
 export async function parseProject(): Promise<GraphView | null> {
   try {
@@ -29,6 +30,8 @@ export async function parseProject(): Promise<GraphView | null> {
 }
 
 export async function main(): Promise<void> {
+  await readConf();
+
   // open panel
   const panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
     enableScripts: true,
@@ -46,4 +49,6 @@ export async function main(): Promise<void> {
   // update panel view
   const viewSource = await request('http://localhost:9551/');
   panel.webview.html = viewSource;
+
+  Program.purge();
 }

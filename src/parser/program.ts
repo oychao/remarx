@@ -23,6 +23,10 @@ export class Program extends ProgramBase {
     return ret;
   }
 
+  public static purge(): void {
+    Program.pool = {};
+  }
+
   private initialized: boolean = false;
 
   public fullPath: string;
