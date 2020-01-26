@@ -2,6 +2,7 @@ import { ConcreteNode } from '../node/concreteNode';
 import { AstType } from '../node/astTypes';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
+import { startWithCapitalLetter } from '../../utils';
 
 export class VisitorReactDom extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[] = [];
@@ -19,8 +20,7 @@ export class VisitorReactDom extends Visitor {
   }
 
   private async visitJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    const charCode = (node.name as string).charCodeAt(0);
-    if (charCode < 91 && charCode > 64) {
+    if (startWithCapitalLetter(node.name as string)) {
       this.compTagNames.add(node.name as string);
     }
   }
