@@ -13,12 +13,12 @@ export class VisitorReactDom extends Visitor {
     this.selectorHandlerMap = [
       {
         selector: [AstType.JSXIdentifier],
-        handler: this.visitJSXIdentifier,
+        handler: this.visitJPath,
       },
     ];
   }
 
-  public async visitJSXIdentifier(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async visitJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     const charCode = (node.name as string).charCodeAt(0);
     if (charCode < 91 && charCode > 64) {
       this.compTagNames.add(node.name as string);

@@ -1,5 +1,5 @@
 import { ConcreteNode } from '../node/astNode';
-import { NodeBlockStatementVisitable, AstType } from '../node/astTypes';
+import { AstType } from '../node/astTypes';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
 
@@ -15,12 +15,12 @@ export class VisitorTopScope extends Visitor {
     this.selectorHandlerMap = [
       {
         selector: [AstType.BlockStatement],
-        handler: this.visitBlockStatement,
+        handler: this.visitBPath,
       },
     ];
   }
 
-  public async visitBlockStatement(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async visitBPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope

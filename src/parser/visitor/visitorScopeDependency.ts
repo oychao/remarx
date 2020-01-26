@@ -11,20 +11,20 @@ export class VisitorScopeDependency extends Visitor {
     this.selectorHandlerMap = [
       {
         selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.Identifier],
-        handler: this.outputFunctionName,
+        handler: this.handleVCIPath,
       },
       {
         selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
-        handler: this.outputFunctionName,
+        handler: this.handleVCIPath,
       },
       // {
       //   selector: [AstType.BlockStatement, AstType.ExpressionStatement, AstType.CallExpression],
-      //   handler: this.outputFunctionName,
+      //   handler: this.handleVCIPath,
       // },
     ];
   }
 
-  private async outputFunctionName(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
     if ((node.name as string).slice(0, 3) === 'use') {
       console.log(node.name);
     }

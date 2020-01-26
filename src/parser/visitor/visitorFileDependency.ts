@@ -22,11 +22,15 @@ export class VisitorFileDependency extends Visitor {
     this.selectorHandlerMap = [
       {
         selector: [AstType.ImportDeclaration],
-        handler: this.visitImportDeclaration,
+        handler: this.visitIPath,
       },
       {
-        selector: [AstType.ExportNamedDeclaration],
-        handler: this.visitExportNamedDeclaration,
+        selector: [AstType.ExportNamedDeclaration, AstType.Literal],
+        handler: this.visitELPath,
+      },
+      {
+        selector: [AstType.ExportNamedDeclaration, AstType.VariableDeclaration, AstType.VariableDeclarator],
+        handler: this.visitEVVPath,
       },
     ];
     this.dirPath = dirPath;
@@ -61,7 +65,11 @@ export class VisitorFileDependency extends Visitor {
     return null;
   }
 
-  private async visitImportDeclaration(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  /**
+   * handle pattern:
+   * import ...;
+   */
+  private async visitIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value);
       if (dep) {
@@ -72,11 +80,25 @@ export class VisitorFileDependency extends Visitor {
     }
   }
 
-  private async visitExportNamedDeclaration(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    if (node?.source?.value) {
-      await this.asyncImportLiteralSource(node.source.value);
+  /**
+   * handle pattern:
+   * export { default } from './xxx';
+   */
+  private async visitELPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    if (node.value) {
+      await this.asyncImportLiteralSource(node.value);
     }
-    if (Array.isArray(node?.declaration?.declarations)) {
-    }
+  }
+
+  /**
+   * handler pattern:
+   * export const foo = ...;
+   */
+  private async visitEVVPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    // TODO handle node below
+    // {
+    //   "type": "Identifier",
+    //   "name": "CreateForm"
+    // },
   }
 }
