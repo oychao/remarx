@@ -1,24 +1,37 @@
-import { Visitor } from './visitor';
 import { ConcreteNode } from '../node/astNode';
 import { NodeBlockStatementVisitable, AstType } from '../node/astTypes';
+import { Program } from '../program';
+import { Visitor, SelectorHandlerMap } from './visitor';
 
-export class VisitorTopScope extends Visitor implements NodeBlockStatementVisitable {
+export class VisitorTopScope extends Visitor {
+  protected selectorHandlerMap: SelectorHandlerMap[];
+
   public hookMap: { [key: string]: ConcreteNode } = {};
 
   public compMap: { [key: string]: ConcreteNode } = {};
 
-  public async visitBlockStatement(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
-    for (let i = 0, len = astPath.length - 1; i < len; i++) {
-      const astAncestor = astPath[i];
+  constructor(program: Program) {
+    super(program);
+    this.selectorHandlerMap = [
+      {
+        selector: [AstType.BlockStatement],
+        handler: this.visitBlockStatement,
+      },
+    ];
+  }
+
+  public async visitBlockStatement(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    for (let i = 0, len = path.length - 1; i < len; i++) {
+      const astAncestor = path[i];
       // it's not a top block scope
       if (astAncestor.type === AstType.BlockStatement) {
         return;
       }
     }
 
-    const len = astPath.length;
-    const parent = astPath[len - 2];
-    const grantParent = astPath[len - 3];
+    const len = path.length;
+    const parent = path[len - 2];
+    const grantParent = path[len - 3];
 
     // like `const foo = () => {};` or `const foo = function () {};`
     const isVariableDeclaration =
@@ -40,14 +53,14 @@ export class VisitorTopScope extends Visitor implements NodeBlockStatementVisita
       functionName = grantParent?.id?.name as string;
     }
 
-    // console.log(astPath.map(node => node.type).join('->'));
+    // console.log(path.map(node => node.type).join('->'));
     // console.log(functionName);
 
     const charCode = functionName.charCodeAt(0);
     if (charCode < 91 && charCode > 64) {
-      this.compMap[functionName] = astNode;
+      this.compMap[functionName] = node;
     } else if (functionName.slice(0, 3) === 'use') {
-      this.hookMap[functionName] = astNode;
+      this.hookMap[functionName] = node;
     }
   }
 }

@@ -2,13 +2,14 @@ import * as path from 'path';
 
 import { Program } from '../program';
 import { ConcreteNode } from '../node/astNode';
-import { NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable } from '../node/astTypes';
-import { Visitor } from './visitor';
+import { AstType } from '../node/astTypes';
+import { Visitor, SelectorHandlerMap } from './visitor';
 import { fileExists } from '../../utils';
 
-export class VisitorFileDependency extends Visitor
-  implements NodeImportDeclarationVisitable, NodeExportNamedDeclarationVisitable {
+export class VisitorFileDependency extends Visitor {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
+
+  protected selectorHandlerMap: SelectorHandlerMap[] = [];
 
   private dirPath: string;
 
@@ -18,6 +19,16 @@ export class VisitorFileDependency extends Visitor
 
   constructor(program: Program, dirPath: string) {
     super(program);
+    this.selectorHandlerMap = [
+      {
+        selector: [AstType.ImportDeclaration],
+        handler: this.visitImportDeclaration,
+      },
+      {
+        selector: [AstType.ExportNamedDeclaration],
+        handler: this.visitExportNamedDeclaration,
+      },
+    ];
     this.dirPath = dirPath;
   }
 
@@ -50,22 +61,22 @@ export class VisitorFileDependency extends Visitor
     return null;
   }
 
-  public async visitImportDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
-    if (astNode?.source?.value) {
-      const dep = await this.asyncImportLiteralSource(astNode.source.value);
+  private async visitImportDeclaration(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    if (node?.source?.value) {
+      const dep = await this.asyncImportLiteralSource(node.source.value);
       if (dep) {
-        astNode.specifiers?.forEach(specifier => {
+        node.specifiers?.forEach(specifier => {
           this.identifierDepMap[specifier.local?.name as string] = dep;
         });
       }
     }
   }
 
-  public async visitExportNamedDeclaration(astNode: ConcreteNode, astPath: ConcreteNode[]): Promise<void> {
-    if (astNode?.source?.value) {
-      await this.asyncImportLiteralSource(astNode.source.value);
+  private async visitExportNamedDeclaration(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+    if (node?.source?.value) {
+      await this.asyncImportLiteralSource(node.source.value);
     }
-    if (Array.isArray(astNode?.declaration?.declarations)) {
+    if (Array.isArray(node?.declaration?.declarations)) {
     }
   }
 }

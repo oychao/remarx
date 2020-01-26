@@ -11,6 +11,8 @@ const App = () => {
 
   const dispatchContextValue = React.useMemo(() => ({ store, dispatch }), [store]);
 
+  React.useEffect(() => {});
+
   return (
     <div>
       <StoreDispatchContext.Provider value={dispatchContextValue}>

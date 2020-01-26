@@ -8,6 +8,7 @@ import { simplifyAst, outputType } from '../utils';
 import { ConcreteNode } from './node/astNode';
 import { ProgramBase } from './programBase';
 import { VisitorFileDependency } from './visitor/visitorFileDependency';
+import { VisitorScopeDependency } from './visitor/visitorScopeDependency';
 import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
@@ -27,8 +28,9 @@ export class Program extends ProgramBase {
   public fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
-  protected visitorDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
   protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  protected visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
+  protected visitorScopeDependency: VisitorScopeDependency = new VisitorScopeDependency(this);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -60,20 +62,23 @@ export class Program extends ProgramBase {
     }
     this.rootAst = new ConcreteNode(astObj);
 
+    // parse file dependencies
+    await this.rootAst.accept(this.visitorFileDependency);
+
     // parse top block scope
     await this.rootAst.accept(this.visitorTopScope);
 
-    // parse dependencies
-    await this.rootAst.accept(this.visitorDependency);
+    // parse scope dependencies
+    await this.rootAst.accept(this.visitorScopeDependency);
 
     // mark as initialized
     this.initialized = true;
   }
 
   public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
-    for (let i = 0; i < this.visitorDependency.dependencies.length; i++) {
-      const dep = this.visitorDependency.dependencies[i];
-      cb.call(null, dep, i, this.visitorDependency.dependencies);
+    for (let i = 0; i < this.visitorFileDependency.dependencies.length; i++) {
+      const dep = this.visitorFileDependency.dependencies[i];
+      cb.call(null, dep, i, this.visitorFileDependency.dependencies);
     }
   }
 }
