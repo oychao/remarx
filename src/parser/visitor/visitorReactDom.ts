@@ -1,4 +1,4 @@
-import { ConcreteNode } from '../node/astNode';
+import { ConcreteNode } from '../node/concreteNode';
 import { AstType } from '../node/astTypes';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';

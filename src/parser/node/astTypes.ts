@@ -1,5 +1,3 @@
-import { ConcreteNode } from './astNode';
-
 export enum AstType {
   Program = 'Program',
   ImportDeclaration = 'ImportDeclaration',

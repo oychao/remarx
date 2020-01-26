@@ -1,26 +1,50 @@
-import { ConcreteNode } from '../node/astNode';
 import { AstType } from '../node/astTypes';
+import { ConcreteNode } from '../node/concreteNode';
+import { ScopeNodeMap, TopScope } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
 
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
-  public hookMap: { [key: string]: ConcreteNode } = {};
+  public hookMap: ScopeNodeMap = {};
 
-  public compMap: { [key: string]: ConcreteNode } = {};
+  public compMap: ScopeNodeMap = {};
+
+  private currWorkingScope: TopScope | null = null;
 
   constructor(program: Program) {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.BlockStatement],
-        handler: this.visitBPath,
+        selector: [AstType.FunctionDeclaration, AstType.BlockStatement],
+        handler: this.visitFBPath,
+      },
+      {
+        selector: [AstType.VariableDeclarator, AstType.FunctionExpression, AstType.BlockStatement],
+        handler: this.visitFBPath,
+      },
+      {
+        selector: [AstType.VariableDeclarator, AstType.ArrowFunctionExpression, AstType.BlockStatement],
+        handler: this.visitFBPath,
+      },
+      {
+        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.Identifier],
+        handler: this.handleVCIPath,
+      },
+      {
+        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
+        handler: this.handleVCIPath,
       },
     ];
   }
 
-  private async visitBPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async visitFBPath(
+    path: ConcreteNode[],
+    node: ConcreteNode,
+    parent: ConcreteNode,
+    grantParent: ConcreteNode
+  ): Promise<void> {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope
@@ -29,22 +53,12 @@ export class VisitorTopScope extends Visitor {
       }
     }
 
-    const len = path.length;
-    const parent = path[len - 2];
-    const grantParent = path[len - 3];
-
     // like `const foo = () => {};` or `const foo = function () {};`
     const isVariableDeclaration =
-      (parent.type === AstType.ArrowFunctionExpression || parent.type === AstType.FunctionExpression) &&
-      grantParent.type === AstType.VariableDeclarator;
+      parent.type === AstType.ArrowFunctionExpression || parent.type === AstType.FunctionExpression;
 
     // like `function foo () {}`
     const isFunctionDeclaration = parent.type === AstType.FunctionDeclaration;
-
-    // not our target scope if not a function scope
-    if (!isVariableDeclaration && !isFunctionDeclaration) {
-      return;
-    }
 
     let functionName = '';
     if (isFunctionDeclaration) {
@@ -58,9 +72,15 @@ export class VisitorTopScope extends Visitor {
 
     const charCode = functionName.charCodeAt(0);
     if (charCode < 91 && charCode > 64) {
-      this.compMap[functionName] = node;
+      this.currWorkingScope = this.compMap[functionName] = new TopScope(functionName, node, this.program);
     } else if (functionName.slice(0, 3) === 'use') {
-      this.hookMap[functionName] = node;
+      this.currWorkingScope = this.hookMap[functionName] = new TopScope(functionName, node, this.program);
+    }
+  }
+
+  private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+    if ((node.name as string).slice(0, 3) === 'use') {
+      console.log(`${this.currWorkingScope?.name} depends on ${node.name}`);
     }
   }
 }

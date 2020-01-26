@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { Program } from '../program';
-import { ConcreteNode } from '../node/astNode';
+import { ConcreteNode } from '../node/concreteNode';
 import { AstType } from '../node/astTypes';
 import { Visitor, SelectorHandlerMap } from './visitor';
 import { fileExists } from '../../utils';

@@ -5,10 +5,9 @@ import * as parser from '@typescript-eslint/typescript-estree';
 import { config } from '../config';
 import { PARSE_CONFIG } from '../constants';
 import { simplifyAst, outputType } from '../utils';
-import { ConcreteNode } from './node/astNode';
+import { ConcreteNode } from './node/concreteNode';
 import { ProgramBase } from './programBase';
 import { VisitorFileDependency } from './visitor/visitorFileDependency';
-import { VisitorScopeDependency } from './visitor/visitorScopeDependency';
 import { VisitorTopScope } from './visitor/visitorTopScope';
 
 export class Program extends ProgramBase {
@@ -32,9 +31,8 @@ export class Program extends ProgramBase {
   public fullPath: string;
   protected rootAst: ConcreteNode | undefined;
 
-  protected visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
-  protected visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
-  protected visitorScopeDependency: VisitorScopeDependency = new VisitorScopeDependency(this);
+  public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -69,11 +67,8 @@ export class Program extends ProgramBase {
     // parse file dependencies
     await this.rootAst.accept(this.visitorFileDependency);
 
-    // parse top block scope
+    // parse top block scope and dependencies
     await this.rootAst.accept(this.visitorTopScope);
-
-    // parse scope dependencies
-    await this.rootAst.accept(this.visitorScopeDependency);
 
     // mark as initialized
     this.initialized = true;

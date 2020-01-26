@@ -1,5 +1,5 @@
 import { Program } from '../program';
-import { ConcreteNode } from '../node/astNode';
+import { ConcreteNode } from '../node/concreteNode';
 import { AstType } from '../node/astTypes';
 
 export type NodeHandler = (

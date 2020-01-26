@@ -34,9 +34,7 @@ export async function outputType(ast: object): Promise<void> {
   const types = Array.from(result);
   await fs.promises.writeFile(
     path.resolve(__projectRoot, 'src', 'parser', 'node', 'astTypes.ts'),
-    `import { ConcreteNode } from './astNode';
-
-export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}\n`
+    `export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}\n`
   );
 }
 
