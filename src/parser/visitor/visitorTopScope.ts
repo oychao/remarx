@@ -35,7 +35,7 @@ export class VisitorTopScope extends Visitor {
       },
       {
         selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
-        handler: this.handleVCIPath,
+        handler: this.handleVCMIPath,
       },
       {
         selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXIdentifier],
@@ -86,6 +86,10 @@ export class VisitorTopScope extends Visitor {
     }
   }
 
+  /**
+   * handle pattern:
+   * useFoo();
+   */
   private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
@@ -95,6 +99,26 @@ export class VisitorTopScope extends Visitor {
     }
   }
 
+  /**
+   * handle pattern:
+   * Foo.useBar();
+   */
+  private async handleVCMIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+    if (node === parent.object) {
+      return;
+    }
+    const hookName: string = node.name as string;
+    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
+      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+        parent.object?.name as string
+      ]?.visitorTopScope.hookMap[hookName];
+    }
+  }
+
+  /**
+   * handle pattern:
+   * <MyComp />
+   */
   private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
@@ -104,6 +128,10 @@ export class VisitorTopScope extends Visitor {
     }
   }
 
+  /**
+   * handle pattern:
+   * <Common.MyComp />
+   */
   private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
     if (node === parent.object) {
       return;

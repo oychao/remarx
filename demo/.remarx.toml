@@ -6,4 +6,4 @@ on=true
 output="remarx_ast"
 
 [meta]
-type=false
+type=true
