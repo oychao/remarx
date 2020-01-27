@@ -2,7 +2,7 @@ import { Program } from './program';
 import { VisitorReactDom } from './visitor/visitorReactDom';
 
 export class ProgramRoot extends Program {
-  private visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
+  public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
 
   constructor(fullPath: string) {
     super(fullPath);

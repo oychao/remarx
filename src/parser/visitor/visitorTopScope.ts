@@ -12,7 +12,7 @@ export class VisitorTopScope extends Visitor {
 
   public compMap: ScopeNodeMap = {};
 
-  private currWorkingScope: TopScope | null = null;
+  private currWorkingScope: TopScope | undefined;
 
   constructor(program: Program) {
     super(program);
@@ -95,7 +95,7 @@ export class VisitorTopScope extends Visitor {
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
       this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
         hookName
-      ]?.visitorTopScope.hookMap[hookName];
+      ]?.visitorFileDependency.exports[hookName];
     }
   }
 
@@ -111,7 +111,7 @@ export class VisitorTopScope extends Visitor {
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
       this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
         parent.object?.name as string
-      ]?.visitorTopScope.hookMap[hookName];
+      ]?.visitorFileDependency.exports[hookName];
     }
   }
 
@@ -124,7 +124,7 @@ export class VisitorTopScope extends Visitor {
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
       this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         compName
-      ]?.visitorTopScope.compMap[compName];
+      ]?.visitorFileDependency.exports[compName];
     }
   }
 
@@ -140,7 +140,7 @@ export class VisitorTopScope extends Visitor {
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
       this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         parent.object?.name as string
-      ]?.visitorTopScope.compMap[compName];
+      ]?.visitorFileDependency.exports[compName];
     }
   }
 }

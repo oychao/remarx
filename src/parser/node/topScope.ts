@@ -1,8 +1,10 @@
 import { Program } from '../program';
 import { ConcreteNode } from './concreteNode';
 
+export type ScopeNodeDepend = TopScope | string | undefined;
+
 export interface ScopeNodeMap {
-  [key: string]: TopScope | string | undefined;
+  [key: string]: ScopeNodeDepend;
 }
 
 export class TopScope {
@@ -20,5 +22,9 @@ export class TopScope {
     this.name = name;
     this.node = node;
     this.program = program;
+  }
+
+  public get depSign(): string {
+    return `${this.program.fullPath}#${this.name}`;
   }
 }

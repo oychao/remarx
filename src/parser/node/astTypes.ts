@@ -14,6 +14,7 @@ export enum AstType {
   JSXClosingElement = 'JSXClosingElement',
   ExportNamedDeclaration = 'ExportNamedDeclaration',
   ExportSpecifier = 'ExportSpecifier',
+  ExportAllDeclaration = 'ExportAllDeclaration',
   ImportSpecifier = 'ImportSpecifier',
   VariableDeclaration = 'VariableDeclaration',
   VariableDeclarator = 'VariableDeclarator',

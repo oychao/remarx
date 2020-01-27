@@ -29,7 +29,9 @@ export class VisitorReactDom extends Visitor {
     if (startWithCapitalLetter(compName)) {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         compName
-      ]?.visitorTopScope.compMap[compName];
+      ]?.visitorFileDependency.exports[compName];
+      // TODO read dependencies from local scopes first, then imports instead of exports
+      console.log(this.program.visitorFileDependency.identifierDepMap[compName]?.visitorFileDependency);
     }
   }
 
@@ -41,7 +43,7 @@ export class VisitorReactDom extends Visitor {
     if (startWithCapitalLetter(compName)) {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         parent.object?.name as string
-      ]?.visitorTopScope.compMap[compName];
+      ]?.visitorFileDependency.exports[compName];
     }
   }
 }
