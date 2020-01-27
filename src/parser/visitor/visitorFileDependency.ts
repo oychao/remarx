@@ -15,13 +15,13 @@ export class VisitorFileDependency extends Visitor {
 
   public dependencies: Program[] = [];
 
-  private identifierDepMap: { [key: string]: Program } = {};
+  public identifierDepMap: { [key: string]: Program | undefined } = {};
 
   constructor(program: Program, dirPath: string) {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.Program, AstType.ImportDefaultSpecifier],
+        selector: [AstType.Program, AstType.ImportDeclaration],
         handler: this.visitIPath,
       },
       {
@@ -36,10 +36,10 @@ export class VisitorFileDependency extends Visitor {
     this.dirPath = dirPath;
   }
 
-  private async asyncImportLiteralSource(sourceValue: string): Promise<Program | null> {
+  private async asyncImportLiteralSource(sourceValue: string): Promise<Program | undefined> {
     if (sourceValue) {
       if (sourceValue.charAt(0) !== '.') {
-        return null;
+        return undefined;
       }
 
       const originPath = path.resolve(this.dirPath, sourceValue);
@@ -54,7 +54,7 @@ export class VisitorFileDependency extends Visitor {
 
       const suffix = possiblePath.split('.').pop();
       if (suffix !== 'ts' && suffix !== 'tsx') {
-        return null;
+        return undefined;
       }
 
       const dep = Program.produce(possiblePath);
@@ -62,7 +62,7 @@ export class VisitorFileDependency extends Visitor {
       this.dependencies.push(dep);
       return dep;
     }
-    return null;
+    return undefined;
   }
 
   /**
@@ -72,11 +72,9 @@ export class VisitorFileDependency extends Visitor {
   private async visitIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value);
-      if (dep) {
-        node.specifiers?.forEach(specifier => {
-          this.identifierDepMap[specifier.local?.name as string] = dep;
-        });
-      }
+      node.specifiers?.forEach(specifier => {
+        this.identifierDepMap[specifier.local?.name as string] = dep;
+      });
     }
   }
 

@@ -12,6 +12,10 @@ export class VisitorTopScope extends Visitor {
 
   public compMap: ScopeNodeMap = {};
 
+  public hookDepMap: ScopeNodeMap = {};
+
+  public compDepMap: ScopeNodeMap = {};
+
   private currWorkingScope: TopScope | null = null;
 
   constructor(program: Program) {
@@ -87,14 +91,20 @@ export class VisitorTopScope extends Visitor {
   }
 
   private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    if ((node.name as string).slice(0, 3) === 'use') {
-      console.log(`${this.currWorkingScope?.name} depends on ${node.name}`);
+    const hookName: string = node.name as string;
+    if (hookName.slice(0, 3) === 'use') {
+      this.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+        hookName
+      ]?.visitorTopScope.hookMap[hookName];
     }
   }
 
   private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    if (startWithCapitalLetter(node.name as string)) {
-      console.log(`${this.currWorkingScope?.name} depends on ${node.name}`);
+    const compName: string = node.name as string;
+    if (startWithCapitalLetter(compName)) {
+      this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+        compName
+      ]?.visitorTopScope.compMap[compName];
     }
   }
 

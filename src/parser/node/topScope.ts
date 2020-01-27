@@ -2,7 +2,7 @@ import { Program } from '../program';
 import { ConcreteNode } from './concreteNode';
 
 export interface ScopeNodeMap {
-  [key: string]: TopScope;
+  [key: string]: TopScope | string | undefined;
 }
 
 export class TopScope {
