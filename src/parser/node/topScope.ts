@@ -12,6 +12,10 @@ export class TopScope {
 
   public program: Program;
 
+  public hookDepMap: ScopeNodeMap = {};
+
+  public compDepMap: ScopeNodeMap = {};
+
   constructor(name: string, node: ConcreteNode, program: Program) {
     this.name = name;
     this.node = node;

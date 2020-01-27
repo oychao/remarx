@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { StoreDispatchContext, ACTION_SET_EDITING_PRODUCT, ACTION_DELETE } from '../../store';
+import * as Common from '../../common';
 
 /**
  * List Component
@@ -12,7 +13,10 @@ export const List = () => {
     <table>
       <thead>
         <tr>
-          <th>ID</th>
+          <th>
+            <Common.MyDiv />
+            <span>ID</span>
+          </th>
           <th>Name</th>
           <th>Price</th>
           <th>Actions</th>

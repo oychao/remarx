@@ -12,10 +12,6 @@ export class VisitorTopScope extends Visitor {
 
   public compMap: ScopeNodeMap = {};
 
-  public hookDepMap: ScopeNodeMap = {};
-
-  public compDepMap: ScopeNodeMap = {};
-
   private currWorkingScope: TopScope | null = null;
 
   constructor(program: Program) {
@@ -92,8 +88,8 @@ export class VisitorTopScope extends Visitor {
 
   private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     const hookName: string = node.name as string;
-    if (hookName.slice(0, 3) === 'use') {
-      this.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
+      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
         hookName
       ]?.visitorTopScope.hookMap[hookName];
     }
@@ -101,16 +97,22 @@ export class VisitorTopScope extends Visitor {
 
   private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
     const compName: string = node.name as string;
-    if (startWithCapitalLetter(compName)) {
-      this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
+      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         compName
       ]?.visitorTopScope.compMap[compName];
     }
   }
 
   private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
-    if (startWithCapitalLetter(parent.property?.name as string)) {
-      console.log(`${this.currWorkingScope?.name} depends on ${parent.property?.name}`);
+    if (node === parent.object) {
+      return;
+    }
+    const compName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
+      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+        parent.object?.name as string
+      ]?.visitorTopScope.compMap[compName];
     }
   }
 }
