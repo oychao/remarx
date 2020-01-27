@@ -12,7 +12,7 @@ export class VisitorTopScope extends Visitor {
 
   public compMap: ScopeNodeMap = {};
 
-  private currWorkingScope: TopScope | null = null;
+  private currWorkingScope: TopScope | undefined;
 
   constructor(program: Program) {
     super(program);
@@ -35,7 +35,7 @@ export class VisitorTopScope extends Visitor {
       },
       {
         selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
-        handler: this.handleVCIPath,
+        handler: this.handleVCMIPath,
       },
       {
         selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXIdentifier],
@@ -86,21 +86,61 @@ export class VisitorTopScope extends Visitor {
     }
   }
 
+  /**
+   * handle pattern:
+   * useFoo();
+   */
   private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    if ((node.name as string).slice(0, 3) === 'use') {
-      console.log(`${this.currWorkingScope?.name} depends on ${node.name}`);
+    const hookName: string = node.name as string;
+    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
+      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+        hookName
+      ]?.visitorFileDependency.exports[hookName];
     }
   }
 
+  /**
+   * handle pattern:
+   * Foo.useBar();
+   */
+  private async handleVCMIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+    if (node === parent.object) {
+      return;
+    }
+    const hookName: string = node.name as string;
+    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
+      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+        parent.object?.name as string
+      ]?.visitorFileDependency.exports[hookName];
+    }
+  }
+
+  /**
+   * handle pattern:
+   * <MyComp />
+   */
   private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    if (startWithCapitalLetter(node.name as string)) {
-      console.log(`${this.currWorkingScope?.name} depends on ${node.name}`);
+    const compName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
+      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+        compName
+      ]?.visitorFileDependency.exports[compName];
     }
   }
 
+  /**
+   * handle pattern:
+   * <Common.MyComp />
+   */
   private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
-    if (startWithCapitalLetter(parent.property?.name as string)) {
-      console.log(`${this.currWorkingScope?.name} depends on ${parent.property?.name}`);
+    if (node === parent.object) {
+      return;
+    }
+    const compName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
+      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+        parent.object?.name as string
+      ]?.visitorFileDependency.exports[compName];
     }
   }
 }

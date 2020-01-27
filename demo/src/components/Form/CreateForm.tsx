@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StoreDispatchContext, ACTION_UPDATE_CREATING_FORM, ACTION_CREATE } from '../../store';
-import { useToggle } from '../../hooks';
+import * as hooks from '../../hooks';
 
 /**
  * CreateForm Component
@@ -9,7 +9,7 @@ import { useToggle } from '../../hooks';
 export const CreateForm = () => {
   const { store, dispatch } = React.useContext(StoreDispatchContext);
 
-  const [visible, show, hide] = useToggle();
+  const [visible, show, hide] = hooks.useToggle();
 
   const handleNameChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

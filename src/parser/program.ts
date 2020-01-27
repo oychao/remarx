@@ -14,7 +14,7 @@ export class Program extends ProgramBase {
   public static pool: { [key: string]: Program } = {};
 
   public static produce(fullPath: string) {
-    let ret: Program | null = Program.pool[fullPath];
+    let ret: Program | undefined = Program.pool[fullPath];
     if (!ret) {
       ret = new Program(fullPath);
       Program.pool[fullPath] = ret;
@@ -64,20 +64,20 @@ export class Program extends ProgramBase {
     }
     this.rootAst = new ConcreteNode(astObj);
 
-    // parse file dependencies
-    await this.rootAst.accept(this.visitorFileDependency);
-
     // parse top block scope and dependencies
     await this.rootAst.accept(this.visitorTopScope);
+
+    // parse file dependencies
+    await this.rootAst.accept(this.visitorFileDependency);
 
     // mark as initialized
     this.initialized = true;
   }
 
   public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
-    for (let i = 0; i < this.visitorFileDependency.dependencies.length; i++) {
-      const dep = this.visitorFileDependency.dependencies[i];
-      cb.call(null, dep, i, this.visitorFileDependency.dependencies);
+    for (let i = 0; i < this.visitorFileDependency.imports.length; i++) {
+      const dep = this.visitorFileDependency.imports[i];
+      cb.call(null, dep, i, this.visitorFileDependency.imports);
     }
   }
 }

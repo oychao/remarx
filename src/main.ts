@@ -8,7 +8,7 @@ import { DependencyGraph } from './parser/dependencyGraph';
 import { __projectRoot } from './utils';
 import { Program } from './parser/program';
 
-export async function parseProject(): Promise<GraphView | null> {
+export async function parseProject(): Promise<GraphView | undefined> {
   try {
     // project source code root directory
     const projectSourceRootDir = path.resolve(config.rootDir, config.sourceFolder);
@@ -18,14 +18,14 @@ export async function parseProject(): Promise<GraphView | null> {
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
-    const graphData = await depGraph.getFileDepDag();
+    const graphData = await depGraph.getTopScopeDag();
 
     return graphData;
     // vscode.window.showInformationMessage('done');
   } catch (error) {
     console.log(error);
     vscode.window.showErrorMessage(error.message);
-    return null;
+    return undefined;
   }
 }
 

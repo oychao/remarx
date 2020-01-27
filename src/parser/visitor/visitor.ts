@@ -27,7 +27,7 @@ export abstract class Visitor {
     this.program = program;
   }
 
-  private matchSelectors(path: ConcreteNode[]): NodeHandler | null {
+  private matchSelectors(path: ConcreteNode[]): NodeHandler | undefined {
     for (let i = 0; i < this.selectorHandlerMap.length; i++) {
       const { selector, handler } = this.selectorHandlerMap[i];
       let j = selector.length - 1;
@@ -50,7 +50,7 @@ export abstract class Visitor {
         return handler;
       }
     }
-    return null;
+    return undefined;
   }
 
   public async visit(node: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
