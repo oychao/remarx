@@ -21,7 +21,7 @@ export class VisitorFileDependency extends Visitor {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.ImportDeclaration],
+        selector: [AstType.Program, AstType.ImportDefaultSpecifier],
         handler: this.visitIPath,
       },
       {
