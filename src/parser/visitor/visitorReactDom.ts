@@ -1,6 +1,7 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+
 import { startWithCapitalLetter } from '../../utils';
 import { ConcreteNode } from '../node/concreteNode';
-import { AstType } from '../node/astTypes';
 import { ScopeNodeMap } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
@@ -14,11 +15,16 @@ export class VisitorReactDom extends Visitor {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXIdentifier],
+        selector: [AST_NODE_TYPES.JSXElement, AST_NODE_TYPES.JSXOpeningElement, AST_NODE_TYPES.JSXIdentifier],
         handler: this.handleJJJPath,
       },
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXMemberExpression, AstType.JSXIdentifier],
+        selector: [
+          AST_NODE_TYPES.JSXElement,
+          AST_NODE_TYPES.JSXOpeningElement,
+          AST_NODE_TYPES.JSXMemberExpression,
+          AST_NODE_TYPES.JSXIdentifier,
+        ],
         handler: this.handleJJJJPath,
       },
     ];
@@ -30,6 +36,7 @@ export class VisitorReactDom extends Visitor {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         compName
       ]?.visitorFileDependency.exports[compName];
+
       // TODO read dependencies from local scopes first, then imports instead of exports
       console.log(this.program.visitorFileDependency.identifierDepMap[compName]?.visitorFileDependency);
     }

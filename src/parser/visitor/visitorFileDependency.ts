@@ -1,8 +1,8 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import * as path from 'path';
 
 import { fileExists } from '../../utils';
 import { ConcreteNode } from '../node/concreteNode';
-import { AstType } from '../node/astTypes';
 import { TopScope, ScopeNodeMap } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
@@ -26,23 +26,27 @@ export class VisitorFileDependency extends Visitor {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.Program, AstType.ImportDeclaration],
+        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration],
         handler: this.visitIPath,
       },
       {
-        selector: [AstType.ExportNamedDeclaration, AstType.Literal],
+        selector: [AST_NODE_TYPES.ExportNamedDeclaration, AST_NODE_TYPES.Literal],
         handler: this.visitELPath,
       },
       {
-        selector: [AstType.Program, AstType.ExportAllDeclaration, AstType.Literal],
+        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportAllDeclaration, AST_NODE_TYPES.Literal],
         handler: this.visitPELPath,
       },
       {
-        selector: [AstType.ExportNamedDeclaration, AstType.VariableDeclaration, AstType.VariableDeclarator],
+        selector: [
+          AST_NODE_TYPES.ExportNamedDeclaration,
+          AST_NODE_TYPES.VariableDeclaration,
+          AST_NODE_TYPES.VariableDeclarator,
+        ],
         handler: this.visitEVVPath,
       },
       {
-        selector: [AstType.Program, AstType.ExportDefaultDeclaration, AstType.Identifier],
+        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportDefaultDeclaration, AST_NODE_TYPES.Identifier],
         handler: this.visitPEIPath,
       },
     ];

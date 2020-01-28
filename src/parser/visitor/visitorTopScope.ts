@@ -1,4 +1,5 @@
-import { AstType } from '../node/astTypes';
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+
 import { ConcreteNode } from '../node/concreteNode';
 import { ScopeNodeMap, TopScope } from '../node/topScope';
 import { Program } from '../program';
@@ -18,31 +19,45 @@ export class VisitorTopScope extends Visitor {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.FunctionDeclaration, AstType.BlockStatement],
+        selector: [AST_NODE_TYPES.FunctionDeclaration, AST_NODE_TYPES.BlockStatement],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.FunctionExpression, AstType.BlockStatement],
+        selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.FunctionExpression, AST_NODE_TYPES.BlockStatement],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.ArrowFunctionExpression, AstType.BlockStatement],
+        selector: [
+          AST_NODE_TYPES.VariableDeclarator,
+          AST_NODE_TYPES.ArrowFunctionExpression,
+          AST_NODE_TYPES.BlockStatement,
+        ],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.Identifier],
+        selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.CallExpression, AST_NODE_TYPES.Identifier],
         handler: this.handleVCIPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
+        selector: [
+          AST_NODE_TYPES.VariableDeclarator,
+          AST_NODE_TYPES.CallExpression,
+          AST_NODE_TYPES.MemberExpression,
+          AST_NODE_TYPES.Identifier,
+        ],
         handler: this.handleVCMIPath,
       },
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXIdentifier],
+        selector: [AST_NODE_TYPES.JSXElement, AST_NODE_TYPES.JSXOpeningElement, AST_NODE_TYPES.JSXIdentifier],
         handler: this.handleJJJPath,
       },
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXMemberExpression, AstType.JSXIdentifier],
+        selector: [
+          AST_NODE_TYPES.JSXElement,
+          AST_NODE_TYPES.JSXOpeningElement,
+          AST_NODE_TYPES.JSXMemberExpression,
+          AST_NODE_TYPES.JSXIdentifier,
+        ],
         handler: this.handleJJJJPath,
       },
     ];
@@ -57,17 +72,17 @@ export class VisitorTopScope extends Visitor {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope
-      if (astAncestor.type === AstType.BlockStatement) {
+      if (astAncestor.type === AST_NODE_TYPES.BlockStatement) {
         return;
       }
     }
 
     // like `const foo = () => {};` or `const foo = function () {};`
     const isVariableDeclaration =
-      parent.type === AstType.ArrowFunctionExpression || parent.type === AstType.FunctionExpression;
+      parent.type === AST_NODE_TYPES.ArrowFunctionExpression || parent.type === AST_NODE_TYPES.FunctionExpression;
 
     // like `function foo () {}`
-    const isFunctionDeclaration = parent.type === AstType.FunctionDeclaration;
+    const isFunctionDeclaration = parent.type === AST_NODE_TYPES.FunctionDeclaration;
 
     let functionName = '';
     if (isFunctionDeclaration) {

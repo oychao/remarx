@@ -21,7 +21,7 @@ export function simplifyAst<T extends object>(ast: T): T {
   return ast;
 }
 
-// output detected types from ast object into src/astTypes.ts file, meta programming?
+// output detected types from ast object into src/AST_NODE_TYPESs.ts file, meta programming?
 export const __projectRoot = path.resolve(__dirname, '..');
 const result: Set<string> = new Set();
 export async function outputType(ast: object): Promise<void> {
@@ -33,8 +33,8 @@ export async function outputType(ast: object): Promise<void> {
   });
   const types = Array.from(result);
   await fs.promises.writeFile(
-    path.resolve(__projectRoot, 'src', 'parser', 'node', 'astTypes.ts'),
-    `export enum AstType {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}\n`
+    path.resolve(__projectRoot, 'src', 'parser', 'node', 'AST_NODE_TYPESs.ts'),
+    `export enum AST_NODE_TYPES {\n${types.map(type => `  ${type} = '${type}'`).join(',\n')},\n}\n`
   );
 }
 

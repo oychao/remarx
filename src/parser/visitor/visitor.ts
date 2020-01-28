@@ -1,6 +1,7 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+
 import { Program } from '../program';
 import { ConcreteNode } from '../node/concreteNode';
-import { AstType } from '../node/astTypes';
 
 export type NodeHandler = (
   path: ConcreteNode[],
@@ -10,7 +11,7 @@ export type NodeHandler = (
 ) => Promise<void>;
 
 export type SelectorHandlerMap = {
-  selector: AstType[];
+  selector: AST_NODE_TYPES[];
   handler: NodeHandler;
 };
 

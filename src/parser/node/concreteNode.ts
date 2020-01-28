@@ -1,9 +1,10 @@
-import { AstType } from './astTypes';
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+
 import { ProgramSourceType, VariableDeclarationType } from './interfaces';
 import { Visitor } from '../visitor/visitor';
 
 export class ConcreteNode {
-  public type: AstType;
+  public type: AST_NODE_TYPES;
   public body?: ConcreteNode[];
   public declaration?: ConcreteNode;
   public declarations?: ConcreteNode[];
@@ -30,7 +31,7 @@ export class ConcreteNode {
   public value?: string;
 
   constructor(node: any) {
-    this.type = AstType.Program;
+    this.type = AST_NODE_TYPES.Program;
     for (const key in node) {
       if (node.hasOwnProperty(key)) {
         if (node[key] && typeof node[key] === 'object') {
