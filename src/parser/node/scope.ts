@@ -1,10 +1,15 @@
-// import { Program } from '../program';
-// import { Identifier } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import { ConcreteBaseNode } from './baseNode';
 
-// export class Scope {
-//   public name: string;
+export class ConcreteScope extends ConcreteBaseNode {
+  public type: AST_NODE_TYPES.BlockStatement;
 
-//   public program: Program;
+  public body: Statement[];
 
-//   public identifiers: Identifier
-// }
+  constructor(astNode: BlockStatement) {
+    super(astNode);
+    this.type = AST_NODE_TYPES.BlockStatement;
+    this.body = astNode.body;
+  }
+}
