@@ -4,7 +4,7 @@ import * as parser from '@typescript-eslint/typescript-estree';
 
 import { config } from '../config';
 import { PARSE_CONFIG } from '../constants';
-import { simplifyAst, outputType } from '../utils';
+import { simplifyAst } from '../utils';
 import { ConcreteNode } from './node/concreteNode';
 import { ProgramBase } from './programBase';
 import { VisitorFileDependency } from './visitor/visitorFileDependency';
@@ -46,10 +46,6 @@ export class Program extends ProgramBase {
     const enterFileBuffer = await fs.promises.readFile(this.fullPath);
     const enterFileStr = enterFileBuffer.toString();
     const astObj = simplifyAst(parser.parse(enterFileStr, PARSE_CONFIG));
-
-    if (config?.meta?.type) {
-      outputType(astObj);
-    }
 
     if (config.debug?.on) {
       const astStr = JSON.stringify(astObj, null, 2);

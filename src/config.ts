@@ -13,9 +13,6 @@ export interface Config {
     output: string;
     rootDir: string;
   };
-  meta?: {
-    type: boolean;
-  };
 }
 
 const rootPath = (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri.fsPath;
