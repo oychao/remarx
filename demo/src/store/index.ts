@@ -1,5 +1,5 @@
-import * as React from 'react';
 import produce from 'immer';
+import * as React from 'react';
 
 export const ACTION_UPDATE_CREATING_FORM = 'ACTION_UPDATE_CREATING_FORM';
 export const ACTION_CREATE = 'ACTION_CREATE';

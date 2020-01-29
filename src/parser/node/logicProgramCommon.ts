@@ -9,7 +9,12 @@ import { VisitorFileDependency } from '../visitor/visitorFileDependency';
 import { VisitorTopScope } from '../visitor/visitorTopScope';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
+import { LogicTopScope, TopScopeDepend, TopScopeMap } from './logicTopScope';
 import { parseAstToImplementedNode } from './nodeFactory';
+
+export type ProgramDepend = LogicProgramCommon | undefined;
+
+export type ProgramMap = { [key: string]: ProgramDepend };
 
 export class LogicProgramCommon extends LogicAbstractProgram {
   public static pool: { [key: string]: LogicProgramCommon } = {};
@@ -33,8 +38,24 @@ export class LogicProgramCommon extends LogicAbstractProgram {
 
   public fullPath: string;
 
+  // visitors
   public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
   public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
+
+  // import scopes
+  public imports: TopScopeMap = {};
+
+  // local scopes
+  public localScopes: TopScopeMap = {};
+
+  // export scopes
+  public exports: TopScopeMap = {};
+
+  // default export scope
+  public defaultExport: LogicTopScope | undefined;
+
+  // file dependencies
+  public fileDepMap: ProgramMap = {};
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -75,12 +96,23 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     this.initialized = true;
   }
 
-  public async forEachDepFile(
-    cb: (dep: LogicProgramCommon, index?: number, deps?: LogicProgramCommon[]) => Promise<void>
+  public async forEachDepFile(cb: (dep: ProgramDepend, key: string, deps?: ProgramMap) => Promise<void>) {
+    for (const key in this.fileDepMap) {
+      if (this.fileDepMap.hasOwnProperty(key)) {
+        const fileDep = this.fileDepMap[key];
+        cb.call(null, fileDep, key, this.fileDepMap);
+      }
+    }
+  }
+
+  public async forEachDepScope(
+    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
   ): Promise<void> {
-    for (let i = 0; i < this.visitorFileDependency.imports.length; i++) {
-      const dep = this.visitorFileDependency.imports[i];
-      cb.call(null, dep, i, this.visitorFileDependency.imports);
+    for (const key in this.imports) {
+      if (this.imports.hasOwnProperty(key)) {
+        const dep = this.imports[key];
+        cb.call(null, dep, key, this.imports);
+      }
     }
   }
 }

@@ -3,8 +3,8 @@ import * as dagre from 'dagre';
 import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
-import { LogicProgramRoot } from './node/logicProgramEntrance';
-import { LogicTopScope, ScopeNodeDepend } from './node/logicTopScope';
+import { LogicProgramEntrance } from './node/logicProgramEntrance';
+import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
@@ -30,12 +30,12 @@ export class DependencyGraph extends LogicAbstractProgram {
   protected astNode: ImplementedNode | undefined;
 
   protected fullPath: string;
-  private program: LogicProgramRoot;
+  private program: LogicProgramEntrance;
 
   constructor(fullPath: string) {
     super(fullPath);
     this.fullPath = fullPath;
-    this.program = new LogicProgramRoot(this.fullPath);
+    this.program = new LogicProgramEntrance(this.fullPath);
   }
 
   public async parse(): Promise<void> {
@@ -55,9 +55,11 @@ export class DependencyGraph extends LogicAbstractProgram {
     while (currProgram) {
       files.add(currProgram.fullPath);
       await currProgram.forEachDepFile(async dep => {
-        queue.push(dep);
-        if (currProgram) {
-          dependencies.push([currProgram.fullPath, dep.fullPath]);
+        if (dep) {
+          queue.push(dep);
+          if (currProgram) {
+            dependencies.push([currProgram.fullPath, dep.fullPath]);
+          }
         }
       });
 
@@ -76,7 +78,7 @@ export class DependencyGraph extends LogicAbstractProgram {
 
     scopes.add('ReactDOM');
 
-    const queue: ScopeNodeDepend[] = Object.values(this.program.visitorReactDom.compDepMap);
+    const queue: TopScopeDepend[] = Object.values(this.program.visitorReactDom.scopeDepMap);
 
     queue.forEach(scope => {
       if (scope instanceof LogicTopScope) {
@@ -97,6 +99,8 @@ export class DependencyGraph extends LogicAbstractProgram {
           dependencies.push([depSign, dep.depSign]);
         }
       });
+
+      currScope = queue.pop() as LogicTopScope;
     }
 
     return DependencyGraph.calcGraph(Array.from(scopes), dependencies);

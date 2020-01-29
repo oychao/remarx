@@ -1,15 +1,14 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { startWithCapitalLetter } from '../../utils';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { ScopeNodeMap } from '../node/logicTopScope';
+import { TopScopeMap } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorReactDom extends Visitor {
-  protected selectorHandlerMap: SelectorHandlerMap[] = [];
+  protected selectorHandlerMap: SelectorHandlerMap[];
 
-  public compDepMap: ScopeNodeMap = {};
+  public scopeDepMap: TopScopeMap = {};
 
   constructor(program: LogicProgramCommon) {
     super(program);
@@ -31,14 +30,10 @@ export class VisitorReactDom extends Visitor {
   }
 
   private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
-    const compName: string = node.name as string;
-    if (startWithCapitalLetter(compName)) {
-      this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        compName
-      ]?.visitorFileDependency.exports[compName];
-
-      // TODO read dependencies from local scopes first, then imports instead of exports
-      console.log(this.program.visitorFileDependency.identifierDepMap[compName]?.visitorFileDependency);
+    const scopeName: string = node.name as string;
+    const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
+    if (depScope) {
+      this.scopeDepMap[scopeName] = depScope;
     }
   }
 
@@ -46,11 +41,10 @@ export class VisitorReactDom extends Visitor {
     if (node === parent.object) {
       return;
     }
-    const compName: string = node.name as string;
-    if (startWithCapitalLetter(compName)) {
-      this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        (parent.object as JSXIdentifier)?.name as string
-      ]?.visitorFileDependency.exports[compName];
+    const scopeName: string = node.name as string;
+    const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
+    if (depScope) {
+      this.scopeDepMap[scopeName] = depScope;
     }
   }
 }

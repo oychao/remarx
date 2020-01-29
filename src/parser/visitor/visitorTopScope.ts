@@ -13,13 +13,11 @@ import {
 import { startWithCapitalLetter } from '../../utils';
 import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, ScopeNodeMap } from '../node/logicTopScope';
+import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
-
-  public scopeMap: ScopeNodeMap = {};
 
   private currWorkingScope: LogicTopScope | undefined;
 
@@ -109,7 +107,7 @@ export class VisitorTopScope extends Visitor {
     // console.log(functionName);
 
     if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.scopeMap[functionName] = new LogicTopScope(
+      this.currWorkingScope = this.program.localScopes[functionName] = new LogicTopScope(
         functionName,
         node as BaseNodeDescendant,
         this.program
@@ -122,11 +120,9 @@ export class VisitorTopScope extends Visitor {
    * useFoo();
    */
   private async handleVCIPath(path: any[], node: Identifier): Promise<void> {
-    const hookName: string = node.name as string;
-    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.scopeDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
-        hookName
-      ]?.visitorFileDependency.exports[hookName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -138,11 +134,9 @@ export class VisitorTopScope extends Visitor {
     if (node === parent.object) {
       return;
     }
-    const hookName: string = node.name as string;
-    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.scopeDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
-        (parent.object as Identifier)?.name as string
-      ]?.visitorFileDependency.exports[hookName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -151,11 +145,9 @@ export class VisitorTopScope extends Visitor {
    * <MyComp />
    */
   private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
-    const compName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.scopeDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        compName
-      ]?.visitorFileDependency.exports[compName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -167,11 +159,9 @@ export class VisitorTopScope extends Visitor {
     if (node === parent.object) {
       return;
     }
-    const compName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.scopeDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        (parent.object as JSXIdentifier)?.name as string
-      ]?.visitorFileDependency.exports[compName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 }

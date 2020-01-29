@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { StoreDispatchContext, ACTION_UPDATE_EDITING_FORM, ACTION_EDIT } from '../../store';
+import { ACTION_EDIT, ACTION_UPDATE_EDITING_FORM, StoreDispatchContext } from '../../store';
 
 /**
  * EditForm Component

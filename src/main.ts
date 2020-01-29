@@ -18,7 +18,7 @@ export async function parseProject(): Promise<GraphView | undefined> {
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
-    const graphData = await depGraph.getFileDepDag();
+    const graphData = await depGraph.getTopScopeDag();
 
     return graphData;
     // vscode.window.showInformationMessage('done');

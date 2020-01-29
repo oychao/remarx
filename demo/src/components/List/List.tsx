@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { StoreDispatchContext, ACTION_SET_EDITING_PRODUCT, ACTION_DELETE } from '../../store';
 import * as Common from '../../common';
+import { ACTION_DELETE, ACTION_SET_EDITING_PRODUCT, StoreDispatchContext } from '../../store';
 
 /**
  * List Component

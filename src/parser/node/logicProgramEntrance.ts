@@ -1,7 +1,7 @@
 import { VisitorReactDom } from '../visitor/visitorReactDom';
 import { LogicProgramCommon } from './logicProgramCommon';
 
-export class LogicProgramRoot extends LogicProgramCommon {
+export class LogicProgramEntrance extends LogicProgramCommon {
   public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
 
   constructor(fullPath: string) {

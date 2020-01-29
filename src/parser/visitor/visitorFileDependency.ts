@@ -5,23 +5,15 @@ import * as path from 'path';
 import { fileExists } from '../../utils';
 import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, ScopeNodeMap } from '../node/logicTopScope';
+import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorFileDependency extends Visitor {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
-  protected selectorHandlerMap: SelectorHandlerMap[] = [];
+  protected selectorHandlerMap: SelectorHandlerMap[];
 
   private dirPath: string;
-
-  public imports: LogicProgramCommon[] = [];
-
-  public exports: ScopeNodeMap = {};
-
-  public defaultExport: LogicTopScope | undefined;
-
-  public identifierDepMap: { [key: string]: LogicProgramCommon | undefined } = {};
 
   constructor(program: LogicProgramCommon, dirPath: string) {
     super(program);
@@ -78,7 +70,7 @@ export class VisitorFileDependency extends Visitor {
 
       const dep = LogicProgramCommon.produce(possiblePath);
       await dep.parse();
-      this.imports.push(dep);
+      this.program.fileDepMap[possiblePath] = dep;
       return dep;
     }
     return undefined;
@@ -92,7 +84,11 @@ export class VisitorFileDependency extends Visitor {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
-        this.identifierDepMap[specifier.local?.name as string] = dep;
+        const specifierName: string = specifier.local?.name;
+        const exportOfDep = dep?.exports[specifierName] || dep?.defaultExport;
+        if (specifierName && exportOfDep) {
+          this.program.imports[specifierName] = exportOfDep;
+        }
       });
     }
   }
@@ -105,7 +101,7 @@ export class VisitorFileDependency extends Visitor {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
-        this.defaultExport = dep.visitorFileDependency.defaultExport;
+        this.program.defaultExport = dep.defaultExport;
       }
     }
   }
@@ -118,7 +114,7 @@ export class VisitorFileDependency extends Visitor {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
-        this.exports = { ...this.exports, ...dep.visitorFileDependency.exports };
+        this.program.exports = { ...this.program.exports, ...dep.exports };
       }
     }
   }
@@ -129,9 +125,9 @@ export class VisitorFileDependency extends Visitor {
    */
   private async visitEVVPath(path: any[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
-    const exportScope = this.program.visitorTopScope.scopeMap[scopeName];
+    const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
-      this.exports[scopeName as string] = exportScope;
+      this.program.exports[scopeName as string] = exportScope;
     }
   }
 
@@ -141,9 +137,9 @@ export class VisitorFileDependency extends Visitor {
    */
   private async visitPEIPath(path: any[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
-    const exportScope = this.program.visitorTopScope.scopeMap[scopeName];
+    const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
-      this.defaultExport = exportScope;
+      this.program.defaultExport = exportScope;
     }
   }
 }
