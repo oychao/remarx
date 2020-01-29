@@ -1,8 +1,8 @@
 import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { ConcreteBaseNode } from './baseNode';
+import { ConcreteNode } from './concreteNode';
 
-export class ConcreteScope extends ConcreteBaseNode {
+export class ConcreteScope extends ConcreteNode {
   public type: AST_NODE_TYPES.BlockStatement;
 
   public body: Statement[];

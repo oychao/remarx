@@ -1,7 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
-
-export const __projectRoot = path.resolve(__dirname, '..');
 
 export function dfsWalk(root: object, cb: (obj: object) => void): void {
   if (!root) {

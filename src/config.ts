@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 import * as toml from 'toml';
 import * as extend from 'deep-extend';
 
+import { __projectRoot } from './constants';
+
 export interface Config {
   rootDir: string;
   sourceFolder: string;
@@ -28,7 +30,7 @@ export const config = configObj;
 
 export async function readConf(): Promise<void> {
   // parse default config
-  const defaultConfigFile = fs.readFileSync(path.resolve('.default.toml')).toString();
+  const defaultConfigFile = fs.readFileSync(path.resolve(__projectRoot, '.default.toml')).toString();
   const defaultConfig = toml.parse(defaultConfigFile);
 
   // parse custom config

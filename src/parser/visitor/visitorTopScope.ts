@@ -1,6 +1,5 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 
-import { ConcreteNode } from '../node/concreteNode';
 import { ScopeNodeMap, TopScope } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
@@ -63,12 +62,7 @@ export class VisitorTopScope extends Visitor {
     ];
   }
 
-  private async visitFBPath(
-    path: ConcreteNode[],
-    node: ConcreteNode,
-    parent: ConcreteNode,
-    grantParent: ConcreteNode
-  ): Promise<void> {
+  private async visitFBPath(path: any[], node: any, parent: any, grantParent: any): Promise<void> {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope
@@ -105,7 +99,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * useFoo();
    */
-  private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async handleVCIPath(path: any[], node: any): Promise<void> {
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
       this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
@@ -118,7 +112,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * Foo.useBar();
    */
-  private async handleVCMIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleVCMIPath(path: any[], node: any, parent: any): Promise<void> {
     if (node === parent.object) {
       return;
     }
@@ -134,7 +128,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <MyComp />
    */
-  private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async handleJJJPath(path: any[], node: any): Promise<void> {
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
       this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
@@ -147,7 +141,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <Common.MyComp />
    */
-  private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleJJJJPath(path: any[], node: any, parent: any): Promise<void> {
     if (node === parent.object) {
       return;
     }

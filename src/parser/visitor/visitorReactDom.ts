@@ -1,7 +1,6 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { ConcreteNode } from '../node/concreteNode';
 import { ScopeNodeMap } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
@@ -30,7 +29,7 @@ export class VisitorReactDom extends Visitor {
     ];
   }
 
-  private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
+  private async handleJJJPath(path: any[], node: any): Promise<void> {
     const compName: string = node.name as string;
     if (startWithCapitalLetter(compName)) {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
@@ -42,7 +41,7 @@ export class VisitorReactDom extends Visitor {
     }
   }
 
-  private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleJJJJPath(path: any[], node: any, parent: any): Promise<void> {
     if (node === parent.object) {
       return;
     }
