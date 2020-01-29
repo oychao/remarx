@@ -1,5 +1,5 @@
-import { Program } from '../program';
-import { ConcreteNode } from './concreteNode';
+import { LogicProgram } from './logicProgram';
+import { ConcreteScope } from './concreteScope';
 
 export type ScopeNodeDepend = TopScope | string | undefined;
 
@@ -10,15 +10,15 @@ export interface ScopeNodeMap {
 export class TopScope {
   public name: string;
 
-  public node: ConcreteNode;
+  public concreteScope: ConcreteScope;
 
-  public program: Program;
+  public program: LogicProgram;
 
   public scopeDepMap: ScopeNodeMap = {};
 
-  constructor(name: string, node: ConcreteNode, program: Program) {
+  constructor(name: string, concreteScope: ConcreteScope, program: LogicProgram) {
     this.name = name;
-    this.node = node;
+    this.concreteScope = concreteScope;
     this.program = program;
   }
 

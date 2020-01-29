@@ -1,11 +1,11 @@
 import * as dagre from 'dagre';
 
-import { ScopeNodeDepend, TopScope } from './node/topScope';
-import { Program } from './program';
-import { ProgramBase } from './programBase';
-import { ProgramRoot } from './programRoot';
+import { ScopeNodeDepend, TopScope } from './node/logicTopScope';
+import { LogicProgram } from './node/logicProgram';
+import { LogicProgramBase } from './node/logicProgramBase';
+import { LogicProgramRoot } from './node/logicProgramRoot';
 
-export class DependencyGraph extends ProgramBase {
+export class DependencyGraph extends LogicProgramBase {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
     g.setGraph({});
@@ -27,12 +27,12 @@ export class DependencyGraph extends ProgramBase {
   }
 
   protected fullPath: string;
-  private program: ProgramRoot;
+  private program: LogicProgramRoot;
 
   constructor(fullPath: string) {
     super(fullPath);
     this.fullPath = fullPath;
-    this.program = new ProgramRoot(this.fullPath);
+    this.program = new LogicProgramRoot(this.fullPath);
   }
 
   public async parse(): Promise<void> {
@@ -46,8 +46,8 @@ export class DependencyGraph extends ProgramBase {
     const files = new Set<string>();
     const dependencies: [string, string][] = [];
 
-    const queue: Program[] = [this.program];
-    let currProgram: Program | undefined = queue.pop();
+    const queue: LogicProgram[] = [this.program];
+    let currProgram: LogicProgram | undefined = queue.pop();
 
     while (currProgram) {
       files.add(currProgram.fullPath);

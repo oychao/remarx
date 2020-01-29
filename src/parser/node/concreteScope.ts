@@ -2,7 +2,7 @@ import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { ConcreteNode } from './concreteNode';
 
-export class ConcreteScope extends ConcreteNode {
+export class ConcreteScope extends ConcreteNode implements BlockStatement {
   public type: AST_NODE_TYPES.BlockStatement;
 
   public body: Statement[];

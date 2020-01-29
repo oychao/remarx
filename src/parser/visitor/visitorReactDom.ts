@@ -2,8 +2,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { ScopeNodeMap } from '../node/topScope';
-import { Program } from '../program';
+import { ScopeNodeMap } from '../node/logicTopScope';
+import { LogicProgram } from '../node/logicProgram';
 import { Visitor, SelectorHandlerMap } from './visitor';
 
 export class VisitorReactDom extends Visitor {
@@ -11,7 +11,7 @@ export class VisitorReactDom extends Visitor {
 
   public compDepMap: ScopeNodeMap = {};
 
-  constructor(program: Program) {
+  constructor(program: LogicProgram) {
     super(program);
     this.selectorHandlerMap = [
       {

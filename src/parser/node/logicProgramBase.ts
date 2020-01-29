@@ -1,4 +1,4 @@
-export abstract class ProgramBase {
+export abstract class LogicProgramBase {
   protected fullPath: string;
   protected dirPath: string;
   protected filename: string;

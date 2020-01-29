@@ -9,8 +9,8 @@ import * as path from 'path';
 
 import { fileExists } from '../../utils';
 import { ConcreteNode } from '../node/concreteNode';
-import { TopScope, ScopeNodeMap } from '../node/topScope';
-import { Program } from '../program';
+import { TopScope, ScopeNodeMap } from '../node/logicTopScope';
+import { LogicProgram } from '../node/logicProgram';
 import { Visitor, SelectorHandlerMap } from './visitor';
 
 export class VisitorFileDependency extends Visitor {
@@ -20,15 +20,15 @@ export class VisitorFileDependency extends Visitor {
 
   private dirPath: string;
 
-  public imports: Program[] = [];
+  public imports: LogicProgram[] = [];
 
   public exports: ScopeNodeMap = {};
 
   public defaultExport: TopScope | undefined;
 
-  public identifierDepMap: { [key: string]: Program | undefined } = {};
+  public identifierDepMap: { [key: string]: LogicProgram | undefined } = {};
 
-  constructor(program: Program, dirPath: string) {
+  constructor(program: LogicProgram, dirPath: string) {
     super(program);
     this.selectorHandlerMap = [
       {
@@ -60,7 +60,7 @@ export class VisitorFileDependency extends Visitor {
     this.dirPath = dirPath;
   }
 
-  private async asyncImportLiteralSource(sourceValue: string): Promise<Program | undefined> {
+  private async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgram | undefined> {
     if (sourceValue && typeof sourceValue === 'string') {
       if (sourceValue.charAt(0) !== '.') {
         return undefined;
@@ -81,7 +81,7 @@ export class VisitorFileDependency extends Visitor {
         return undefined;
       }
 
-      const dep = Program.produce(possiblePath);
+      const dep = LogicProgram.produce(possiblePath);
       await dep.parse();
       this.imports.push(dep);
       return dep;

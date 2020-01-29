@@ -1,7 +1,7 @@
-import { Program } from './program';
-import { VisitorReactDom } from './visitor/visitorReactDom';
+import { LogicProgram } from './logicProgram';
+import { VisitorReactDom } from '../visitor/visitorReactDom';
 
-export class ProgramRoot extends Program {
+export class LogicProgramRoot extends LogicProgram {
   public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
 
   constructor(fullPath: string) {

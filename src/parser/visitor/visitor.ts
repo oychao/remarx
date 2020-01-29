@@ -1,7 +1,7 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { BaseNode } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { Program } from '../program';
+import { LogicProgram } from '../node/logicProgram';
 import { ConcreteNode } from '../node/concreteNode';
 
 export type BaseNodeDescendant<T = any> = BaseNode | T;
@@ -23,11 +23,11 @@ export type SelectorHandlerMap = {
  * would be visited by specific method of corresponding decent concrete visitor.
  */
 export abstract class Visitor {
-  protected program: Program;
+  protected program: LogicProgram;
 
   protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
 
-  constructor(program: Program) {
+  constructor(program: LogicProgram) {
     this.program = program;
   }
 

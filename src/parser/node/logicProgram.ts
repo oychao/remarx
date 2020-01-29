@@ -2,28 +2,28 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as parser from '@typescript-eslint/typescript-estree';
 
-import { config } from '../config';
-import { PARSE_CONFIG } from '../constants';
-import { simplifyAst } from '../utils';
-import { ConcreteNode } from './node/concreteNode';
-import { ProgramBase } from './programBase';
-import { VisitorFileDependency } from './visitor/visitorFileDependency';
-import { VisitorTopScope } from './visitor/visitorTopScope';
+import { config } from '../../config';
+import { PARSE_CONFIG } from '../../constants';
+import { simplifyAst } from '../../utils';
+import { ConcreteNode } from './concreteNode';
+import { LogicProgramBase } from './logicProgramBase';
+import { VisitorFileDependency } from '../visitor/visitorFileDependency';
+import { VisitorTopScope } from '../visitor/visitorTopScope';
 
-export class Program extends ProgramBase {
-  public static pool: { [key: string]: Program } = {};
+export class LogicProgram extends LogicProgramBase {
+  public static pool: { [key: string]: LogicProgram } = {};
 
   public static produce(fullPath: string) {
-    let ret: Program | undefined = Program.pool[fullPath];
+    let ret: LogicProgram | undefined = LogicProgram.pool[fullPath];
     if (!ret) {
-      ret = new Program(fullPath);
-      Program.pool[fullPath] = ret;
+      ret = new LogicProgram(fullPath);
+      LogicProgram.pool[fullPath] = ret;
     }
     return ret;
   }
 
   public static purge(): void {
-    Program.pool = {};
+    LogicProgram.pool = {};
   }
 
   private initialized: boolean = false;
@@ -70,7 +70,7 @@ export class Program extends ProgramBase {
     this.initialized = true;
   }
 
-  public async forEachDepFile(cb: (dep: Program, index?: number, deps?: Program[]) => Promise<void>): Promise<void> {
+  public async forEachDepFile(cb: (dep: LogicProgram, index?: number, deps?: LogicProgram[]) => Promise<void>): Promise<void> {
     for (let i = 0; i < this.visitorFileDependency.imports.length; i++) {
       const dep = this.visitorFileDependency.imports[i];
       cb.call(null, dep, i, this.visitorFileDependency.imports);

@@ -11,8 +11,8 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { ScopeNodeMap, TopScope } from '../node/topScope';
-import { Program } from '../program';
+import { ScopeNodeMap, TopScope } from '../node/logicTopScope';
+import { LogicProgram } from '../node/logicProgram';
 import { Visitor, SelectorHandlerMap, BaseNodeDescendant } from './visitor';
 
 export class VisitorTopScope extends Visitor {
@@ -22,7 +22,7 @@ export class VisitorTopScope extends Visitor {
 
   private currWorkingScope: TopScope | undefined;
 
-  constructor(program: Program) {
+  constructor(program: LogicProgram) {
     super(program);
     this.selectorHandlerMap = [
       {
