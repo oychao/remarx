@@ -1,9 +1,19 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import {
+  BlockStatement,
+  FunctionDeclaration,
+  ArrowFunctionExpression,
+  FunctionExpression,
+  Identifier,
+  MemberExpression,
+  JSXIdentifier,
+  JSXMemberExpression,
+} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
+import { startWithCapitalLetter } from '../../utils';
 import { ScopeNodeMap, TopScope } from '../node/topScope';
 import { Program } from '../program';
-import { Visitor, SelectorHandlerMap } from './visitor';
-import { startWithCapitalLetter } from '../../utils';
+import { Visitor, SelectorHandlerMap, BaseNodeDescendant } from './visitor';
 
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
@@ -62,7 +72,12 @@ export class VisitorTopScope extends Visitor {
     ];
   }
 
-  private async visitFBPath(path: any[], node: any, parent: any, grantParent: any): Promise<void> {
+  private async visitFBPath(
+    path: any[],
+    node: BlockStatement,
+    parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
+    grantParent: any
+  ): Promise<void> {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope
@@ -89,9 +104,17 @@ export class VisitorTopScope extends Visitor {
     // console.log(functionName);
 
     if (startWithCapitalLetter(functionName)) {
-      this.currWorkingScope = this.compMap[functionName] = new TopScope(functionName, node, this.program);
+      this.currWorkingScope = this.compMap[functionName] = new TopScope(
+        functionName,
+        node as BaseNodeDescendant,
+        this.program
+      );
     } else if (functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.hookMap[functionName] = new TopScope(functionName, node, this.program);
+      this.currWorkingScope = this.hookMap[functionName] = new TopScope(
+        functionName,
+        node as BaseNodeDescendant,
+        this.program
+      );
     }
   }
 
@@ -99,7 +122,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * useFoo();
    */
-  private async handleVCIPath(path: any[], node: any): Promise<void> {
+  private async handleVCIPath(path: any[], node: Identifier): Promise<void> {
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
       this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
@@ -112,14 +135,14 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * Foo.useBar();
    */
-  private async handleVCMIPath(path: any[], node: any, parent: any): Promise<void> {
+  private async handleVCMIPath(path: any[], node: Identifier, parent: MemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
       this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
-        parent.object?.name as string
+        (parent.object as Identifier)?.name as string
       ]?.visitorFileDependency.exports[hookName];
     }
   }
@@ -128,7 +151,7 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <MyComp />
    */
-  private async handleJJJPath(path: any[], node: any): Promise<void> {
+  private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
       this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
@@ -141,14 +164,14 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <Common.MyComp />
    */
-  private async handleJJJJPath(path: any[], node: any, parent: any): Promise<void> {
+  private async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
       this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        parent.object?.name as string
+        (parent.object as JSXIdentifier)?.name as string
       ]?.visitorFileDependency.exports[compName];
     }
   }

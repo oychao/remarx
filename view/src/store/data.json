@@ -1,12 +1,307 @@
 {
   "nodes": [
     {
-      "label": "ReactDOM",
+      "label": "/Users/ouyangchao/Code/remarx/demo/index.tsx",
+      "width": 50,
+      "height": 50,
+      "x": 75,
+      "y": 25
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/App/index.ts",
+      "width": 50,
+      "height": 50,
+      "x": 75,
+      "y": 125
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+      "width": 50,
+      "height": 50,
+      "x": 75,
+      "y": 225
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/Form/index.ts",
+      "width": 50,
+      "height": 50,
+      "x": 75,
+      "y": 325
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx",
       "width": 50,
       "height": 50,
       "x": 25,
-      "y": 25
+      "y": 425
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+      "width": 50,
+      "height": 50,
+      "x": 35,
+      "y": 525
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx",
+      "width": 50,
+      "height": 50,
+      "x": 125,
+      "y": 425
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts",
+      "width": 50,
+      "height": 50,
+      "x": 345,
+      "y": 525
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/List/index.ts",
+      "width": 50,
+      "height": 50,
+      "x": 235,
+      "y": 325
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx",
+      "width": 50,
+      "height": 50,
+      "x": 235,
+      "y": 425
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/common/index.tsx",
+      "width": 50,
+      "height": 50,
+      "x": 245,
+      "y": 525
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "points": [
+        {
+          "x": 75,
+          "y": 50
+        },
+        {
+          "x": 75,
+          "y": 75
+        },
+        {
+          "x": 75,
+          "y": 100
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 75,
+          "y": 150
+        },
+        {
+          "x": 75,
+          "y": 175
+        },
+        {
+          "x": 75,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 50,
+          "y": 236.36363636363637
+        },
+        {
+          "x": -35,
+          "y": 275
+        },
+        {
+          "x": -35,
+          "y": 325
+        },
+        {
+          "x": -35,
+          "y": 375
+        },
+        {
+          "x": -35,
+          "y": 425
+        },
+        {
+          "x": -35,
+          "y": 475
+        },
+        {
+          "x": 10,
+          "y": 507.14285714285717
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 100,
+          "y": 232.8125
+        },
+        {
+          "x": 235,
+          "y": 275
+        },
+        {
+          "x": 235,
+          "y": 300
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 75,
+          "y": 250
+        },
+        {
+          "x": 75,
+          "y": 275
+        },
+        {
+          "x": 75,
+          "y": 300
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 100,
+          "y": 350
+        },
+        {
+          "x": 125,
+          "y": 375
+        },
+        {
+          "x": 125,
+          "y": 400
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 50,
+          "y": 350
+        },
+        {
+          "x": 25,
+          "y": 375
+        },
+        {
+          "x": 25,
+          "y": 400
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 25,
+          "y": 450
+        },
+        {
+          "x": 25,
+          "y": 475
+        },
+        {
+          "x": 30,
+          "y": 500
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 125,
+          "y": 450
+        },
+        {
+          "x": 125,
+          "y": 475
+        },
+        {
+          "x": 60,
+          "y": 511.1111111111111
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 150,
+          "y": 430.6818181818182
+        },
+        {
+          "x": 345,
+          "y": 475
+        },
+        {
+          "x": 345,
+          "y": 500
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 235,
+          "y": 350
+        },
+        {
+          "x": 235,
+          "y": 375
+        },
+        {
+          "x": 235,
+          "y": 400
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 210,
+          "y": 450
+        },
+        {
+          "x": 185,
+          "y": 475
+        },
+        {
+          "x": 60,
+          "y": 516.6666666666666
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 240,
+          "y": 450
+        },
+        {
+          "x": 245,
+          "y": 475
+        },
+        {
+          "x": 245,
+          "y": 500
+        }
+      ]
+    }
+  ]
 }

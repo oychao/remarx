@@ -1,13 +1,16 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import { BaseNode } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { Program } from '../program';
 import { ConcreteNode } from '../node/concreteNode';
 
+export type BaseNodeDescendant<T = any> = BaseNode | T;
+
 export type NodeHandler = (
   path: ConcreteNode[],
-  node: ConcreteNode,
-  parent: ConcreteNode,
-  grantParent: ConcreteNode
+  node: BaseNodeDescendant,
+  parent: BaseNodeDescendant,
+  grantParent: BaseNodeDescendant
 ) => Promise<void>;
 
 export type SelectorHandlerMap = {

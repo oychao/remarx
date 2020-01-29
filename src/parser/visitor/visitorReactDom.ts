@@ -1,4 +1,5 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
 import { ScopeNodeMap } from '../node/topScope';
@@ -29,7 +30,7 @@ export class VisitorReactDom extends Visitor {
     ];
   }
 
-  private async handleJJJPath(path: any[], node: any): Promise<void> {
+  private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
     const compName: string = node.name as string;
     if (startWithCapitalLetter(compName)) {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
@@ -41,14 +42,14 @@ export class VisitorReactDom extends Visitor {
     }
   }
 
-  private async handleJJJJPath(path: any[], node: any, parent: any): Promise<void> {
+  private async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
     const compName: string = node.name as string;
     if (startWithCapitalLetter(compName)) {
       this.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        parent.object?.name as string
+        (parent.object as JSXIdentifier)?.name as string
       ]?.visitorFileDependency.exports[compName];
     }
   }

@@ -1,7 +1,14 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import {
+  ImportDeclaration,
+  Literal,
+  VariableDeclarator,
+  Identifier,
+} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import * as path from 'path';
 
 import { fileExists } from '../../utils';
+import { ConcreteNode } from '../node/concreteNode';
 import { TopScope, ScopeNodeMap } from '../node/topScope';
 import { Program } from '../program';
 import { Visitor, SelectorHandlerMap } from './visitor';
@@ -41,6 +48,7 @@ export class VisitorFileDependency extends Visitor {
           AST_NODE_TYPES.ExportNamedDeclaration,
           AST_NODE_TYPES.VariableDeclaration,
           AST_NODE_TYPES.VariableDeclarator,
+          AST_NODE_TYPES.Identifier,
         ],
         handler: this.visitEVVPath,
       },
@@ -53,7 +61,7 @@ export class VisitorFileDependency extends Visitor {
   }
 
   private async asyncImportLiteralSource(sourceValue: string): Promise<Program | undefined> {
-    if (sourceValue) {
+    if (sourceValue && typeof sourceValue === 'string') {
       if (sourceValue.charAt(0) !== '.') {
         return undefined;
       }
@@ -85,9 +93,9 @@ export class VisitorFileDependency extends Visitor {
    * handle pattern:
    * import ...;
    */
-  private async visitIPath(path: any[], node: any): Promise<void> {
+  private async visitIPath(path: ConcreteNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
-      const dep = await this.asyncImportLiteralSource(node.source.value);
+      const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
         this.identifierDepMap[specifier.local?.name as string] = dep;
       });
@@ -98,9 +106,9 @@ export class VisitorFileDependency extends Visitor {
    * handle pattern:
    * export { default } from './xxx';
    */
-  private async visitELPath(path: any[], node: any): Promise<void> {
+  private async visitELPath(path: any[], node: Literal): Promise<void> {
     if (node.value) {
-      const dep = await this.asyncImportLiteralSource(node.value);
+      const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
         this.defaultExport = dep.visitorFileDependency.defaultExport;
       }
@@ -111,9 +119,9 @@ export class VisitorFileDependency extends Visitor {
    * handle pattern:
    * export * from './xxx';
    */
-  private async visitPELPath(path: any[], node: any): Promise<void> {
+  private async visitPELPath(path: any[], node: Literal): Promise<void> {
     if (node.value) {
-      const dep = await this.asyncImportLiteralSource(node.value);
+      const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
         this.exports = { ...this.exports, ...dep.visitorFileDependency.exports };
       }
@@ -124,8 +132,8 @@ export class VisitorFileDependency extends Visitor {
    * handler pattern:
    * export const foo = ...;
    */
-  private async visitEVVPath(path: any[], node: any): Promise<void> {
-    const scopeName: string = node.id?.name as string;
+  private async visitEVVPath(path: any[], node: Identifier): Promise<void> {
+    const scopeName: string = node.name;
     const exportScope =
       this.program.visitorTopScope.compMap[scopeName] || this.program.visitorTopScope.hookMap[scopeName];
     if (exportScope instanceof TopScope) {
@@ -137,7 +145,7 @@ export class VisitorFileDependency extends Visitor {
    * handle pattern:
    * export default foo;
    */
-  private async visitPEIPath(path: any[], node: any): Promise<void> {
+  private async visitPEIPath(path: any[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope =
       this.program.visitorTopScope.compMap[scopeName] || this.program.visitorTopScope.hookMap[scopeName];
