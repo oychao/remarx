@@ -1,5 +1,5 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { Program, Node } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import { Node } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ImplementedNode } from './implementedNode';
 import { ImplementedProgram } from './implementedProgram';
@@ -10,15 +10,15 @@ function getPossibleImplementedNodeConstructor(type: AST_NODE_TYPES): typeof Imp
     case AST_NODE_TYPES.Program:
       return ImplementedProgram;
     case AST_NODE_TYPES.BlockStatement:
-      return ImplementedScope;
+      return ImplementedScope as typeof ImplementedNode;
     default:
       return ImplementedNode;
   }
 }
 
-export function parseAstToImplementedNode<T extends ImplementedProgram>(astNode: Node & any): T {
+export function parseAstToImplementedNode<R extends ImplementedProgram>(astNode: Node & any): R {
   const ClassConstructor = getPossibleImplementedNodeConstructor(astNode.type);
-  const node = new ClassConstructor(astNode) as any;
+  const node = Reflect.construct(ClassConstructor, [astNode]);
 
   for (const key in astNode) {
     if (astNode.hasOwnProperty(key)) {

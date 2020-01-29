@@ -1,20 +1,20 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import {
+  ArrowFunctionExpression,
   BlockStatement,
   FunctionDeclaration,
-  ArrowFunctionExpression,
   FunctionExpression,
   Identifier,
-  MemberExpression,
   JSXIdentifier,
   JSXMemberExpression,
+  MemberExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
 import { BaseNodeDescendant } from '../node/implementedNode';
-import { ScopeNodeMap, LogicTopScope } from '../node/logicTopScope';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { Visitor, SelectorHandlerMap } from './visitor';
+import { LogicTopScope, ScopeNodeMap } from '../node/logicTopScope';
+import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];

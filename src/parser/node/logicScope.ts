@@ -1,11 +1,8 @@
-import { LogicNode } from './logicNode';
 import { ImplementedScope } from './implementedScope';
+import { LogicNode } from './logicNode';
 
 export class LogicScope extends LogicNode {
-  protected astNode: ImplementedScope;
-
   constructor(astNode: ImplementedScope) {
-    super();
-    this.astNode = astNode;
+    super(astNode);
   }
 }

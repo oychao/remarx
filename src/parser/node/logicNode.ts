@@ -1,5 +1,12 @@
 import { ImplementedNode } from './implementedNode';
+import { LogicAbstractNode } from './logicAbstractNode';
 
-export abstract class LogicNode {
-  protected abstract astNode: ImplementedNode | undefined;
+export class LogicNode extends LogicAbstractNode {
+  protected astNode: ImplementedNode<LogicAbstractNode> | undefined;
+
+  constructor(astNode: ImplementedNode) {
+    super();
+    this.astNode = astNode;
+    astNode.logicNode = this;
+  }
 }

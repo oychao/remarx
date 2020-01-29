@@ -1,12 +1,12 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { ImportDeclaration, Literal, Identifier } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import { Identifier, ImportDeclaration, Literal } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import * as path from 'path';
 
 import { fileExists } from '../../utils';
 import { ImplementedNode } from '../node/implementedNode';
-import { LogicTopScope, ScopeNodeMap } from '../node/logicTopScope';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { Visitor, SelectorHandlerMap } from './visitor';
+import { LogicTopScope, ScopeNodeMap } from '../node/logicTopScope';
+import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorFileDependency extends Visitor {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];

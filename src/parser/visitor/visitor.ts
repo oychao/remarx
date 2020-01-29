@@ -1,7 +1,7 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 
+import { BaseNodeDescendant, ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { ImplementedNode, BaseNodeDescendant } from '../node/implementedNode';
 
 export type NodeHandler = (
   path: ImplementedNode[],

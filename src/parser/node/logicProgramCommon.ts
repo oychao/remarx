@@ -1,19 +1,17 @@
 import * as parser from '@typescript-eslint/typescript-estree';
-import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
-import { ImplementedNode } from './implementedNode';
-import { LogicProgramBase } from './logicProgramBase';
 import { VisitorFileDependency } from '../visitor/visitorFileDependency';
 import { VisitorTopScope } from '../visitor/visitorTopScope';
-import { ImplementedScope } from './implementedScope';
+import { ImplementedNode } from './implementedNode';
+import { LogicAbstractProgram } from './logicAbstractProgram';
 import { parseAstToImplementedNode } from './nodeFactory';
 
-export class LogicProgramCommon extends LogicProgramBase {
+export class LogicProgramCommon extends LogicAbstractProgram {
   public static pool: { [key: string]: LogicProgramCommon } = {};
 
   public static produce(fullPath: string) {
@@ -29,16 +27,7 @@ export class LogicProgramCommon extends LogicProgramBase {
     LogicProgramCommon.pool = {};
   }
 
-  public static getPossibleImplementedNodeConstructor(type: AST_NODE_TYPES): typeof ImplementedNode {
-    switch (type) {
-      case AST_NODE_TYPES.BlockStatement:
-        return ImplementedScope;
-      default:
-        return ImplementedNode;
-    }
-  }
-
-  protected astNode: ImplementedNode | undefined;
+  protected astNode: ImplementedNode<LogicProgramCommon> | undefined;
 
   private initialized: boolean = false;
 
@@ -72,6 +61,9 @@ export class LogicProgramCommon extends LogicProgramBase {
       await fs.promises.writeFile(astFullPath, astStr);
     }
     this.astNode = parseAstToImplementedNode(astObj);
+
+    // set `this` as logicNode of current ast node
+    this.astNode.logicNode = this;
 
     // parse top block scope and dependencies
     await this.astNode.accept(this.visitorTopScope);

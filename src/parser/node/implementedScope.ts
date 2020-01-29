@@ -1,8 +1,11 @@
-import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { ImplementedNode } from './implementedNode';
+import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-export class ImplementedScope extends ImplementedNode implements BlockStatement {
+import { ImplementedNode } from './implementedNode';
+import { LogicNode } from './logicNode';
+import { LogicScope } from './logicScope';
+
+export class ImplementedScope<T extends LogicNode = LogicScope> extends ImplementedNode<T> implements BlockStatement {
   public type: AST_NODE_TYPES.BlockStatement;
 
   public body: Statement[];

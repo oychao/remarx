@@ -1,6 +1,6 @@
-import { LogicNode } from './logicNode';
+import { LogicAbstractNode } from './logicAbstractNode';
 
-export abstract class LogicProgramBase extends LogicNode {
+export abstract class LogicAbstractProgram extends LogicAbstractNode {
   protected fullPath: string;
   protected dirPath: string;
   protected filename: string;

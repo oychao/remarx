@@ -2,9 +2,9 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { ScopeNodeMap } from '../node/logicTopScope';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { Visitor, SelectorHandlerMap } from './visitor';
+import { ScopeNodeMap } from '../node/logicTopScope';
+import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorReactDom extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[] = [];

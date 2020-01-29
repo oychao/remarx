@@ -1,5 +1,5 @@
-import { LogicProgramCommon } from './logicProgramCommon';
 import { VisitorReactDom } from '../visitor/visitorReactDom';
+import { LogicProgramCommon } from './logicProgramCommon';
 
 export class LogicProgramRoot extends LogicProgramCommon {
   public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);

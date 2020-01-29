@@ -1,12 +1,12 @@
 import * as dagre from 'dagre';
 
 import { ImplementedNode } from './node/implementedNode';
-import { ScopeNodeDepend, LogicTopScope } from './node/logicTopScope';
+import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
-import { LogicProgramBase } from './node/logicProgramBase';
 import { LogicProgramRoot } from './node/logicProgramEntrance';
+import { LogicTopScope, ScopeNodeDepend } from './node/logicTopScope';
 
-export class DependencyGraph extends LogicProgramBase {
+export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
     g.setGraph({});
