@@ -4,9 +4,9 @@ import * as request from 'request-promise';
 import * as vscode from 'vscode';
 
 import { config, readConf } from './config';
+import { __projectRoot } from './constants';
 import { DependencyGraph } from './parser/dependencyGraph';
-import { __projectRoot } from './utils';
-import { Program } from './parser/program';
+import { LogicProgramCommon } from './parser/node/logicProgramCommon';
 
 export async function parseProject(): Promise<GraphView | undefined> {
   try {
@@ -41,6 +41,7 @@ export async function main(): Promise<void> {
   });
 
   const graphData = await parseProject();
+
   await fs.promises.writeFile(
     path.resolve(__projectRoot, 'view', 'src', 'store', 'data.json'),
     JSON.stringify(graphData, null, 2)
@@ -50,5 +51,5 @@ export async function main(): Promise<void> {
   const viewSource = await request('http://localhost:9551/');
   panel.webview.html = viewSource;
 
-  Program.purge();
+  LogicProgramCommon.purge();
 }

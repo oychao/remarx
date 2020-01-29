@@ -6,7 +6,31 @@
       "height": 50,
       "x": 25,
       "y": 25
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+      "width": 50,
+      "height": 50,
+      "x": 25,
+      "y": 125
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "points": [
+        {
+          "x": 25,
+          "y": 50
+        },
+        {
+          "x": 25,
+          "y": 75
+        },
+        {
+          "x": 25,
+          "y": 100
+        }
+      ]
+    }
+  ]
 }

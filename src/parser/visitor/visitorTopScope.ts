@@ -1,73 +1,100 @@
-import { AstType } from '../node/astTypes';
-import { ConcreteNode } from '../node/concreteNode';
-import { ScopeNodeMap, TopScope } from '../node/topScope';
-import { Program } from '../program';
-import { Visitor, SelectorHandlerMap } from './visitor';
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import {
+  ArrowFunctionExpression,
+  BlockStatement,
+  FunctionDeclaration,
+  FunctionExpression,
+  Identifier,
+  JSXIdentifier,
+  JSXMemberExpression,
+  MemberExpression,
+} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+
 import { startWithCapitalLetter } from '../../utils';
+import { BaseNodeDescendant } from '../node/implementedNode';
+import { LogicProgramCommon } from '../node/logicProgramCommon';
+import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
-  public hookMap: ScopeNodeMap = {};
+  private currWorkingScope: LogicTopScope | undefined;
 
-  public compMap: ScopeNodeMap = {};
-
-  private currWorkingScope: TopScope | undefined;
-
-  constructor(program: Program) {
+  constructor(program: LogicProgramCommon) {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AstType.FunctionDeclaration, AstType.BlockStatement],
+        selector: [AST_NODE_TYPES.FunctionDeclaration, AST_NODE_TYPES.BlockStatement],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.FunctionExpression, AstType.BlockStatement],
+        selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.FunctionExpression, AST_NODE_TYPES.BlockStatement],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.ArrowFunctionExpression, AstType.BlockStatement],
+        selector: [
+          AST_NODE_TYPES.VariableDeclarator,
+          AST_NODE_TYPES.ArrowFunctionExpression,
+          AST_NODE_TYPES.BlockStatement,
+        ],
         handler: this.visitFBPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.Identifier],
+        selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.CallExpression, AST_NODE_TYPES.Identifier],
         handler: this.handleVCIPath,
       },
       {
-        selector: [AstType.VariableDeclarator, AstType.CallExpression, AstType.MemberExpression, AstType.Identifier],
+        selector: [
+          AST_NODE_TYPES.VariableDeclarator,
+          AST_NODE_TYPES.CallExpression,
+          AST_NODE_TYPES.MemberExpression,
+          AST_NODE_TYPES.Identifier,
+        ],
         handler: this.handleVCMIPath,
       },
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXIdentifier],
+        selector: [AST_NODE_TYPES.JSXElement, AST_NODE_TYPES.JSXOpeningElement, AST_NODE_TYPES.JSXIdentifier],
         handler: this.handleJJJPath,
       },
       {
-        selector: [AstType.JSXElement, AstType.JSXOpeningElement, AstType.JSXMemberExpression, AstType.JSXIdentifier],
+        selector: [
+          AST_NODE_TYPES.JSXElement,
+          AST_NODE_TYPES.JSXOpeningElement,
+          AST_NODE_TYPES.JSXMemberExpression,
+          AST_NODE_TYPES.JSXIdentifier,
+        ],
         handler: this.handleJJJJPath,
       },
     ];
   }
 
+  /**
+   * handler patterns:
+   * const foo = () => {};
+   * const foo = function () {};
+   * function foo () {}
+   */
   private async visitFBPath(
-    path: ConcreteNode[],
-    node: ConcreteNode,
-    parent: ConcreteNode,
-    grantParent: ConcreteNode
+    path: any[],
+    node: BlockStatement,
+    parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
+    grantParent: any
   ): Promise<void> {
     for (let i = 0, len = path.length - 1; i < len; i++) {
       const astAncestor = path[i];
       // it's not a top block scope
-      if (astAncestor.type === AstType.BlockStatement) {
+      if (astAncestor.type === AST_NODE_TYPES.BlockStatement) {
         return;
       }
     }
 
     // like `const foo = () => {};` or `const foo = function () {};`
     const isVariableDeclaration =
-      parent.type === AstType.ArrowFunctionExpression || parent.type === AstType.FunctionExpression;
+      parent.type === AST_NODE_TYPES.ArrowFunctionExpression || parent.type === AST_NODE_TYPES.FunctionExpression;
 
     // like `function foo () {}`
-    const isFunctionDeclaration = parent.type === AstType.FunctionDeclaration;
+    const isFunctionDeclaration = parent.type === AST_NODE_TYPES.FunctionDeclaration;
 
     let functionName = '';
     if (isFunctionDeclaration) {
@@ -79,10 +106,12 @@ export class VisitorTopScope extends Visitor {
     // console.log(path.map(node => node.type).join('->'));
     // console.log(functionName);
 
-    if (startWithCapitalLetter(functionName)) {
-      this.currWorkingScope = this.compMap[functionName] = new TopScope(functionName, node, this.program);
-    } else if (functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.hookMap[functionName] = new TopScope(functionName, node, this.program);
+    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
+      this.currWorkingScope = this.program.localScopes[functionName] = new LogicTopScope(
+        functionName,
+        node as BaseNodeDescendant,
+        this.program
+      );
     }
   }
 
@@ -90,12 +119,10 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * useFoo();
    */
-  private async handleVCIPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    const hookName: string = node.name as string;
-    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
-        hookName
-      ]?.visitorFileDependency.exports[hookName];
+  private async handleVCIPath(path: any[], node: Identifier): Promise<void> {
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -103,15 +130,13 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * Foo.useBar();
    */
-  private async handleVCMIPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleVCMIPath(path: any[], node: Identifier, parent: MemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
-    const hookName: string = node.name as string;
-    if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
-        parent.object?.name as string
-      ]?.visitorFileDependency.exports[hookName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -119,12 +144,10 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <MyComp />
    */
-  private async handleJJJPath(path: ConcreteNode[], node: ConcreteNode): Promise<void> {
-    const compName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        compName
-      ]?.visitorFileDependency.exports[compName];
+  private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 
@@ -132,15 +155,13 @@ export class VisitorTopScope extends Visitor {
    * handle pattern:
    * <Common.MyComp />
    */
-  private async handleJJJJPath(path: ConcreteNode[], node: ConcreteNode, parent: ConcreteNode): Promise<void> {
+  private async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
-    const compName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
-        parent.object?.name as string
-      ]?.visitorFileDependency.exports[compName];
+    const scopeName: string = node.name as string;
+    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
     }
   }
 }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import { initialState, reducer, StoreDispatchContext } from '../../store';
-import { List } from '../List';
 import { CreateForm, EditForm } from '../Form';
+import { List } from '../List';
 
 import './style.less';
 

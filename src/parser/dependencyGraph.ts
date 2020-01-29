@@ -1,11 +1,12 @@
 import * as dagre from 'dagre';
 
-import { ScopeNodeDepend, TopScope } from './node/topScope';
-import { Program } from './program';
-import { ProgramBase } from './programBase';
-import { ProgramRoot } from './programRoot';
+import { ImplementedNode } from './node/implementedNode';
+import { LogicAbstractProgram } from './node/logicAbstractProgram';
+import { LogicProgramCommon } from './node/logicProgramCommon';
+import { LogicProgramEntrance } from './node/logicProgramEntrance';
+import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
-export class DependencyGraph extends ProgramBase {
+export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
     g.setGraph({});
@@ -26,13 +27,15 @@ export class DependencyGraph extends ProgramBase {
     };
   }
 
+  protected astNode: ImplementedNode | undefined;
+
   protected fullPath: string;
-  private program: ProgramRoot;
+  private program: LogicProgramEntrance;
 
   constructor(fullPath: string) {
     super(fullPath);
     this.fullPath = fullPath;
-    this.program = new ProgramRoot(this.fullPath);
+    this.program = new LogicProgramEntrance(this.fullPath);
   }
 
   public async parse(): Promise<void> {
@@ -46,15 +49,17 @@ export class DependencyGraph extends ProgramBase {
     const files = new Set<string>();
     const dependencies: [string, string][] = [];
 
-    const queue: Program[] = [this.program];
-    let currProgram: Program | undefined = queue.pop();
+    const queue: LogicProgramCommon[] = [this.program];
+    let currProgram: LogicProgramCommon | undefined = queue.pop();
 
     while (currProgram) {
       files.add(currProgram.fullPath);
       await currProgram.forEachDepFile(async dep => {
-        queue.push(dep);
-        if (currProgram) {
-          dependencies.push([currProgram.fullPath, dep.fullPath]);
+        if (dep) {
+          queue.push(dep);
+          if (currProgram) {
+            dependencies.push([currProgram.fullPath, dep.fullPath]);
+          }
         }
       });
 
@@ -73,27 +78,29 @@ export class DependencyGraph extends ProgramBase {
 
     scopes.add('ReactDOM');
 
-    const queue: ScopeNodeDepend[] = Object.values(this.program.visitorReactDom.compDepMap);
+    const queue: TopScopeDepend[] = Object.values(this.program.visitorReactDom.scopeDepMap);
 
     queue.forEach(scope => {
-      if (scope instanceof TopScope) {
+      if (scope instanceof LogicTopScope) {
         const { depSign } = scope;
         dependencies.push(['ReactDOM', depSign]);
         scopes.add(depSign);
       }
     });
 
-    let currScope: TopScope = queue.pop() as TopScope;
+    let currScope: LogicTopScope = queue.pop() as LogicTopScope;
     while (currScope) {
       const { depSign } = currScope;
       scopes.add(depSign);
-      const deps = [...Object.values(currScope.compDepMap), ...Object.values(currScope.hookDepMap)];
+      const deps = [...Object.values(currScope.scopeDepMap)];
       deps.forEach(dep => {
-        if (dep instanceof TopScope) {
+        if (dep instanceof LogicTopScope) {
           queue.push(dep);
           dependencies.push([depSign, dep.depSign]);
         }
       });
+
+      currScope = queue.pop() as LogicTopScope;
     }
 
     return DependencyGraph.calcGraph(Array.from(scopes), dependencies);
