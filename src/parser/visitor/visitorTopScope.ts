@@ -18,9 +18,7 @@ import { Visitor, SelectorHandlerMap, BaseNodeDescendant } from './visitor';
 export class VisitorTopScope extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
-  public hookMap: ScopeNodeMap = {};
-
-  public compMap: ScopeNodeMap = {};
+  public scopeMap: ScopeNodeMap = {};
 
   private currWorkingScope: TopScope | undefined;
 
@@ -72,6 +70,12 @@ export class VisitorTopScope extends Visitor {
     ];
   }
 
+  /**
+   * handler patterns:
+   * const foo = () => {};
+   * const foo = function () {};
+   * function foo () {}
+   */
   private async visitFBPath(
     path: any[],
     node: BlockStatement,
@@ -103,14 +107,8 @@ export class VisitorTopScope extends Visitor {
     // console.log(path.map(node => node.type).join('->'));
     // console.log(functionName);
 
-    if (startWithCapitalLetter(functionName)) {
-      this.currWorkingScope = this.compMap[functionName] = new TopScope(
-        functionName,
-        node as BaseNodeDescendant,
-        this.program
-      );
-    } else if (functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.hookMap[functionName] = new TopScope(
+    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
+      this.currWorkingScope = this.scopeMap[functionName] = new TopScope(
         functionName,
         node as BaseNodeDescendant,
         this.program
@@ -125,7 +123,7 @@ export class VisitorTopScope extends Visitor {
   private async handleVCIPath(path: any[], node: Identifier): Promise<void> {
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+      this.currWorkingScope.scopeDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
         hookName
       ]?.visitorFileDependency.exports[hookName];
     }
@@ -141,7 +139,7 @@ export class VisitorTopScope extends Visitor {
     }
     const hookName: string = node.name as string;
     if (this.currWorkingScope && hookName.slice(0, 3) === 'use') {
-      this.currWorkingScope.hookDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
+      this.currWorkingScope.scopeDepMap[hookName] = this.program.visitorFileDependency.identifierDepMap[
         (parent.object as Identifier)?.name as string
       ]?.visitorFileDependency.exports[hookName];
     }
@@ -154,7 +152,7 @@ export class VisitorTopScope extends Visitor {
   private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+      this.currWorkingScope.scopeDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         compName
       ]?.visitorFileDependency.exports[compName];
     }
@@ -170,7 +168,7 @@ export class VisitorTopScope extends Visitor {
     }
     const compName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(compName)) {
-      this.currWorkingScope.compDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
+      this.currWorkingScope.scopeDepMap[compName] = this.program.visitorFileDependency.identifierDepMap[
         (parent.object as JSXIdentifier)?.name as string
       ]?.visitorFileDependency.exports[compName];
     }

@@ -87,7 +87,7 @@ export class DependencyGraph extends ProgramBase {
     while (currScope) {
       const { depSign } = currScope;
       scopes.add(depSign);
-      const deps = [...Object.values(currScope.compDepMap), ...Object.values(currScope.hookDepMap)];
+      const deps = [...Object.values(currScope.scopeDepMap)];
       deps.forEach(dep => {
         if (dep instanceof TopScope) {
           queue.push(dep);

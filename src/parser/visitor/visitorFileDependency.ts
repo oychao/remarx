@@ -134,8 +134,7 @@ export class VisitorFileDependency extends Visitor {
    */
   private async visitEVVPath(path: any[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
-    const exportScope =
-      this.program.visitorTopScope.compMap[scopeName] || this.program.visitorTopScope.hookMap[scopeName];
+    const exportScope = this.program.visitorTopScope.scopeMap[scopeName];
     if (exportScope instanceof TopScope) {
       this.exports[scopeName as string] = exportScope;
     }
@@ -147,8 +146,7 @@ export class VisitorFileDependency extends Visitor {
    */
   private async visitPEIPath(path: any[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
-    const exportScope =
-      this.program.visitorTopScope.compMap[scopeName] || this.program.visitorTopScope.hookMap[scopeName];
+    const exportScope = this.program.visitorTopScope.scopeMap[scopeName];
     if (exportScope instanceof TopScope) {
       this.defaultExport = exportScope;
     }
