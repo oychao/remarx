@@ -1,9 +1,10 @@
 import * as dagre from 'dagre';
 
-import { ScopeNodeDepend, TopScope } from './node/logicTopScope';
-import { LogicProgram } from './node/logicProgram';
+import { ImplementedNode } from './node/implementedNode';
+import { ScopeNodeDepend, LogicTopScope } from './node/logicTopScope';
+import { LogicProgramCommon } from './node/logicProgramCommon';
 import { LogicProgramBase } from './node/logicProgramBase';
-import { LogicProgramRoot } from './node/logicProgramRoot';
+import { LogicProgramRoot } from './node/logicProgramEntrance';
 
 export class DependencyGraph extends LogicProgramBase {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
@@ -26,6 +27,8 @@ export class DependencyGraph extends LogicProgramBase {
     };
   }
 
+  protected astNode: ImplementedNode | undefined;
+
   protected fullPath: string;
   private program: LogicProgramRoot;
 
@@ -46,8 +49,8 @@ export class DependencyGraph extends LogicProgramBase {
     const files = new Set<string>();
     const dependencies: [string, string][] = [];
 
-    const queue: LogicProgram[] = [this.program];
-    let currProgram: LogicProgram | undefined = queue.pop();
+    const queue: LogicProgramCommon[] = [this.program];
+    let currProgram: LogicProgramCommon | undefined = queue.pop();
 
     while (currProgram) {
       files.add(currProgram.fullPath);
@@ -76,20 +79,20 @@ export class DependencyGraph extends LogicProgramBase {
     const queue: ScopeNodeDepend[] = Object.values(this.program.visitorReactDom.compDepMap);
 
     queue.forEach(scope => {
-      if (scope instanceof TopScope) {
+      if (scope instanceof LogicTopScope) {
         const { depSign } = scope;
         dependencies.push(['ReactDOM', depSign]);
         scopes.add(depSign);
       }
     });
 
-    let currScope: TopScope = queue.pop() as TopScope;
+    let currScope: LogicTopScope = queue.pop() as LogicTopScope;
     while (currScope) {
       const { depSign } = currScope;
       scopes.add(depSign);
       const deps = [...Object.values(currScope.scopeDepMap)];
       deps.forEach(dep => {
-        if (dep instanceof TopScope) {
+        if (dep instanceof LogicTopScope) {
           queue.push(dep);
           dependencies.push([depSign, dep.depSign]);
         }

@@ -3,7 +3,7 @@ import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescrip
 
 import { startWithCapitalLetter } from '../../utils';
 import { ScopeNodeMap } from '../node/logicTopScope';
-import { LogicProgram } from '../node/logicProgram';
+import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { Visitor, SelectorHandlerMap } from './visitor';
 
 export class VisitorReactDom extends Visitor {
@@ -11,7 +11,7 @@ export class VisitorReactDom extends Visitor {
 
   public compDepMap: ScopeNodeMap = {};
 
-  constructor(program: LogicProgram) {
+  constructor(program: LogicProgramCommon) {
     super(program);
     this.selectorHandlerMap = [
       {

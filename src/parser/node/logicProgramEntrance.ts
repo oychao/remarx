@@ -1,7 +1,7 @@
-import { LogicProgram } from './logicProgram';
+import { LogicProgramCommon } from './logicProgramCommon';
 import { VisitorReactDom } from '../visitor/visitorReactDom';
 
-export class LogicProgramRoot extends LogicProgram {
+export class LogicProgramRoot extends LogicProgramCommon {
   public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
 
   constructor(fullPath: string) {
@@ -10,7 +10,7 @@ export class LogicProgramRoot extends LogicProgram {
 
   public async parse(): Promise<void> {
     await super.parse();
-    await this.rootAst?.accept(this.visitorReactDom);
+    await this.astNode?.accept(this.visitorReactDom);
     // console.log(Array.from(this.visitorReactDom.compTagNames));
   }
 }

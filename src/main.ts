@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { config, readConf } from './config';
 import { __projectRoot } from './constants';
 import { DependencyGraph } from './parser/dependencyGraph';
-import { LogicProgram } from './parser/node/logicProgram';
+import { LogicProgramCommon } from './parser/node/logicProgramCommon';
 
 export async function parseProject(): Promise<GraphView | undefined> {
   try {
@@ -51,5 +51,5 @@ export async function main(): Promise<void> {
   const viewSource = await request('http://localhost:9551/');
   panel.webview.html = viewSource;
 
-  LogicProgram.purge();
+  LogicProgramCommon.purge();
 }

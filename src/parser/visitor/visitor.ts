@@ -1,13 +1,10 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { BaseNode } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { LogicProgram } from '../node/logicProgram';
-import { ConcreteNode } from '../node/concreteNode';
-
-export type BaseNodeDescendant<T = any> = BaseNode | T;
+import { LogicProgramCommon } from '../node/logicProgramCommon';
+import { ImplementedNode, BaseNodeDescendant } from '../node/implementedNode';
 
 export type NodeHandler = (
-  path: ConcreteNode[],
+  path: ImplementedNode[],
   node: BaseNodeDescendant,
   parent: BaseNodeDescendant,
   grantParent: BaseNodeDescendant
@@ -23,15 +20,15 @@ export type SelectorHandlerMap = {
  * would be visited by specific method of corresponding decent concrete visitor.
  */
 export abstract class Visitor {
-  protected program: LogicProgram;
+  protected program: LogicProgramCommon;
 
   protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
 
-  constructor(program: LogicProgram) {
+  constructor(program: LogicProgramCommon) {
     this.program = program;
   }
 
-  private matchSelectors(path: ConcreteNode[]): NodeHandler | undefined {
+  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
     for (let i = 0; i < this.selectorHandlerMap.length; i++) {
       const { selector, handler } = this.selectorHandlerMap[i];
       let j = selector.length - 1;
@@ -57,7 +54,7 @@ export abstract class Visitor {
     return undefined;
   }
 
-  public async visit(node: ConcreteNode, path: ConcreteNode[] = []): Promise<void> {
+  public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
     path.push(node);
     const handler = this.matchSelectors(path);
 
@@ -68,12 +65,12 @@ export abstract class Visitor {
     for (const key in node) {
       if (node.hasOwnProperty(key)) {
         const value = (node as any)[key];
-        if (value instanceof ConcreteNode) {
+        if (value instanceof ImplementedNode) {
           await value.accept(this, [...path]);
         } else if (Array.isArray(value)) {
           for (let i = 0; i < value.length; i++) {
             const subValue = value[i];
-            if (subValue instanceof ConcreteNode) {
+            if (subValue instanceof ImplementedNode) {
               await subValue.accept(this, [...path]);
             }
           }

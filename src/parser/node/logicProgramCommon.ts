@@ -1,35 +1,48 @@
+import * as parser from '@typescript-eslint/typescript-estree';
+import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as parser from '@typescript-eslint/typescript-estree';
 
 import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
-import { ConcreteNode } from './concreteNode';
+import { ImplementedNode } from './implementedNode';
 import { LogicProgramBase } from './logicProgramBase';
 import { VisitorFileDependency } from '../visitor/visitorFileDependency';
 import { VisitorTopScope } from '../visitor/visitorTopScope';
+import { ImplementedScope } from './implementedScope';
+import { parseAstToImplementedNode } from './nodeFactory';
 
-export class LogicProgram extends LogicProgramBase {
-  public static pool: { [key: string]: LogicProgram } = {};
+export class LogicProgramCommon extends LogicProgramBase {
+  public static pool: { [key: string]: LogicProgramCommon } = {};
 
   public static produce(fullPath: string) {
-    let ret: LogicProgram | undefined = LogicProgram.pool[fullPath];
+    let ret: LogicProgramCommon | undefined = LogicProgramCommon.pool[fullPath];
     if (!ret) {
-      ret = new LogicProgram(fullPath);
-      LogicProgram.pool[fullPath] = ret;
+      ret = new LogicProgramCommon(fullPath);
+      LogicProgramCommon.pool[fullPath] = ret;
     }
     return ret;
   }
 
   public static purge(): void {
-    LogicProgram.pool = {};
+    LogicProgramCommon.pool = {};
   }
+
+  public static getPossibleImplementedNodeConstructor(type: AST_NODE_TYPES): typeof ImplementedNode {
+    switch (type) {
+      case AST_NODE_TYPES.BlockStatement:
+        return ImplementedScope;
+      default:
+        return ImplementedNode;
+    }
+  }
+
+  protected astNode: ImplementedNode | undefined;
 
   private initialized: boolean = false;
 
   public fullPath: string;
-  protected rootAst: ConcreteNode | undefined;
 
   public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
   public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
@@ -58,19 +71,21 @@ export class LogicProgram extends LogicProgramBase {
       const astFullPath = path.resolve(astDir, `${this.filename}.json`);
       await fs.promises.writeFile(astFullPath, astStr);
     }
-    this.rootAst = new ConcreteNode(astObj);
+    this.astNode = parseAstToImplementedNode(astObj);
 
     // parse top block scope and dependencies
-    await this.rootAst.accept(this.visitorTopScope);
+    await this.astNode.accept(this.visitorTopScope);
 
     // parse file dependencies
-    await this.rootAst.accept(this.visitorFileDependency);
+    await this.astNode.accept(this.visitorFileDependency);
 
     // mark as initialized
     this.initialized = true;
   }
 
-  public async forEachDepFile(cb: (dep: LogicProgram, index?: number, deps?: LogicProgram[]) => Promise<void>): Promise<void> {
+  public async forEachDepFile(
+    cb: (dep: LogicProgramCommon, index?: number, deps?: LogicProgramCommon[]) => Promise<void>
+  ): Promise<void> {
     for (let i = 0; i < this.visitorFileDependency.imports.length; i++) {
       const dep = this.visitorFileDependency.imports[i];
       cb.call(null, dep, i, this.visitorFileDependency.imports);

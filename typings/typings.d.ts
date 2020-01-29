@@ -26,6 +26,15 @@ declare interface TopScopeDependencyDag {
   dependencies: [TopScopeNode, TopScopeNode][];
 }
 
+declare enum ProgramSourceType {
+  script = 'script',
+}
+
+declare enum VariableDeclarationType {
+  const = 'const',
+  let = 'let',
+}
+
 declare namespace JSX {
   export interface Element {}
   export interface IntrinsicElements {
