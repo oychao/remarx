@@ -6,7 +6,8 @@ import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
 import { VisitorFileDependency } from '../visitor/visitorFileDependency';
-import { VisitorTopScope } from '../visitor/visitorTopScope';
+import { VisitorTopScopeImports } from '../visitor/visitorTopScopeImports';
+import { VisitorTopScopeLocal } from '../visitor/visitorTopScopeLocal';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from './logicTopScope';
@@ -39,8 +40,9 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   public fullPath: string;
 
   // visitors
-  public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  public visitorTopScopeLocal: VisitorTopScopeLocal = new VisitorTopScopeLocal(this);
   public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
+  public visitorTopScopeImports: VisitorTopScopeImports = new VisitorTopScopeImports(this);
 
   // import scopes
   public imports: TopScopeMap = {};
@@ -86,19 +88,14 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // set `this` as logicNode of current ast node
     this.astNode.logicNode = this;
 
-    // parse top block scope and dependencies
-    await this.astNode.accept(this.visitorTopScope);
+    // parse local top block scope
+    await this.astNode.accept(this.visitorTopScopeLocal);
 
     // parse file dependencies
     await this.astNode.accept(this.visitorFileDependency);
 
-    console.log(this.fullPath);
-    console.log(Object.keys(this.imports));
-    const exportKeys = Object.keys(this.exports);
-    if (this.defaultExport) {
-      exportKeys.push('default');
-    }
-    console.log(exportKeys);
+    // parse top block scope dependencies
+    await this.astNode.accept(this.visitorTopScopeImports);
 
     // mark as initialized
     this.initialized = true;

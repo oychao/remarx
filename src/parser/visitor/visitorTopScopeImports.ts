@@ -11,12 +11,11 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { LogicTopScope } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
-export class VisitorTopScope extends Visitor {
+export class VisitorTopScopeImports extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
   private currWorkingScope: LogicTopScope | undefined;
@@ -106,12 +105,11 @@ export class VisitorTopScope extends Visitor {
     // console.log(path.map(node => node.type).join('->'));
     // console.log(functionName);
 
-    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.program.localScopes[functionName] = new LogicTopScope(
-        functionName,
-        node as BaseNodeDescendant,
-        this.program
-      );
+    if (
+      (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') &&
+      this.program.localScopes[functionName] instanceof LogicTopScope
+    ) {
+      this.currWorkingScope = this.program.localScopes[functionName] as LogicTopScope;
     }
   }
 

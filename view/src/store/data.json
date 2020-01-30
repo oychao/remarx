@@ -4,31 +4,100 @@
       "label": "ReactDOM",
       "width": 50,
       "height": 50,
-      "x": 25,
+      "x": 125,
       "y": 25
     },
     {
       "label": "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
       "width": 50,
       "height": 50,
-      "x": 25,
+      "x": 125,
       "y": 125
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx#List",
+      "width": 50,
+      "height": 50,
+      "x": 225,
+      "y": 225
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx#EditForm",
+      "width": 50,
+      "height": 50,
+      "x": 125,
+      "y": 225
+    },
+    {
+      "label": "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm",
+      "width": 50,
+      "height": 50,
+      "x": 25,
+      "y": 225
     }
   ],
   "edges": [
     {
       "points": [
         {
-          "x": 25,
+          "x": 125,
           "y": 50
         },
         {
-          "x": 25,
+          "x": 125,
           "y": 75
         },
         {
-          "x": 25,
+          "x": 125,
           "y": 100
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 100,
+          "y": 137.5
+        },
+        {
+          "x": 25,
+          "y": 175
+        },
+        {
+          "x": 25,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 125,
+          "y": 150
+        },
+        {
+          "x": 125,
+          "y": 175
+        },
+        {
+          "x": 125,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "points": [
+        {
+          "x": 150,
+          "y": 137.5
+        },
+        {
+          "x": 225,
+          "y": 175
+        },
+        {
+          "x": 225,
+          "y": 200
         }
       ]
     }

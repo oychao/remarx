@@ -29,14 +29,14 @@ export class VisitorFileDependency extends Visitor {
         selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration],
         handler: this.visitIPath,
       },
-      {
-        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportNamespaceSpecifier],
-        handler: this.visitPIIPath,
-      },
-      {
-        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportDefaultSpecifier],
-        handler: this.visitPII2Path,
-      },
+      // {
+      //   selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportNamespaceSpecifier],
+      //   handler: this.visitPIIPath,
+      // },
+      // {
+      //   selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportDefaultSpecifier],
+      //   handler: this.visitPII2Path,
+      // },
       {
         selector: [AST_NODE_TYPES.ExportNamedDeclaration, AST_NODE_TYPES.Literal],
         handler: this.visitELPath,

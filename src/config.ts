@@ -1,8 +1,8 @@
+import * as extend from 'deep-extend';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as vscode from 'vscode';
 import * as toml from 'toml';
-import * as extend from 'deep-extend';
+import * as vscode from 'vscode';
 
 import { __projectRoot } from './constants';
 
