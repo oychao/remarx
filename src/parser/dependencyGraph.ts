@@ -86,26 +86,26 @@ export class DependencyGraph extends LogicAbstractProgram {
 
     const queue: TopScopeDepend[] = [];
 
-    LogicTopScope.dfsWalkTopScopeMap(this.program.visitorReactDom.scopeDepMap, function(
-      dep: TopScopeDepend,
-      key: string
-    ): void {
-      if (dep instanceof LogicTopScope) {
-        queue.push(dep);
-        const { depSign } = dep;
-        dependencies.push([entrance, depSign]);
-        scopes.add(depSign);
-      } else if (typeof dep === 'string') {
-        scopes.add(dep);
+    await LogicTopScope.dfsWalkTopScopeMap(
+      this.program.visitorReactDom.scopeDepMap,
+      async (dep: TopScopeDepend): Promise<void> => {
+        if (dep instanceof LogicTopScope) {
+          queue.push(dep);
+          const { depSign } = dep;
+          dependencies.push([entrance, depSign]);
+          scopes.add(depSign);
+        } else if (typeof dep === 'string') {
+          scopes.add(dep);
+        }
       }
-    });
+    );
 
     let currScope: LogicTopScope = queue.pop() as LogicTopScope;
     while (currScope) {
       if (currScope instanceof LogicTopScope) {
         const { depSign } = currScope;
         scopes.add(depSign);
-        currScope.forEachDepScope(async dep => {
+        await currScope.forEachDepScope(async dep => {
           if (dep instanceof LogicTopScope) {
             queue.push(dep);
             dependencies.push([depSign, dep.depSign]);

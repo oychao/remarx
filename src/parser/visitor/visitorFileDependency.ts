@@ -12,7 +12,7 @@ import * as path from 'path';
 import { fileExists } from '../../utils';
 import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { LogicTopScope } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
 export class VisitorFileDependency extends Visitor {

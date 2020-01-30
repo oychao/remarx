@@ -16,15 +16,15 @@ export interface TopScopeMap {
 }
 
 export class LogicTopScope extends LogicScope {
-  public static dfsWalkTopScopeMap(
+  public static async dfsWalkTopScopeMap(
     scopeDepMap: TopScopeMap,
-    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => void
-  ): void {
+    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
+  ): Promise<void> {
     for (const key in scopeDepMap) {
       if (scopeDepMap.hasOwnProperty(key)) {
         const dep = scopeDepMap[key];
         if (dep instanceof LogicTopScope || typeof dep === 'string') {
-          cb.call(null, dep, key, scopeDepMap);
+          await cb.call(null, dep, key, scopeDepMap);
         } else if (typeof dep === 'object') {
           LogicTopScope.dfsWalkTopScopeMap(dep, cb);
         }
@@ -60,6 +60,6 @@ export class LogicTopScope extends LogicScope {
   public async forEachDepScope(
     cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
   ): Promise<void> {
-    LogicTopScope.dfsWalkTopScopeMap(this.scopeDepMap, cb);
+    await LogicTopScope.dfsWalkTopScopeMap(this.scopeDepMap, cb);
   }
 }

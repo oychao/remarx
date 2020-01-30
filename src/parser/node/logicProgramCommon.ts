@@ -10,7 +10,7 @@ import { VisitorTopScopeImports } from '../visitor/visitorTopScopeImports';
 import { VisitorTopScopeLocal } from '../visitor/visitorTopScopeLocal';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
-import { LogicTopScope, TopScopeDepend, TopScopeMap } from './logicTopScope';
+import { LogicTopScope, TopScopeMap } from './logicTopScope';
 import { parseAstToImplementedNode } from './nodeFactory';
 
 export type ProgramDepend = LogicProgramCommon | string | undefined;
