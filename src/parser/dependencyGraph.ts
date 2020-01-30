@@ -55,24 +55,22 @@ export class DependencyGraph extends LogicAbstractProgram {
     const dependencies: [string, string][] = [];
 
     const queue: LogicProgramCommon[] = [this.program];
-    let currProgram: LogicProgramCommon | undefined = queue.pop();
+    let currProgram: LogicProgramCommon = queue.pop() as LogicProgramCommon;
 
     while (currProgram) {
-      files.add(currProgram.fullPath);
-      await currProgram.forEachDepFile(async dep => {
-        if (dep instanceof LogicProgramCommon) {
-          queue.push(dep);
-          if (currProgram) {
+      if (currProgram instanceof LogicProgramCommon) {
+        files.add(currProgram.fullPath);
+        await currProgram.forEachDepFile(async dep => {
+          if (dep instanceof LogicProgramCommon) {
+            queue.push(dep);
             dependencies.push([currProgram.fullPath, dep.fullPath]);
-          }
-        } else if (typeof dep === 'string') {
-          if (currProgram) {
+          } else if (typeof dep === 'string') {
+            files.add(dep);
             dependencies.push([currProgram.fullPath, dep]);
           }
-        }
-      });
-
-      currProgram = queue.pop();
+        });
+      }
+      currProgram = queue.pop() as LogicProgramCommon;
     }
 
     return DependencyGraph.calcGraph(Array.from(files), dependencies);
