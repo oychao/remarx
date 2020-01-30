@@ -20,8 +20,8 @@ export async function parseProject(): Promise<GraphView | undefined> {
 
     const graphData = await depGraph.getTopScopeDag();
 
-    return graphData;
     // vscode.window.showInformationMessage('done');
+    return graphData;
   } catch (error) {
     console.log(error);
     vscode.window.showErrorMessage(error.message);
@@ -51,5 +51,6 @@ export async function main(): Promise<void> {
   const viewSource = await request('http://localhost:9551/');
   panel.webview.html = viewSource;
 
+  // purge all cached programs
   LogicProgramCommon.purge();
 }

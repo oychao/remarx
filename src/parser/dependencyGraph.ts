@@ -4,7 +4,7 @@ import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
 import { LogicProgramEntrance } from './node/logicProgramEntrance';
-import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
+import { LogicTopScope, TopScopeDepend, TopScopeMap } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
@@ -55,10 +55,14 @@ export class DependencyGraph extends LogicAbstractProgram {
     while (currProgram) {
       files.add(currProgram.fullPath);
       await currProgram.forEachDepFile(async dep => {
-        if (dep) {
+        if (dep instanceof LogicProgramCommon) {
           queue.push(dep);
           if (currProgram) {
             dependencies.push([currProgram.fullPath, dep.fullPath]);
+          }
+        } else if (typeof dep === 'string') {
+          if (currProgram) {
+            dependencies.push([currProgram.fullPath, dep]);
           }
         }
       });
@@ -78,26 +82,37 @@ export class DependencyGraph extends LogicAbstractProgram {
 
     scopes.add('ReactDOM');
 
-    const queue: TopScopeDepend[] = Object.values(this.program.visitorReactDom.scopeDepMap);
+    const queue: TopScopeDepend[] = [];
 
-    queue.forEach(scope => {
-      if (scope instanceof LogicTopScope) {
-        const { depSign } = scope;
+    LogicTopScope.dfsWalkTopScopeMap(this.program.visitorReactDom.scopeDepMap, function(
+      dep: TopScopeDepend,
+      key: string
+    ): void {
+      if (dep instanceof LogicTopScope) {
+        queue.push(dep);
+        const { depSign } = dep;
         dependencies.push(['ReactDOM', depSign]);
         scopes.add(depSign);
+      } else if (typeof dep === 'string') {
+        scopes.add(dep);
       }
     });
 
     let currScope: LogicTopScope = queue.pop() as LogicTopScope;
     while (currScope) {
-      const { depSign } = currScope;
-      scopes.add(depSign);
-      currScope.forEachDepScope(async dep => {
-        if (dep instanceof LogicTopScope) {
-          queue.push(dep);
-          dependencies.push([depSign, dep.depSign]);
-        }
-      });
+      if (currScope instanceof LogicTopScope) {
+        const { depSign } = currScope;
+        scopes.add(depSign);
+        currScope.forEachDepScope(async dep => {
+          if (dep instanceof LogicTopScope) {
+            queue.push(dep);
+            dependencies.push([depSign, dep.depSign]);
+          } else if (typeof dep === 'string') {
+            scopes.add(dep);
+            dependencies.push([depSign, dep]);
+          }
+        });
+      }
 
       currScope = queue.pop() as LogicTopScope;
     }

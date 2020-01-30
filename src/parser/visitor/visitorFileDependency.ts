@@ -73,6 +73,7 @@ export class VisitorFileDependency extends Visitor {
   private async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgramCommon | undefined> {
     if (sourceValue && typeof sourceValue === 'string') {
       if (sourceValue.charAt(0) !== '.') {
+        this.program.fileDepMap[sourceValue] = sourceValue;
         return undefined;
       }
 
@@ -80,6 +81,7 @@ export class VisitorFileDependency extends Visitor {
       let possiblePath = originPath;
       let isFile = await fileExists(possiblePath);
       let i = 0;
+
       // determine readable target module full path;
       while (!isFile && i < VisitorFileDependency.POSSIBLE_FILE_SUFFIXES.length) {
         possiblePath = `${originPath}${VisitorFileDependency.POSSIBLE_FILE_SUFFIXES[i++]}`;
@@ -101,16 +103,33 @@ export class VisitorFileDependency extends Visitor {
 
   /**
    * handle pattern:
-   * import ...;
+   * import Foo from './foo';
+   * import { Foo } from './foo';
+   * import * as Foo from './foo';
    */
   private async visitIPath(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
         const specifierName: string = specifier.local?.name;
-        const exportOfDep = dep?.exports[specifierName] || dep?.defaultExport;
-        if (specifierName && exportOfDep) {
-          this.program.imports[specifierName] = exportOfDep;
+        if (!specifierName) {
+          return;
+        }
+
+        if (AST_NODE_TYPES.ImportSpecifier === specifier.type) {
+          const exportOfDep = dep?.exports[specifierName];
+          if (exportOfDep) {
+            this.program.imports[specifierName] = exportOfDep;
+          }
+        } else if (AST_NODE_TYPES.ImportDefaultSpecifier === specifier.type) {
+          const exportOfDep = dep?.defaultExport;
+          if (exportOfDep) {
+            this.program.imports[specifierName] = exportOfDep;
+          }
+        } else if (AST_NODE_TYPES.ImportNamespaceSpecifier === specifier.type) {
+          if ((node.source.value as string).charAt(0) !== '.') {
+            this.program.imports[specifierName] = node.source.value as string;
+          }
         }
       });
     }

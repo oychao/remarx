@@ -13,7 +13,7 @@ import { LogicAbstractProgram } from './logicAbstractProgram';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from './logicTopScope';
 import { parseAstToImplementedNode } from './nodeFactory';
 
-export type ProgramDepend = LogicProgramCommon | undefined;
+export type ProgramDepend = LogicProgramCommon | string | undefined;
 
 export type ProgramMap = { [key: string]: ProgramDepend };
 

@@ -12,10 +12,26 @@ export enum TOP_SCOPE_TYPE {
 }
 
 export interface TopScopeMap {
-  [key: string]: TopScopeDepend;
+  [key: string]: TopScopeDepend | TopScopeMap;
 }
 
 export class LogicTopScope extends LogicScope {
+  public static dfsWalkTopScopeMap(
+    scopeDepMap: TopScopeMap,
+    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => void
+  ): void {
+    for (const key in scopeDepMap) {
+      if (scopeDepMap.hasOwnProperty(key)) {
+        const dep = scopeDepMap[key];
+        if (dep instanceof LogicTopScope || typeof dep === 'string') {
+          cb.call(null, dep, key, scopeDepMap);
+        } else if (typeof dep === 'object') {
+          LogicTopScope.dfsWalkTopScopeMap(dep, cb);
+        }
+      }
+    }
+  }
+
   public name: string;
 
   public program: LogicProgramCommon;
@@ -44,11 +60,6 @@ export class LogicTopScope extends LogicScope {
   public async forEachDepScope(
     cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
   ): Promise<void> {
-    for (const key in this.scopeDepMap) {
-      if (this.scopeDepMap.hasOwnProperty(key)) {
-        const dep = this.scopeDepMap[key];
-        cb.call(null, dep, key, this.scopeDepMap);
-      }
-    }
+    LogicTopScope.dfsWalkTopScopeMap(this.scopeDepMap, cb);
   }
 }
