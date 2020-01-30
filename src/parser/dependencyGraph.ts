@@ -1,5 +1,6 @@
 import * as dagre from 'dagre';
 
+import { config } from '../config';
 import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
@@ -7,12 +8,12 @@ import { LogicProgramEntrance } from './node/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
-  private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
+  private static calcGraph(rawNodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
     g.setGraph({});
     g.setDefaultEdgeLabel(() => ({}));
 
-    nodes.forEach(node => {
+    rawNodes.forEach(node => {
       g.setNode(node, { label: node, width: 50, height: 50 });
     });
     dependencies.forEach(([from, to]) => {
@@ -21,10 +22,14 @@ export class DependencyGraph extends LogicAbstractProgram {
 
     dagre.layout(g);
 
-    return {
-      nodes: g.nodes().map(n => g.node(n)),
-      edges: g.edges().map(e => g.edge(e)),
-    };
+    const nodes = g.nodes().map(n => g.node(n));
+    const edges = g.edges().map(e => g.edge(e));
+
+    nodes.forEach(node => {
+      node.label = (node.label as string).replace(config.rootDir, '.');
+    });
+
+    return { nodes, edges };
   }
 
   protected astNode: ImplementedNode | undefined;
