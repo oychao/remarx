@@ -40,4 +40,15 @@ export class LogicTopScope extends LogicScope {
   public get depSign(): string {
     return `${this.program.fullPath}#${this.name}`;
   }
+
+  public async forEachDepScope(
+    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
+  ): Promise<void> {
+    for (const key in this.scopeDepMap) {
+      if (this.scopeDepMap.hasOwnProperty(key)) {
+        const dep = this.scopeDepMap[key];
+        cb.call(null, dep, key, this.scopeDepMap);
+      }
+    }
+  }
 }

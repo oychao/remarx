@@ -104,15 +104,4 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       }
     }
   }
-
-  public async forEachDepScope(
-    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
-  ): Promise<void> {
-    for (const key in this.imports) {
-      if (this.imports.hasOwnProperty(key)) {
-        const dep = this.imports[key];
-        cb.call(null, dep, key, this.imports);
-      }
-    }
-  }
 }

@@ -92,8 +92,7 @@ export class DependencyGraph extends LogicAbstractProgram {
     while (currScope) {
       const { depSign } = currScope;
       scopes.add(depSign);
-      const deps = [...Object.values(currScope.scopeDepMap)];
-      deps.forEach(dep => {
+      currScope.forEachDepScope(async dep => {
         if (dep instanceof LogicTopScope) {
           queue.push(dep);
           dependencies.push([depSign, dep.depSign]);
