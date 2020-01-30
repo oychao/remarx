@@ -6,7 +6,7 @@ import { List } from '../List';
 
 import './style.less';
 
-const App = () => {
+export const App = () => {
   const [store, dispatch] = React.useReducer(reducer, initialState);
 
   const dispatchContextValue = React.useMemo(() => ({ store, dispatch }), [store]);

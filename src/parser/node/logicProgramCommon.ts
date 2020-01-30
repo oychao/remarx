@@ -92,6 +92,14 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // parse file dependencies
     await this.astNode.accept(this.visitorFileDependency);
 
+    console.log(this.fullPath);
+    console.log(Object.keys(this.imports));
+    const exportKeys = Object.keys(this.exports);
+    if (this.defaultExport) {
+      exportKeys.push('default');
+    }
+    console.log(exportKeys);
+
     // mark as initialized
     this.initialized = true;
   }
