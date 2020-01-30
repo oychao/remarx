@@ -4,7 +4,7 @@ import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
 import { LogicProgramEntrance } from './node/logicProgramEntrance';
-import { LogicTopScope, TopScopeDepend, TopScopeMap } from './node/logicTopScope';
+import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
@@ -80,7 +80,9 @@ export class DependencyGraph extends LogicAbstractProgram {
     const scopes = new Set<string>();
     const dependencies: [string, string][] = [];
 
-    scopes.add('ReactDOM');
+    const entrance: string = `${this.program.fullPath}#ReactDOM`;
+
+    scopes.add(entrance);
 
     const queue: TopScopeDepend[] = [];
 
@@ -91,7 +93,7 @@ export class DependencyGraph extends LogicAbstractProgram {
       if (dep instanceof LogicTopScope) {
         queue.push(dep);
         const { depSign } = dep;
-        dependencies.push(['ReactDOM', depSign]);
+        dependencies.push([entrance, depSign]);
         scopes.add(depSign);
       } else if (typeof dep === 'string') {
         scopes.add(dep);
