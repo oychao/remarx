@@ -123,13 +123,10 @@ export class VisitorTopScopeImports extends Visitor {
       if (parent) {
         const callerName: string = (parent.object as Identifier).name as string;
         const scopeName: string = (parent.property as Identifier).name as string;
-        // if (this.program.fullPath.includes('Create')) {
-        //   debugger;
-        // }
         if (scopeName.slice(0, 3) === 'use') {
           const targetProgram: TopScopeDepend = this.program.imports[callerName] as TopScopeDepend;
           this.currWorkingScope.scopeDepMap[scopeName] =
-            targetProgram instanceof LogicTopScope
+            typeof targetProgram === 'object'
               ? (this.program.imports[callerName] as TopScopeMap)[scopeName]
               : `${targetProgram}#${scopeName}`;
         }

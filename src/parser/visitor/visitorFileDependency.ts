@@ -127,7 +127,9 @@ export class VisitorFileDependency extends Visitor {
             this.program.imports[specifierName] = exportOfDep;
           }
         } else if (AST_NODE_TYPES.ImportNamespaceSpecifier === specifier.type) {
-          if ((node.source.value as string).charAt(0) !== '.') {
+          if ((node.source.value as string).charAt(0) === '.') {
+            this.program.imports[specifierName] = dep?.exports;
+          } else {
             this.program.imports[specifierName] = node.source.value as string;
           }
         }
