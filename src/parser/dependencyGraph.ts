@@ -1,5 +1,6 @@
 import * as dagre from 'dagre';
 
+import { config } from '../config';
 import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';
@@ -7,13 +8,13 @@ import { LogicProgramEntrance } from './node/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
-  private static calcGraph(nodes: string[], dependencies: [string, string][]): GraphView {
+  private static calcGraph(rawNodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
     g.setGraph({});
     g.setDefaultEdgeLabel(() => ({}));
 
-    nodes.forEach(node => {
-      g.setNode(node, { label: node, width: 50, height: 50 });
+    rawNodes.forEach(node => {
+      g.setNode(node, { label: node, width: 200, height: 20 });
     });
     dependencies.forEach(([from, to]) => {
       g.setEdge(from, to);
@@ -21,10 +22,14 @@ export class DependencyGraph extends LogicAbstractProgram {
 
     dagre.layout(g);
 
-    return {
-      nodes: g.nodes().map(n => g.node(n)),
-      edges: g.edges().map(e => g.edge(e)),
-    };
+    const nodes = g.nodes().map(n => g.node(n));
+    const edges = g.edges().map(e => g.edge(e));
+
+    nodes.forEach(node => {
+      node.label = (node.label as string).replace(config.rootDir, '.');
+    });
+
+    return { nodes, edges };
   }
 
   protected astNode: ImplementedNode | undefined;
@@ -50,20 +55,22 @@ export class DependencyGraph extends LogicAbstractProgram {
     const dependencies: [string, string][] = [];
 
     const queue: LogicProgramCommon[] = [this.program];
-    let currProgram: LogicProgramCommon | undefined = queue.pop();
+    let currProgram: LogicProgramCommon = queue.pop() as LogicProgramCommon;
 
     while (currProgram) {
-      files.add(currProgram.fullPath);
-      await currProgram.forEachDepFile(async dep => {
-        if (dep) {
-          queue.push(dep);
-          if (currProgram) {
+      if (currProgram instanceof LogicProgramCommon) {
+        files.add(currProgram.fullPath);
+        await currProgram.forEachDepFile(async dep => {
+          if (dep instanceof LogicProgramCommon) {
+            queue.push(dep);
             dependencies.push([currProgram.fullPath, dep.fullPath]);
+          } else if (typeof dep === 'string') {
+            files.add(dep);
+            dependencies.push([currProgram.fullPath, dep]);
           }
-        }
-      });
-
-      currProgram = queue.pop();
+        });
+      }
+      currProgram = queue.pop() as LogicProgramCommon;
     }
 
     return DependencyGraph.calcGraph(Array.from(files), dependencies);
@@ -76,29 +83,41 @@ export class DependencyGraph extends LogicAbstractProgram {
     const scopes = new Set<string>();
     const dependencies: [string, string][] = [];
 
-    scopes.add('ReactDOM');
+    const entrance: string = `${this.program.fullPath}#ReactDOM`;
 
-    const queue: TopScopeDepend[] = Object.values(this.program.visitorReactDom.scopeDepMap);
+    scopes.add(entrance);
 
-    queue.forEach(scope => {
-      if (scope instanceof LogicTopScope) {
-        const { depSign } = scope;
-        dependencies.push(['ReactDOM', depSign]);
-        scopes.add(depSign);
+    const queue: TopScopeDepend[] = [];
+
+    await LogicTopScope.dfsWalkTopScopeMap(
+      this.program.visitorReactDom.scopeDepMap,
+      async (dep: TopScopeDepend): Promise<void> => {
+        if (dep instanceof LogicTopScope) {
+          queue.push(dep);
+          const { depSign } = dep;
+          dependencies.push([entrance, depSign]);
+          scopes.add(depSign);
+        } else if (typeof dep === 'string') {
+          scopes.add(dep);
+        }
       }
-    });
+    );
 
     let currScope: LogicTopScope = queue.pop() as LogicTopScope;
     while (currScope) {
-      const { depSign } = currScope;
-      scopes.add(depSign);
-      const deps = [...Object.values(currScope.scopeDepMap)];
-      deps.forEach(dep => {
-        if (dep instanceof LogicTopScope) {
-          queue.push(dep);
-          dependencies.push([depSign, dep.depSign]);
-        }
-      });
+      if (currScope instanceof LogicTopScope) {
+        const { depSign } = currScope;
+        scopes.add(depSign);
+        await currScope.forEachDepScope(async dep => {
+          if (dep instanceof LogicTopScope) {
+            queue.push(dep);
+            dependencies.push([depSign, dep.depSign]);
+          } else if (typeof dep === 'string') {
+            scopes.add(dep);
+            dependencies.push([depSign, dep]);
+          }
+        });
+      }
 
       currScope = queue.pop() as LogicTopScope;
     }

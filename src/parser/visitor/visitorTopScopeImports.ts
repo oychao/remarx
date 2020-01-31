@@ -2,6 +2,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import {
   ArrowFunctionExpression,
   BlockStatement,
+  CallExpression,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
@@ -11,12 +12,11 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../node/logicTopScope';
 import { SelectorHandlerMap, Visitor } from './visitor';
 
-export class VisitorTopScope extends Visitor {
+export class VisitorTopScopeImports extends Visitor {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
   private currWorkingScope: LogicTopScope | undefined;
@@ -41,17 +41,8 @@ export class VisitorTopScope extends Visitor {
         handler: this.visitFBPath,
       },
       {
-        selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.CallExpression, AST_NODE_TYPES.Identifier],
-        handler: this.handleVCIPath,
-      },
-      {
-        selector: [
-          AST_NODE_TYPES.VariableDeclarator,
-          AST_NODE_TYPES.CallExpression,
-          AST_NODE_TYPES.MemberExpression,
-          AST_NODE_TYPES.Identifier,
-        ],
-        handler: this.handleVCMIPath,
+        selector: [AST_NODE_TYPES.CallExpression],
+        handler: this.handleCPath,
       },
       {
         selector: [AST_NODE_TYPES.JSXElement, AST_NODE_TYPES.JSXOpeningElement, AST_NODE_TYPES.JSXIdentifier],
@@ -106,37 +97,45 @@ export class VisitorTopScope extends Visitor {
     // console.log(path.map(node => node.type).join('->'));
     // console.log(functionName);
 
-    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.currWorkingScope = this.program.localScopes[functionName] = new LogicTopScope(
-        functionName,
-        node as BaseNodeDescendant,
-        this.program
-      );
+    if (
+      (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') &&
+      this.program.localScopes[functionName] instanceof LogicTopScope
+    ) {
+      this.currWorkingScope = this.program.localScopes[functionName] as LogicTopScope;
     }
   }
 
   /**
    * handle pattern:
    * useFoo();
+   * Foo.useFoo();
    */
-  private async handleVCIPath(path: any[], node: Identifier): Promise<void> {
-    const scopeName: string = node.name as string;
-    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+  private async handleCPath(path: any[], node: CallExpression): Promise<void> {
+    const nodes: MemberExpression[] = [];
+    let currCallee = node.callee as MemberExpression | Identifier;
+    while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
+      nodes.push(currCallee);
+      currCallee = currCallee.object as MemberExpression | Identifier;
     }
-  }
+    const parent = nodes.pop();
 
-  /**
-   * handle pattern:
-   * Foo.useBar();
-   */
-  private async handleVCMIPath(path: any[], node: Identifier, parent: MemberExpression): Promise<void> {
-    if (node === parent.object) {
-      return;
-    }
-    const scopeName: string = node.name as string;
-    if (this.currWorkingScope && scopeName.slice(0, 3) === 'use') {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+    if (this.currWorkingScope) {
+      if (parent) {
+        const callerName: string = (parent.object as Identifier).name as string;
+        const scopeName: string = (parent.property as Identifier).name as string;
+        if (scopeName.slice(0, 3) === 'use') {
+          const targetProgram: TopScopeDepend = this.program.imports[callerName] as TopScopeDepend;
+          this.currWorkingScope.scopeDepMap[scopeName] =
+            typeof targetProgram === 'object'
+              ? (this.program.imports[callerName] as TopScopeMap)[scopeName]
+              : `${targetProgram}#${scopeName}`;
+        }
+      } else {
+        const scopeName: string = currCallee.name as string;
+        if (scopeName.slice(0, 3) === 'use') {
+          this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+        }
+      }
     }
   }
 

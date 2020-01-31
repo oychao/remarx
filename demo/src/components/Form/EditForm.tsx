@@ -7,6 +7,7 @@ import { ACTION_EDIT, ACTION_UPDATE_EDITING_FORM, StoreDispatchContext } from '.
  */
 export function EditForm() {
   const { store, dispatch } = React.useContext(StoreDispatchContext);
+
   const handleNameChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({

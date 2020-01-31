@@ -6,13 +6,14 @@ import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
 import { VisitorFileDependency } from '../visitor/visitorFileDependency';
-import { VisitorTopScope } from '../visitor/visitorTopScope';
+import { VisitorTopScopeImports } from '../visitor/visitorTopScopeImports';
+import { VisitorTopScopeLocal } from '../visitor/visitorTopScopeLocal';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
-import { LogicTopScope, TopScopeDepend, TopScopeMap } from './logicTopScope';
+import { LogicTopScope, TopScopeMap } from './logicTopScope';
 import { parseAstToImplementedNode } from './nodeFactory';
 
-export type ProgramDepend = LogicProgramCommon | undefined;
+export type ProgramDepend = LogicProgramCommon | string | undefined;
 
 export type ProgramMap = { [key: string]: ProgramDepend };
 
@@ -39,8 +40,9 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   public fullPath: string;
 
   // visitors
-  public visitorTopScope: VisitorTopScope = new VisitorTopScope(this);
+  public visitorTopScopeLocal: VisitorTopScopeLocal = new VisitorTopScopeLocal(this);
   public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
+  public visitorTopScopeImports: VisitorTopScopeImports = new VisitorTopScopeImports(this);
 
   // import scopes
   public imports: TopScopeMap = {};
@@ -86,11 +88,14 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // set `this` as logicNode of current ast node
     this.astNode.logicNode = this;
 
-    // parse top block scope and dependencies
-    await this.astNode.accept(this.visitorTopScope);
+    // parse local top block scope
+    await this.astNode.accept(this.visitorTopScopeLocal);
 
     // parse file dependencies
     await this.astNode.accept(this.visitorFileDependency);
+
+    // parse top block scope dependencies
+    await this.astNode.accept(this.visitorTopScopeImports);
 
     // mark as initialized
     this.initialized = true;
@@ -101,17 +106,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       if (this.fileDepMap.hasOwnProperty(key)) {
         const fileDep = this.fileDepMap[key];
         cb.call(null, fileDep, key, this.fileDepMap);
-      }
-    }
-  }
-
-  public async forEachDepScope(
-    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
-  ): Promise<void> {
-    for (const key in this.imports) {
-      if (this.imports.hasOwnProperty(key)) {
-        const dep = this.imports[key];
-        cb.call(null, dep, key, this.imports);
       }
     }
   }
