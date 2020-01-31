@@ -14,7 +14,7 @@ export class DependencyGraph extends LogicAbstractProgram {
     g.setDefaultEdgeLabel(() => ({}));
 
     rawNodes.forEach(node => {
-      g.setNode(node, { label: node, width: 50, height: 50 });
+      g.setNode(node, { label: node, width: 200, height: 20 });
     });
     dependencies.forEach(([from, to]) => {
       g.setEdge(from, to);
