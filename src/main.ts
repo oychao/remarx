@@ -8,7 +8,13 @@ import { __projectRoot } from './constants';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { LogicProgramCommon } from './parser/node/logicProgramCommon';
 
-export async function parseProject(): Promise<GraphView | undefined> {
+export async function parseProject(): Promise<
+  | {
+      topScopeGraphData: GraphView;
+      fileGraphData: GraphView;
+    }
+  | undefined
+> {
   try {
     // project source code root directory
     const projectSourceRootDir = path.resolve(config.rootDir, config.sourceFolder);
@@ -18,10 +24,16 @@ export async function parseProject(): Promise<GraphView | undefined> {
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
-    const graphData = await depGraph.getTopScopeDag();
+    const [topScopeGraphData, fileGraphData] = await Promise.all([
+      await depGraph.getFileDepDag(),
+      await depGraph.getTopScopeDag(),
+    ]);
 
     // vscode.window.showInformationMessage('done');
-    return graphData;
+    return {
+      topScopeGraphData,
+      fileGraphData,
+    };
   } catch (error) {
     console.log(error);
     vscode.window.showErrorMessage(error.message);
