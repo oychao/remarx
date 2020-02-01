@@ -4,7 +4,7 @@ import { data } from 'store/index';
 
 import './style.less';
 
-const NODE_HALF_WIDTH = 100 as const;
+const NODE_HALF_WIDTH = 150 as const;
 const NODE_HALF_HEIGHT = 10 as const;
 
 export function App() {

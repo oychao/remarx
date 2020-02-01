@@ -12,6 +12,7 @@
       "PIII",
       "VCMI",
       "dagre",
-      "graphlib"
+      "graphlib",
+      "rankdir"
     ]
 }

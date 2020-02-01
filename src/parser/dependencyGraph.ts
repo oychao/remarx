@@ -10,17 +10,20 @@ import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(rawNodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
+
     g.setGraph({});
     g.setDefaultEdgeLabel(() => ({}));
 
     rawNodes.forEach(node => {
-      g.setNode(node, { label: node, width: 200, height: 20 });
+      g.setNode(node, { label: node, width: 300, height: 20 });
     });
     dependencies.forEach(([from, to]) => {
       g.setEdge(from, to);
     });
 
-    dagre.layout(g);
+    dagre.layout(g, {
+      rankdir: 'LR',
+    });
 
     const nodes = g.nodes().map(n => g.node(n));
     const edges = g.edges().map(e => g.edge(e));
