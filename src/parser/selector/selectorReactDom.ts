@@ -3,9 +3,9 @@ import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescrip
 
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { TopScopeMap } from '../node/logicTopScope';
-import { SelectorHandlerMap, Visitor } from './visitor';
+import { Selector, SelectorHandlerMap } from './selector';
 
-export class VisitorReactDom extends Visitor {
+export class SelectorReactDom extends Selector {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
   public scopeDepMap: TopScopeMap = {};

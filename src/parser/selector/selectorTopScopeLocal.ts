@@ -10,9 +10,9 @@ import { startWithCapitalLetter } from '../../utils';
 import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope } from '../node/logicTopScope';
-import { SelectorHandlerMap, Visitor } from './visitor';
+import { Selector, SelectorHandlerMap } from './selector';
 
-export class VisitorTopScopeLocal extends Visitor {
+export class SelectorTopScopeLocal extends Selector {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
   constructor(program: LogicProgramCommon) {

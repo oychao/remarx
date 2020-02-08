@@ -93,7 +93,7 @@ export class DependencyGraph extends LogicAbstractProgram {
     const queue: TopScopeDepend[] = [];
 
     await LogicTopScope.dfsWalkTopScopeMap(
-      this.program.visitorReactDom.scopeDepMap,
+      this.program.selectorReactDom.scopeDepMap,
       async (dep: TopScopeDepend): Promise<void> => {
         if (dep instanceof LogicTopScope) {
           queue.push(dep);
