@@ -11,11 +11,11 @@ export class DependencyGraph extends LogicAbstractProgram {
   private static calcGraph(rawNodes: string[], dependencies: [string, string][]): GraphView {
     const g = new dagre.graphlib.Graph();
 
-    g.setGraph({});
+    g.setGraph({ rankdir: 'LR' });
     g.setDefaultEdgeLabel(() => ({}));
 
     rawNodes.forEach(node => {
-      g.setNode(node, { label: node, width: 300, height: 20 });
+      g.setNode(node, { label: node, width: 120, height: 40 });
     });
     dependencies.forEach(([from, to]) => {
       g.setEdge(from, to);

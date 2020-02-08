@@ -1,7 +1,5 @@
 import * as React from 'react';
-
-export const NODE_HALF_WIDTH = 150 as const;
-export const NODE_HALF_HEIGHT = 10 as const;
+import { NODE_HALF_HEIGHT, NODE_HALF_WIDTH } from './DepNode';
 
 interface DepEdgeProps {
   edge: DepEdgeModel;

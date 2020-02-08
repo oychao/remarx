@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-export const NODE_HALF_WIDTH = 150 as const;
-export const NODE_HALF_HEIGHT = 10 as const;
+export const NODE_HALF_WIDTH = 60;
+export const NODE_HALF_HEIGHT = 20;
 
 export interface NodeStyle {
   rectFill: string;
