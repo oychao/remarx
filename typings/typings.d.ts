@@ -1,11 +1,5 @@
 declare interface GraphView {
-  nodes: dagre.Node[];
-  edges: dagre.GraphEdge[];
-}
-
-// file dependency dag
-declare interface FileDependencyDag {
-  files: string[];
+  nodes: string[];
   dependencies: [string, string][];
 }
 

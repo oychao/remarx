@@ -1,5 +1,3 @@
-import * as dagre from 'dagre';
-
 import { config } from '../config';
 import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
@@ -8,33 +6,6 @@ import { LogicProgramEntrance } from './node/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
-  private static calcGraph(rawNodes: string[], dependencies: [string, string][]): GraphView {
-    const g = new dagre.graphlib.Graph();
-
-    g.setGraph({ rankdir: 'LR' });
-    g.setDefaultEdgeLabel(() => ({}));
-
-    rawNodes.forEach(node => {
-      g.setNode(node, { label: node, width: 120, height: 40 });
-    });
-    dependencies.forEach(([from, to]) => {
-      g.setEdge(from, to);
-    });
-
-    dagre.layout(g, {
-      rankdir: 'LR',
-    });
-
-    const nodes = g.nodes().map(n => g.node(n));
-    const edges = g.edges().map(e => g.edge(e));
-
-    nodes.forEach(node => {
-      node.label = (node.label as string).replace(config.rootDir, '.');
-    });
-
-    return { nodes, edges };
-  }
-
   protected astNode: ImplementedNode | undefined;
 
   protected fullPath: string;
@@ -76,7 +47,10 @@ export class DependencyGraph extends LogicAbstractProgram {
       currProgram = queue.pop() as LogicProgramCommon;
     }
 
-    return DependencyGraph.calcGraph(Array.from(files), dependencies);
+    return {
+      nodes: Array.from(files),
+      dependencies,
+    };
   }
 
   /**
@@ -125,6 +99,9 @@ export class DependencyGraph extends LogicAbstractProgram {
       currScope = queue.pop() as LogicTopScope;
     }
 
-    return DependencyGraph.calcGraph(Array.from(scopes), dependencies);
+    return {
+      nodes: Array.from(scopes),
+      dependencies,
+    };
   }
 }

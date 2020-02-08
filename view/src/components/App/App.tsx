@@ -7,31 +7,31 @@ import { data } from 'store/index';
 
 import './style.less';
 
-function determineTopScopeStyle(node: DepNodeModel): NodeStyle {
+function determineTopScopeStyle(node: dagre.Node): NodeStyle {
   const lastFlag = node.label.split('#').pop();
   if (startWithCapitalLetter(lastFlag)) {
     return {
       rectFill: 'lightblue',
-      textFill: 'grey',
+      textFill: 'blue',
     };
   } else {
     return {
       rectFill: 'lightgreen',
-      textFill: 'grey',
+      textFill: 'blue',
     };
   }
 }
 
-function determineFileStyle(node: DepNodeModel): NodeStyle {
-  if (node.label.charAt(0) === '.') {
+function determineFileStyle(node: dagre.Node): NodeStyle {
+  if (node.label.charAt(0) === '/') {
     return {
       rectFill: 'orange',
-      textFill: 'grey',
+      textFill: 'blue',
     };
   } else {
     return {
       rectFill: 'pink',
-      textFill: 'grey',
+      textFill: 'blue',
     };
   }
 }

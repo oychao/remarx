@@ -9,8 +9,8 @@ export interface NodeStyle {
 }
 
 interface DepNodeProps {
-  node: DepNodeModel;
-  determineStyle?: (node: DepNodeModel) => NodeStyle;
+  node: dagre.Node;
+  determineStyle?: (node: dagre.Node) => NodeStyle;
 }
 
 /**
