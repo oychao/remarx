@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import * as hooks from '../../hooks';
-import { useToggle } from '../../hooks';
 import { ACTION_CREATE, ACTION_UPDATE_CREATING_FORM, StoreDispatchContext } from '../../store';
 
 /**
