@@ -5,9 +5,9 @@ import * as path from 'path';
 import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
-import { VisitorFileDependency } from '../visitor/visitorFileDependency';
-import { VisitorTopScopeImports } from '../visitor/visitorTopScopeImports';
-import { VisitorTopScopeLocal } from '../visitor/visitorTopScopeLocal';
+import { SelectorFileDependency } from '../selector/selectorFileDependency';
+import { SelectorTopScopeImports } from '../selector/selectorTopScopeImports';
+import { SelectorTopScopeLocal } from '../selector/selectorTopScopeLocal';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
 import { LogicTopScope, TopScopeMap } from './logicTopScope';
@@ -39,10 +39,10 @@ export class LogicProgramCommon extends LogicAbstractProgram {
 
   public fullPath: string;
 
-  // visitors
-  public visitorTopScopeLocal: VisitorTopScopeLocal = new VisitorTopScopeLocal(this);
-  public visitorFileDependency: VisitorFileDependency = new VisitorFileDependency(this, this.dirPath);
-  public visitorTopScopeImports: VisitorTopScopeImports = new VisitorTopScopeImports(this);
+  // selectors
+  public selectorTopScopeLocal: SelectorTopScopeLocal = new SelectorTopScopeLocal(this);
+  public selectorFileDependency: SelectorFileDependency = new SelectorFileDependency(this, this.dirPath);
+  public selectorTopScopeImports: SelectorTopScopeImports = new SelectorTopScopeImports(this);
 
   // import scopes
   public imports: TopScopeMap = {};
@@ -89,13 +89,13 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     this.astNode.logicNode = this;
 
     // parse local top block scope
-    await this.astNode.accept(this.visitorTopScopeLocal);
+    await this.astNode.accept(this.selectorTopScopeLocal);
 
     // parse file dependencies
-    await this.astNode.accept(this.visitorFileDependency);
+    await this.astNode.accept(this.selectorFileDependency);
 
     // parse top block scope dependencies
-    await this.astNode.accept(this.visitorTopScopeImports);
+    await this.astNode.accept(this.selectorTopScopeImports);
 
     // mark as initialized
     this.initialized = true;

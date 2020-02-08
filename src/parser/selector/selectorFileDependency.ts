@@ -13,9 +13,9 @@ import { fileExists } from '../../utils';
 import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope } from '../node/logicTopScope';
-import { SelectorHandlerMap, Visitor } from './visitor';
+import { Selector, SelectorHandlerMap } from './selector';
 
-export class VisitorFileDependency extends Visitor {
+export class SelectorFileDependency extends Selector {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
   protected selectorHandlerMap: SelectorHandlerMap[];
@@ -83,8 +83,8 @@ export class VisitorFileDependency extends Visitor {
       let i = 0;
 
       // determine readable target module full path;
-      while (!isFile && i < VisitorFileDependency.POSSIBLE_FILE_SUFFIXES.length) {
-        possiblePath = `${originPath}${VisitorFileDependency.POSSIBLE_FILE_SUFFIXES[i++]}`;
+      while (!isFile && i < SelectorFileDependency.POSSIBLE_FILE_SUFFIXES.length) {
+        possiblePath = `${originPath}${SelectorFileDependency.POSSIBLE_FILE_SUFFIXES[i++]}`;
         isFile = await fileExists(possiblePath);
       }
 

@@ -1,8 +1,8 @@
-import { VisitorReactDom } from '../visitor/visitorReactDom';
+import { SelectorReactDom } from '../selector/selectorReactDom';
 import { LogicProgramCommon } from './logicProgramCommon';
 
 export class LogicProgramEntrance extends LogicProgramCommon {
-  public visitorReactDom: VisitorReactDom = new VisitorReactDom(this);
+  public selectorReactDom: SelectorReactDom = new SelectorReactDom(this);
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -10,7 +10,7 @@ export class LogicProgramEntrance extends LogicProgramCommon {
 
   public async parse(): Promise<void> {
     await super.parse();
-    await this.astNode?.accept(this.visitorReactDom);
-    // console.log(Array.from(this.visitorReactDom.compTagNames));
+    await this.astNode?.accept(this.selectorReactDom);
+    // console.log(Array.from(this.selectorReactDom.compTagNames));
   }
 }

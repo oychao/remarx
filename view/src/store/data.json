@@ -1,323 +1,211 @@
 {
-  "nodes": [
-    {
-      "label": "./index.tsx#ReactDOM",
-      "width": 200,
-      "height": 20,
-      "x": 542.5,
-      "y": 10
-    },
-    {
-      "label": "./src/components/App/App.tsx#App",
-      "width": 200,
-      "height": 20,
-      "x": 542.5,
-      "y": 80
-    },
-    {
-      "label": "react#useReducer",
-      "width": 200,
-      "height": 20,
-      "x": 100,
-      "y": 150
-    },
-    {
-      "label": "react#useMemo",
-      "width": 200,
-      "height": 20,
-      "x": 350,
-      "y": 150
-    },
-    {
-      "label": "./src/components/List/List.tsx#List",
-      "width": 200,
-      "height": 20,
-      "x": 600,
-      "y": 150
-    },
-    {
-      "label": "react#useContext",
-      "width": 200,
-      "height": 20,
-      "x": 610,
-      "y": 220
-    },
-    {
-      "label": "./src/components/Form/EditForm.tsx#EditForm",
-      "width": 200,
-      "height": 20,
-      "x": 850,
-      "y": 150
-    },
-    {
-      "label": "react#useCallback",
-      "width": 200,
-      "height": 20,
-      "x": 1130,
-      "y": 290
-    },
-    {
-      "label": "./src/components/Form/CreateForm.tsx#CreateForm",
-      "width": 200,
-      "height": 20,
-      "x": 1100,
-      "y": 150
-    },
-    {
-      "label": "./src/hooks/index.ts#useToggle",
-      "width": 200,
-      "height": 20,
-      "x": 1042.5,
-      "y": 220
-    },
-    {
-      "label": "react#useState",
-      "width": 200,
-      "height": 20,
-      "x": 772.5,
-      "y": 290
-    }
-  ],
-  "edges": [
-    {
-      "points": [
-        {
-          "x": 542.5,
-          "y": 20
-        },
-        {
-          "x": 542.5,
-          "y": 45
-        },
-        {
-          "x": 542.5,
-          "y": 70
-        }
+  "topScopeGraphData": {
+    "nodes": [
+      "/Users/ouyangchao/Code/remarx/demo/index.tsx#ReactDOM",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+      "react#useReducer",
+      "react#useMemo",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx#List",
+      "react#useContext",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx#EditForm",
+      "react#useCallback",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm",
+      "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts#useToggle",
+      "react#useState"
+    ],
+    "dependencies": [
+      [
+        "/Users/ouyangchao/Code/remarx/demo/index.tsx#ReactDOM",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+        "react#useReducer"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+        "react#useMemo"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx#EditForm"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx#App",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx#List"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx#List",
+        "react#useContext"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx#EditForm",
+        "react#useContext"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx#EditForm",
+        "react#useCallback"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm",
+        "react#useContext"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm",
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts#useToggle"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx#CreateForm",
+        "react#useCallback"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts#useToggle",
+        "react#useState"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts#useToggle",
+        "react#useCallback"
       ]
-    },
-    {
-      "points": [
-        {
-          "x": 442.5,
-          "y": 87.909604519774
-        },
-        {
-          "x": 100,
-          "y": 115
-        },
-        {
-          "x": 100,
-          "y": 140
-        }
+    ]
+  },
+  "fileGraphData": {
+    "nodes": [
+      "/Users/ouyangchao/Code/remarx/demo/index.tsx",
+      "react",
+      "react-dom",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/App/index.ts",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/List/index.ts",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx",
+      "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+      "immer",
+      "/Users/ouyangchao/Code/remarx/demo/src/common/index.tsx",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/Form/index.ts",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx",
+      "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx",
+      "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts"
+    ],
+    "dependencies": [
+      [
+        "/Users/ouyangchao/Code/remarx/demo/index.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/index.tsx",
+        "react-dom"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/index.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/index.ts",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/App/App.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/index.ts",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/common/index.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/List/List.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "immer"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/common/index.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/index.ts",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/index.ts",
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/EditForm.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "immer"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/components/Form/CreateForm.tsx",
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "immer"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "immer"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",
+        "react"
       ]
-    },
-    {
-      "points": [
-        {
-          "x": 487.5,
-          "y": 90
-        },
-        {
-          "x": 350,
-          "y": 115
-        },
-        {
-          "x": 350,
-          "y": 140
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 642.5,
-          "y": 86.27802690582959
-        },
-        {
-          "x": 1100,
-          "y": 115
-        },
-        {
-          "x": 1100,
-          "y": 140
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 630.3571428571429,
-          "y": 90
-        },
-        {
-          "x": 850,
-          "y": 115
-        },
-        {
-          "x": 850,
-          "y": 140
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 558.9285714285714,
-          "y": 90
-        },
-        {
-          "x": 600,
-          "y": 115
-        },
-        {
-          "x": 600,
-          "y": 140
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 600,
-          "y": 160
-        },
-        {
-          "x": 600,
-          "y": 185
-        },
-        {
-          "x": 607.1428571428571,
-          "y": 210
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 817.1428571428571,
-          "y": 160
-        },
-        {
-          "x": 735,
-          "y": 185
-        },
-        {
-          "x": 645.7142857142857,
-          "y": 210
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 866.4285714285714,
-          "y": 160
-        },
-        {
-          "x": 907.5,
-          "y": 185
-        },
-        {
-          "x": 907.5,
-          "y": 220
-        },
-        {
-          "x": 907.5,
-          "y": 255
-        },
-        {
-          "x": 1066.4285714285713,
-          "y": 280
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 1012.1428571428571,
-          "y": 160
-        },
-        {
-          "x": 792.5,
-          "y": 185
-        },
-        {
-          "x": 662.1428571428571,
-          "y": 210
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 1083.5714285714287,
-          "y": 160
-        },
-        {
-          "x": 1042.5,
-          "y": 185
-        },
-        {
-          "x": 1042.5,
-          "y": 210
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 1122.142857142857,
-          "y": 160
-        },
-        {
-          "x": 1177.5,
-          "y": 185
-        },
-        {
-          "x": 1177.5,
-          "y": 220
-        },
-        {
-          "x": 1177.5,
-          "y": 255
-        },
-        {
-          "x": 1143.5714285714287,
-          "y": 280
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 965.3571428571429,
-          "y": 230
-        },
-        {
-          "x": 772.5,
-          "y": 255
-        },
-        {
-          "x": 772.5,
-          "y": 280
-        }
-      ]
-    },
-    {
-      "points": [
-        {
-          "x": 1086.7857142857142,
-          "y": 230
-        },
-        {
-          "x": 1197.5,
-          "y": 255
-        },
-        {
-          "x": 1149.2857142857142,
-          "y": 280
-        }
-      ]
-    }
-  ]
+    ]
+  }
 }

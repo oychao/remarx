@@ -14,9 +14,9 @@ import {
 import { startWithCapitalLetter } from '../../utils';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../node/logicTopScope';
-import { SelectorHandlerMap, Visitor } from './visitor';
+import { Selector, SelectorHandlerMap } from './selector';
 
-export class VisitorTopScopeImports extends Visitor {
+export class SelectorTopScopeImports extends Selector {
   protected selectorHandlerMap: SelectorHandlerMap[];
 
   private currWorkingScope: LogicTopScope | undefined;

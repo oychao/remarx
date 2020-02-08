@@ -16,10 +16,10 @@ export type SelectorHandlerMap = {
 };
 
 /**
- * abstract visitor, supply a common visit method, every concrete ast node which accept visitor instance
- * would be visited by specific method of corresponding decent concrete visitor.
+ * abstract selector, supply a common visit method, every concrete ast node which accept selector instance
+ * would be visited by specific method of corresponding decent concrete selector.
  */
-export abstract class Visitor {
+export abstract class Selector {
   protected program: LogicProgramCommon;
 
   protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];

@@ -50,6 +50,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "connected-react-router": "^6.3.2",
+    "dagre": "^0.8.5",
     "history": "^4.9.0",
     "immer": "^2.1.4",
     "react": "^16.8.6",
