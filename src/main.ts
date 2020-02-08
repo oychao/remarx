@@ -24,7 +24,7 @@ export async function parseProject(): Promise<
     const depGraph = new DependencyGraph(enterPath);
     await depGraph.parse();
 
-    const [topScopeGraphData, fileGraphData] = await Promise.all([
+    const [fileGraphData, topScopeGraphData] = await Promise.all([
       await depGraph.getFileDepDag(),
       await depGraph.getTopScopeDag(),
     ]);
