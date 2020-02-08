@@ -19,11 +19,14 @@ interface DepNodeProps {
 export const DepNode = ({ node, determineStyle = () => ({ rectFill: 'grey', textFill: 'orange' }) }: DepNodeProps) => {
   const { x, y, height, width, label } = node;
   const nodeStyle = determineStyle(node);
+
+  const showName = React.useMemo(() => label.split('/').pop(), [label]);
+
   return (
     <g>
       <rect x={x} y={y} height={height} width={width} style={{ fill: nodeStyle.rectFill }} />
       <text x={x} y={y + NODE_HALF_HEIGHT * 2} style={{ fill: nodeStyle.textFill }}>
-        {label}
+        {showName}
       </text>
     </g>
   );
