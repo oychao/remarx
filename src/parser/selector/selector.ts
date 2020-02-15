@@ -15,12 +15,12 @@ export type SelectorHandlerMap = {
   handler: NodeHandler;
 };
 
-export enum SelectorRuleTokens {
-  RuleChild = 'RuleChild',
-  RuleDescent = 'RuleDescent',
-  RuleLoop = 'RuleLoop',
-  RuleScopeLeft = 'RuleScopeLeft',
-  RuleScopeRight = 'RuleScopeRight',
+export enum SelectorToken {
+  KwChild = '__KwChild',
+  KwDescent = '__KwDescent',
+  KwLoop = '__KwLoop',
+  KwScopeLeft = '__KwScopeLeft',
+  KwScopeRight = '__KwScopeRight',
 }
 
 /**
@@ -28,32 +28,31 @@ export enum SelectorRuleTokens {
  * would be visited by specific method of corresponding decent concrete selector.
  */
 export abstract class Selector {
-  public static parseSelectorString(selector: string): Array<AST_NODE_TYPES | SelectorRuleTokens> {
-    const strTokens = selector.split(/\s{1,}/);
-    const ret: Array<AST_NODE_TYPES | SelectorRuleTokens> = [];
-    for (let i = 0; i < strTokens.length; i++) {
-      const currStrToken = strTokens[i];
-      const currToken = Selector.abbrs[currStrToken] || Selector.selectorKwRules[currStrToken];
-      ret.push(currToken);
-
-      const nextStrToken = strTokens[i + 1];
-      if (!nextStrToken) {
-        continue;
-      }
-
-      if (Selector.abbrs[currStrToken] && Selector.abbrs[nextStrToken]) {
-        ret.push(SelectorRuleTokens.RuleDescent);
-      }
-    }
-    return ret;
+  public static parseSelectorString(selector: string): Array<AST_NODE_TYPES | SelectorToken> {
+    return [...selector.trim().matchAll(/(>|L:|\(|\)|[a-zA-Z]+|\s+)/g)]
+      .map(m => {
+        const strToken = m[0].replace(/\s{1,}/, ' ');
+        return Selector.abbrs[strToken] || Selector.selectorKwKws[strToken];
+      })
+      .filter((token: AST_NODE_TYPES | SelectorToken, idx, arr) => {
+        if (!token) {
+          return false;
+        }
+        if (SelectorToken.KwDescent !== token) {
+          return true;
+        }
+        const prevToken = arr[idx - 1] || '';
+        const nextToken = arr[idx + 1] || '';
+        return prevToken.slice(0, 2) !== '__' && nextToken.slice(0, 2) !== '__';
+      });
   }
 
-  private static readonly selectorKwRules: { [key: string]: SelectorRuleTokens } = {
-    '>': SelectorRuleTokens.RuleChild,
-    ' ': SelectorRuleTokens.RuleDescent,
-    'L:': SelectorRuleTokens.RuleLoop,
-    '(': SelectorRuleTokens.RuleScopeLeft,
-    ')': SelectorRuleTokens.RuleScopeRight,
+  public static readonly selectorKwKws: { [key: string]: SelectorToken } = {
+    '>': SelectorToken.KwChild,
+    'L:': SelectorToken.KwLoop,
+    '(': SelectorToken.KwScopeLeft,
+    ')': SelectorToken.KwScopeRight,
+    ' ': SelectorToken.KwDescent,
   };
 
   private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
@@ -120,3 +119,5 @@ export abstract class Selector {
     path.pop();
   }
 }
+
+// console.log(Selector.parseSelectorString('p p > p L:(p > p)'));
