@@ -13,7 +13,12 @@
       "VCMI",
       "abbrs",
       "dagre",
+      "esnext",
+      "espower",
       "graphlib",
+      "happypack",
+      "immer",
+      "intelli",
       "rankdir"
     ]
 }
