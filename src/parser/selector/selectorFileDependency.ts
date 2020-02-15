@@ -26,44 +26,42 @@ export class SelectorFileDependency extends Selector {
     super(program);
     this.selectorHandlerMap = [
       {
-        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration],
+        // selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration],
+        selector: 'p > imp_dton',
         handler: this.visitIPath,
       },
-      // {
-      //   selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportNamespaceSpecifier],
-      //   handler: this.visitPIIPath,
-      // },
-      // {
-      //   selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ImportDeclaration, AST_NODE_TYPES.ImportDefaultSpecifier],
-      //   handler: this.visitPII2Path,
-      // },
       {
-        selector: [AST_NODE_TYPES.ExportNamedDeclaration, AST_NODE_TYPES.Literal],
+        // selector: [AST_NODE_TYPES.ExportNamedDeclaration, AST_NODE_TYPES.Literal],
+        selector: 'exp_n_dton > lit',
         handler: this.visitELPath,
       },
       {
-        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportAllDeclaration, AST_NODE_TYPES.Literal],
+        // selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportAllDeclaration, AST_NODE_TYPES.Literal],
+        selector: 'p > exp_a_dton > lit',
         handler: this.visitPELPath,
       },
       {
-        selector: [
-          AST_NODE_TYPES.ExportNamedDeclaration,
-          AST_NODE_TYPES.VariableDeclaration,
-          AST_NODE_TYPES.VariableDeclarator,
-          AST_NODE_TYPES.Identifier,
-        ],
+        // selector: [
+        //   AST_NODE_TYPES.ExportNamedDeclaration,
+        //   AST_NODE_TYPES.VariableDeclaration,
+        //   AST_NODE_TYPES.VariableDeclarator,
+        //   AST_NODE_TYPES.Identifier,
+        // ],
+        selector: 'exp_n_dton > v_dton > v_dtor > idt',
         handler: this.visitEVVPath,
       },
       {
-        selector: [
-          AST_NODE_TYPES.ExportNamedDeclaration,
-          AST_NODE_TYPES.FunctionDeclaration,
-          AST_NODE_TYPES.Identifier,
-        ],
+        // selector: [
+        //   AST_NODE_TYPES.ExportNamedDeclaration,
+        //   AST_NODE_TYPES.FunctionDeclaration,
+        //   AST_NODE_TYPES.Identifier,
+        // ],
+        selector: 'exp_n_dton > f_dton > idt',
         handler: this.visitEVVPath,
       },
       {
-        selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportDefaultDeclaration, AST_NODE_TYPES.Identifier],
+        // selector: [AST_NODE_TYPES.Program, AST_NODE_TYPES.ExportDefaultDeclaration, AST_NODE_TYPES.Identifier],
+        selector: 'p > exp_d_dton > idt',
         handler: this.visitPEIPath,
       },
     ];

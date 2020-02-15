@@ -10,17 +10,19 @@ export type NodeHandler = (
   grantParent: BaseNodeDescendant
 ) => Promise<void>;
 
+export type SelectorExpression = Array<AST_NODE_TYPES | SelectorToken> | string;
+
 export type SelectorHandlerMap = {
-  selector: AST_NODE_TYPES[];
+  selector: SelectorExpression;
   handler: NodeHandler;
 };
 
+// must start with two underscores
 export enum SelectorToken {
   KwChild = '__KwChild',
   KwDescent = '__KwDescent',
-  KwLoop = '__KwLoop',
-  KwScopeLeft = '__KwScopeLeft',
-  KwScopeRight = '__KwScopeRight',
+  KwLoopStart = '__KwLoopStart',
+  KwLoopEnd = '__KwLoopEnd',
 }
 
 /**
@@ -29,7 +31,7 @@ export enum SelectorToken {
  */
 export abstract class Selector {
   public static parseSelectorString(selector: string): Array<AST_NODE_TYPES | SelectorToken> {
-    return [...selector.trim().matchAll(/(>|L:|\(|\)|[a-zA-Z]+|\s+)/g)]
+    return [...selector.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
       .map(m => {
         const strToken = m[0].replace(/\s{1,}/, ' ');
         return Selector.abbrs[strToken] || Selector.selectorKwKws[strToken];
@@ -43,20 +45,40 @@ export abstract class Selector {
         }
         const prevToken = arr[idx - 1] || '';
         const nextToken = arr[idx + 1] || '';
-        return prevToken.slice(0, 2) !== '__' && nextToken.slice(0, 2) !== '__';
+        return !Selector.isSelectorToken(prevToken) && !Selector.isSelectorToken(nextToken);
       });
+  }
+
+  private static isSelectorToken(token: string) {
+    return token.slice(0, 2) === '__';
   }
 
   public static readonly selectorKwKws: { [key: string]: SelectorToken } = {
     '>': SelectorToken.KwChild,
-    'L:': SelectorToken.KwLoop,
-    '(': SelectorToken.KwScopeLeft,
-    ')': SelectorToken.KwScopeRight,
+    'L:(': SelectorToken.KwLoopStart,
+    ')': SelectorToken.KwLoopEnd,
     ' ': SelectorToken.KwDescent,
   };
 
   private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
     p: AST_NODE_TYPES.Program,
+    imp_dton: AST_NODE_TYPES.ImportDeclaration,
+    exp_n_dton: AST_NODE_TYPES.ExportNamedDeclaration,
+    exp_a_dton: AST_NODE_TYPES.ExportAllDeclaration,
+    exp_d_dton: AST_NODE_TYPES.ExportDefaultDeclaration,
+    lit: AST_NODE_TYPES.Literal,
+    idt: AST_NODE_TYPES.Identifier,
+    v_dton: AST_NODE_TYPES.VariableDeclaration,
+    v_dtor: AST_NODE_TYPES.VariableDeclarator,
+    f_dton: AST_NODE_TYPES.FunctionDeclaration,
+    f_exp: AST_NODE_TYPES.FunctionExpression,
+    af_exp: AST_NODE_TYPES.ArrowFunctionExpression,
+    cl: AST_NODE_TYPES.CallExpression,
+    jsx_ele: AST_NODE_TYPES.JSXElement,
+    jsx_o_ele: AST_NODE_TYPES.JSXOpeningElement,
+    jsx_mem_exp: AST_NODE_TYPES.JSXMemberExpression,
+    jsx_idt: AST_NODE_TYPES.JSXIdentifier,
+    blk: AST_NODE_TYPES.BlockStatement,
   };
 
   protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
@@ -67,20 +89,60 @@ export abstract class Selector {
     this.program = program;
   }
 
-  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
+  private matchSelectorsNovel(path: ImplementedNode[]): NodeHandler | undefined {
     for (let i = 0; i < this.selectorHandlerMap.length; i++) {
       const { selector, handler } = this.selectorHandlerMap[i];
-      let j = selector.length - 1;
+      const selectorTokens = typeof selector === 'string' ? Selector.parseSelectorString(selector) : [...selector];
+      let j = selectorTokens.length - 1;
       let k = path.length - 1;
-      let currSelector = selector[j];
+      let currNodeToken = selectorTokens[j];
+      let upLevelSelectorToken = selectorTokens[--j];
       let currPathNode = path[k];
       let jumpToEnd = false;
-      while (currSelector && currPathNode) {
-        if (currSelector !== currPathNode.type) {
+      while (currNodeToken && currPathNode) {
+        if (currNodeToken !== currPathNode.type) {
           jumpToEnd = true;
           break;
         }
-        currSelector = selector[--j];
+        currNodeToken = selectorTokens[--j];
+        upLevelSelectorToken = selectorTokens[--j];
+        currPathNode = path[--k];
+
+        // TODO implement selector token logic
+        switch (upLevelSelectorToken) {
+          case SelectorToken.KwChild:
+            break;
+          case SelectorToken.KwDescent:
+            break;
+          default:
+            break;
+        }
+      }
+      if (jumpToEnd) {
+        continue;
+      }
+      if (j < 0) {
+        return handler;
+      }
+    }
+    return undefined;
+  }
+
+  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
+    for (let i = 0; i < this.selectorHandlerMap.length; i++) {
+      const { selector, handler } = this.selectorHandlerMap[i];
+      const selectorTokens = typeof selector === 'string' ? Selector.parseSelectorString(selector) : selector;
+      let j = selectorTokens.length - 1;
+      let k = path.length - 1;
+      let currToken = selectorTokens[j];
+      let currPathNode = path[k];
+      let jumpToEnd = false;
+      while (currToken && currPathNode) {
+        if (currToken !== currPathNode.type) {
+          jumpToEnd = true;
+          break;
+        }
+        currToken = selectorTokens[--j];
         currPathNode = path[--k];
       }
       if (jumpToEnd) {
@@ -95,7 +157,7 @@ export abstract class Selector {
 
   public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
     path.push(node);
-    const handler = this.matchSelectors(path);
+    const handler = this.matchSelectorsNovel(path);
 
     if (handler) {
       await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
