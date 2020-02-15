@@ -19,21 +19,14 @@ export class SelectorTopScopeLocal extends Selector {
     super(program);
     this.selectorHandlerMap = [
       {
-        // selector: [AST_NODE_TYPES.FunctionDeclaration, AST_NODE_TYPES.BlockStatement],
         selector: 'f_dton > blk',
         handler: this.visitFBPath,
       },
       {
-        // selector: [AST_NODE_TYPES.VariableDeclarator, AST_NODE_TYPES.FunctionExpression, AST_NODE_TYPES.BlockStatement],
         selector: 'v_dtor > f_exp > blk',
         handler: this.visitFBPath,
       },
       {
-        // selector: [
-        //   AST_NODE_TYPES.VariableDeclarator,
-        //   AST_NODE_TYPES.ArrowFunctionExpression,
-        //   AST_NODE_TYPES.BlockStatement,
-        // ],
         selector: 'v_dtor > af_exp > blk',
         handler: this.visitFBPath,
       },

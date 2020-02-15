@@ -128,33 +128,6 @@ export abstract class Selector {
     return undefined;
   }
 
-  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
-    for (let i = 0; i < this.selectorHandlerMap.length; i++) {
-      const { selector, handler } = this.selectorHandlerMap[i];
-      const selectorTokens = typeof selector === 'string' ? Selector.parseSelectorString(selector) : selector;
-      let j = selectorTokens.length - 1;
-      let k = path.length - 1;
-      let currToken = selectorTokens[j];
-      let currPathNode = path[k];
-      let jumpToEnd = false;
-      while (currToken && currPathNode) {
-        if (currToken !== currPathNode.type) {
-          jumpToEnd = true;
-          break;
-        }
-        currToken = selectorTokens[--j];
-        currPathNode = path[--k];
-      }
-      if (jumpToEnd) {
-        continue;
-      }
-      if (j === -1) {
-        return handler;
-      }
-    }
-    return undefined;
-  }
-
   public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
     path.push(node);
     const handler = this.matchSelectorsNovel(path);

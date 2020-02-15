@@ -14,17 +14,10 @@ export class SelectorReactDom extends Selector {
     super(program);
     this.selectorHandlerMap = [
       {
-        // selector: [AST_NODE_TYPES.JSXElement, AST_NODE_TYPES.JSXOpeningElement, AST_NODE_TYPES.JSXIdentifier],
         selector: 'jsx_ele > jsx_o_ele > jsx_idt',
         handler: this.handleJJJPath,
       },
       {
-        // selector: [
-        //   AST_NODE_TYPES.JSXElement,
-        //   AST_NODE_TYPES.JSXOpeningElement,
-        //   AST_NODE_TYPES.JSXMemberExpression,
-        //   AST_NODE_TYPES.JSXIdentifier,
-        // ],
         selector: 'jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt',
         handler: this.handleJJJJPath,
       },
