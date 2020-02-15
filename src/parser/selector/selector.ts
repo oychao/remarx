@@ -15,14 +15,54 @@ export type SelectorHandlerMap = {
   handler: NodeHandler;
 };
 
+export enum SelectorRuleTokens {
+  RuleChild = 'RuleChild',
+  RuleDescent = 'RuleDescent',
+  RuleLoop = 'RuleLoop',
+  RuleScopeLeft = 'RuleScopeLeft',
+  RuleScopeRight = 'RuleScopeRight',
+}
+
 /**
  * abstract selector, supply a common visit method, every concrete ast node which accept selector instance
  * would be visited by specific method of corresponding decent concrete selector.
  */
 export abstract class Selector {
-  protected program: LogicProgramCommon;
+  public static parseSelectorString(selector: string): Array<AST_NODE_TYPES | SelectorRuleTokens> {
+    const strTokens = selector.split(/\s{1,}/);
+    const ret: Array<AST_NODE_TYPES | SelectorRuleTokens> = [];
+    for (let i = 0; i < strTokens.length; i++) {
+      const currStrToken = strTokens[i];
+      const currToken = Selector.abbrs[currStrToken] || Selector.selectorKwRules[currStrToken];
+      ret.push(currToken);
+
+      const nextStrToken = strTokens[i + 1];
+      if (!nextStrToken) {
+        continue;
+      }
+
+      if (Selector.abbrs[currStrToken] && Selector.abbrs[nextStrToken]) {
+        ret.push(SelectorRuleTokens.RuleDescent);
+      }
+    }
+    return ret;
+  }
+
+  private static readonly selectorKwRules: { [key: string]: SelectorRuleTokens } = {
+    '>': SelectorRuleTokens.RuleChild,
+    ' ': SelectorRuleTokens.RuleDescent,
+    'L:': SelectorRuleTokens.RuleLoop,
+    '(': SelectorRuleTokens.RuleScopeLeft,
+    ')': SelectorRuleTokens.RuleScopeRight,
+  };
+
+  private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
+    p: AST_NODE_TYPES.Program,
+  };
 
   protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
+
+  protected program: LogicProgramCommon;
 
   constructor(program: LogicProgramCommon) {
     this.program = program;
