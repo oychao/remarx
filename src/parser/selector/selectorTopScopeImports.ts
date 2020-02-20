@@ -32,7 +32,7 @@ export class SelectorTopScopeImports extends Selector {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async visitFBPath(
+  protected async visitPath1(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -77,7 +77,7 @@ export class SelectorTopScopeImports extends Selector {
    * Foo.useFoo();
    */
   @selector('cl')
-  protected async handleCPath(path: any[], node: CallExpression): Promise<void> {
+  protected async visitPath2(path: any[], node: CallExpression): Promise<void> {
     const nodes: MemberExpression[] = [];
     let currCallee = node.callee as MemberExpression | Identifier;
     while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
@@ -111,7 +111,7 @@ export class SelectorTopScopeImports extends Selector {
    * <MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
+  protected async visitPath3(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
       this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
@@ -123,7 +123,7 @@ export class SelectorTopScopeImports extends Selector {
    * <Common.MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async visitPath4(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }

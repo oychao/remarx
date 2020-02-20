@@ -63,7 +63,7 @@ export class SelectorFileDependency extends Selector {
    * import * as Foo from './foo';
    */
   @selector('p > imp_dton')
-  protected async visitIPath(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
+  protected async visitPath1(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
@@ -97,7 +97,7 @@ export class SelectorFileDependency extends Selector {
    * handle pattern:
    * import * as Foo from 'foo';
    */
-  public async visitPIIPath(path: ImplementedNode[], node: ImportNamespaceSpecifier): Promise<void> {
+  public async visitPath2(path: ImplementedNode[], node: ImportNamespaceSpecifier): Promise<void> {
     // {
     //   "type": "ImportNamespaceSpecifier",
     //   "local": {
@@ -111,7 +111,7 @@ export class SelectorFileDependency extends Selector {
    * handle pattern:
    * import Foo from 'foo';
    */
-  public async visitPII2Path(path: ImplementedNode[], node: ImportDefaultSpecifier): Promise<void> {
+  public async visitPath3(path: ImplementedNode[], node: ImportDefaultSpecifier): Promise<void> {
     // {
     //   "type": "ImportDefaultSpecifier",
     //   "local": {
@@ -126,7 +126,7 @@ export class SelectorFileDependency extends Selector {
    * export { default } from './xxx';
    */
   @selector('exp_n_dton > lit')
-  protected async visitELPath(path: ImplementedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
+  protected async visitPath4(path: ImplementedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
@@ -150,7 +150,7 @@ export class SelectorFileDependency extends Selector {
    * export * from './xxx';
    */
   @selector('p > exp_a_dton > lit')
-  protected async visitPELPath(path: ImplementedNode[], node: Literal): Promise<void> {
+  protected async visitPath5(path: ImplementedNode[], node: Literal): Promise<void> {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
@@ -173,7 +173,7 @@ export class SelectorFileDependency extends Selector {
    */
   @selector('exp_n_dton > f_dton > idt')
   @selector('exp_n_dton > v_dton > v_dtor > idt')
-  protected async visitEVVPath(path: ImplementedNode[], node: Identifier): Promise<void> {
+  protected async visitPath6(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
     const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
@@ -186,7 +186,7 @@ export class SelectorFileDependency extends Selector {
    * export default foo;
    */
   @selector('p > exp_d_dton > idt')
-  protected async visitPEIPath(path: ImplementedNode[], node: Identifier): Promise<void> {
+  protected async visitPath7(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {

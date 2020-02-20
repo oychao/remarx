@@ -13,7 +13,7 @@ export class SelectorReactDom extends Selector {
   }
 
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
+  protected async visitPath1(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
     if (depScope) {
@@ -22,7 +22,7 @@ export class SelectorReactDom extends Selector {
   }
 
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async visitPath2(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }

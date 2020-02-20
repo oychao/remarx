@@ -26,7 +26,7 @@ export class SelectorTopScopeLocal extends Selector {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async visitFBPath(
+  protected async visitPath1(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
