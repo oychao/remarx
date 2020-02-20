@@ -41,34 +41,42 @@ export async function parseProject(): Promise<
   }
 }
 
+let panel: vscode.WebviewPanel | undefined;
+
 export async function main(): Promise<void> {
   await readConf();
 
-  // open panel
-  const panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
-    enableScripts: true,
-  });
+  if (!panel) {
+    // open panel
+    panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
+      enableScripts: true,
+    });
 
-  panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
-    switch (action) {
-      case 'OpenFile':
-        vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
-        break;
-      default:
-        break;
-    }
-  });
+    panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
+      switch (action) {
+        case 'OpenFile':
+          vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
+          break;
+        default:
+          break;
+      }
+    });
+    panel.onDidDispose(() => {
+      panel = undefined;
+    });
+  }
+  if (panel) {
+    const graphData = await parseProject();
 
-  const graphData = await parseProject();
+    await fs.promises.writeFile(
+      path.resolve(__projectRoot, 'view', 'src', 'store', 'data.json'),
+      JSON.stringify(graphData, null, 2)
+    );
 
-  await fs.promises.writeFile(
-    path.resolve(__projectRoot, 'view', 'src', 'store', 'data.json'),
-    JSON.stringify(graphData, null, 2)
-  );
-
-  // update panel view
-  const viewSource = await request('http://localhost:9551/');
-  panel.webview.html = viewSource;
+    // update panel view
+    const viewSource = await request('http://localhost:9551/');
+    panel.webview.html = viewSource;
+  }
 
   // purge all cached programs
   LogicProgramCommon.purge();
