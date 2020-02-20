@@ -13,12 +13,12 @@ function determineTopScopeStyle(node: dagre.Node): NodeStyle {
   if (startWithCapitalLetter(lastFlag)) {
     return {
       rectFill: 'lightblue',
-      textFill: 'blue',
+      textFill: '#555',
     };
   } else {
     return {
       rectFill: 'lightgreen',
-      textFill: 'blue',
+      textFill: '#555',
     };
   }
 }
@@ -27,12 +27,12 @@ function determineFileStyle(node: dagre.Node): NodeStyle {
   if (node.label.charAt(0) === '/') {
     return {
       rectFill: 'orange',
-      textFill: 'blue',
+      textFill: '#555',
     };
   } else {
     return {
       rectFill: 'pink',
-      textFill: 'blue',
+      textFill: '#555',
     };
   }
 }
@@ -42,14 +42,42 @@ export function App() {
     openFile(path);
   }, []);
 
-  return (
-    <div className='app'>
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const selectedView = React.useMemo(() => {
+    const options = [
       <DepGraph
         graphModel={data.default.fileGraphData}
         determineStyle={determineFileStyle}
         onNodeClick={handleFileDepNodeClick}
-      />
-      <DepGraph graphModel={data.default.topScopeGraphData} determineStyle={determineTopScopeStyle} />
+      />,
+      <DepGraph graphModel={data.default.topScopeGraphData} determineStyle={determineTopScopeStyle} />,
+    ];
+    return options[selectedIndex];
+  }, [selectedIndex]);
+
+  return (
+    <div className='app'>
+      <header className='app__header'>
+        <input
+          id='select-index-1'
+          type='radio'
+          name='select-index'
+          onChange={() => setSelectedIndex(0)}
+          checked={0 === selectedIndex}
+        />
+        <label htmlFor='select-index-1'>File Dependencies</label>
+        <br />
+        <input
+          id='select-index-2'
+          type='radio'
+          name='select-index'
+          onChange={() => setSelectedIndex(1)}
+          checked={1 === selectedIndex}
+        />
+        <label htmlFor='select-index-2'>Component & Hook Dependencies</label>
+      </header>
+      <div className='app_main'>{selectedView}</div>
     </div>
   );
 }

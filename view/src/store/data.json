@@ -74,6 +74,10 @@
       [
         "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts#useToggle",
         "/Users/ouyangchao/Code/remarx/demo/src/hooks/test.ts#useTest"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/test.ts#useTest",
+        "react#useState"
       ]
     ]
   },
@@ -207,6 +211,10 @@
       [
         "/Users/ouyangchao/Code/remarx/demo/src/hooks/index.ts",
         "/Users/ouyangchao/Code/remarx/demo/src/hooks/test.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/demo/src/hooks/test.ts",
+        "react"
       ],
       [
         "/Users/ouyangchao/Code/remarx/demo/src/store/index.ts",

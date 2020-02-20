@@ -14,7 +14,7 @@ export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphPr
   const daGraph = calcGraph(graphModel);
 
   return (
-    <svg style={{ display: 'block', height: '50%', width: '100%' }}>
+    <svg style={{ display: 'block', height: '100%', width: '100%' }}>
       {daGraph.nodes.map(node => (
         <DepNode key={node.label} node={node} determineStyle={determineStyle} onNodeClick={onNodeClick} />
       ))}

@@ -25,14 +25,22 @@ export const DepNode = ({
   const { x, y, height, width, label } = node;
   const nodeStyle = determineStyle(node);
 
-  const showName = React.useMemo(() => label.split('/').pop(), [label]);
+  const showName = React.useMemo(() => {
+    const parts = label.split('/');
+    const lastPart = parts.pop();
+    if (lastPart.slice(0, 5) === 'index') {
+      return `${parts.pop()}/${lastPart}`;
+    } else {
+      return lastPart;
+    }
+  }, [label]);
 
   const handleClick: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void = React.useCallback(() => {
     onNodeClick(label.split('#')[0]);
   }, [label]);
 
   return (
-    <g onClick={handleClick}>
+    <g onClick={handleClick} style={{ cursor: 'pointer' }}>
       <rect x={x} y={y} height={height} width={width} style={{ fill: nodeStyle.rectFill }} />
       <text x={x} y={y + NODE_HALF_HEIGHT * 2} style={{ fill: nodeStyle.textFill }}>
         {showName}
