@@ -14,7 +14,7 @@ export type SelectorExpression = Array<AST_NODE_TYPES | SelectorToken> | string;
 
 export type SelectorHandlerMap = {
   selector: SelectorExpression;
-  handler: NodeHandler;
+  handlerName: string;
 };
 
 // must start with two underscores
@@ -81,17 +81,18 @@ export abstract class Selector {
     blk: AST_NODE_TYPES.BlockStatement,
   };
 
-  protected abstract selectorHandlerMap: SelectorHandlerMap[] = [];
-
   protected program: LogicProgramCommon;
 
   constructor(program: LogicProgramCommon) {
     this.program = program;
   }
 
-  private matchSelectorsNovel(path: ImplementedNode[]): NodeHandler | undefined {
-    for (let i = 0; i < this.selectorHandlerMap.length; i++) {
-      const { selector, handler } = this.selectorHandlerMap[i];
+  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
+    const selectorHandlerMap = (this as any).getSelectorHandlerMap ? (this as any).getSelectorHandlerMap() : [];
+
+    for (let i = 0; i < selectorHandlerMap.length; i++) {
+      const { selector, handlerName } = selectorHandlerMap[i];
+      const handler = (this as any)[handlerName];
       const selectorTokens = typeof selector === 'string' ? Selector.parseSelectorString(selector) : [...selector];
       let j = selectorTokens.length - 1;
       let k = path.length - 1;
@@ -122,7 +123,7 @@ export abstract class Selector {
         continue;
       }
       if (j < 0) {
-        return handler;
+        return handler as NodeHandler;
       }
     }
     return undefined;
@@ -130,7 +131,7 @@ export abstract class Selector {
 
   public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
     path.push(node);
-    const handler = this.matchSelectorsNovel(path);
+    const handler = this.matchSelectors(path);
 
     if (handler) {
       await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
@@ -154,5 +155,25 @@ export abstract class Selector {
     path.pop();
   }
 }
+
+const classSelectorMap: { [key: string]: SelectorHandlerMap[] } = {};
+export const selector = function(selectorString: string) {
+  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    if (!classSelectorMap[target.constructor.name]) {
+      classSelectorMap[target.constructor.name] = [];
+    }
+
+    if (!target.getSelectorHandlerMap) {
+      target.getSelectorHandlerMap = function() {
+        return classSelectorMap[target.constructor.name];
+      };
+    }
+
+    classSelectorMap[target.constructor.name].push({
+      selector: selectorString,
+      handlerName: propertyKey,
+    });
+  };
+};
 
 // console.log(Selector.parseSelectorString('p p > p L:(p > p)'));

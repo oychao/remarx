@@ -10,27 +10,11 @@ import { startWithCapitalLetter } from '../../utils';
 import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope } from '../node/logicTopScope';
-import { Selector, SelectorHandlerMap } from './selector';
+import { selector, Selector } from './selector';
 
 export class SelectorTopScopeLocal extends Selector {
-  protected selectorHandlerMap: SelectorHandlerMap[];
-
   constructor(program: LogicProgramCommon) {
     super(program);
-    this.selectorHandlerMap = [
-      {
-        selector: 'f_dton > blk',
-        handler: this.visitFBPath,
-      },
-      {
-        selector: 'v_dtor > f_exp > blk',
-        handler: this.visitFBPath,
-      },
-      {
-        selector: 'v_dtor > af_exp > blk',
-        handler: this.visitFBPath,
-      },
-    ];
   }
 
   /**
@@ -39,7 +23,10 @@ export class SelectorTopScopeLocal extends Selector {
    * const foo = function () {};
    * function foo () {}
    */
-  private async visitFBPath(
+  @selector('f_dton > blk')
+  @selector('v_dtor > f_exp > blk')
+  @selector('v_dtor > af_exp > blk')
+  protected async visitFBPath(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,

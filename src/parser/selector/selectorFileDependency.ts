@@ -13,43 +13,15 @@ import { fileExists } from '../../utils';
 import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope } from '../node/logicTopScope';
-import { Selector, SelectorHandlerMap } from './selector';
+import { selector, Selector } from './selector';
 
 export class SelectorFileDependency extends Selector {
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
-
-  protected selectorHandlerMap: SelectorHandlerMap[];
 
   private dirPath: string;
 
   constructor(program: LogicProgramCommon, dirPath: string) {
     super(program);
-    this.selectorHandlerMap = [
-      {
-        selector: 'p > imp_dton',
-        handler: this.visitIPath,
-      },
-      {
-        selector: 'exp_n_dton > lit',
-        handler: this.visitELPath,
-      },
-      {
-        selector: 'p > exp_a_dton > lit',
-        handler: this.visitPELPath,
-      },
-      {
-        selector: 'exp_n_dton > v_dton > v_dtor > idt',
-        handler: this.visitEVVPath,
-      },
-      {
-        selector: 'exp_n_dton > f_dton > idt',
-        handler: this.visitEVVPath,
-      },
-      {
-        selector: 'p > exp_d_dton > idt',
-        handler: this.visitPEIPath,
-      },
-    ];
     this.dirPath = dirPath;
   }
 
@@ -90,7 +62,8 @@ export class SelectorFileDependency extends Selector {
    * import { Foo } from './foo';
    * import * as Foo from './foo';
    */
-  private async visitIPath(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
+  @selector('p > imp_dton')
+  protected async visitIPath(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
@@ -152,7 +125,8 @@ export class SelectorFileDependency extends Selector {
    * handle pattern:
    * export { default } from './xxx';
    */
-  private async visitELPath(path: ImplementedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
+  @selector('exp_n_dton > lit')
+  protected async visitELPath(path: ImplementedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
@@ -175,7 +149,8 @@ export class SelectorFileDependency extends Selector {
    * handle pattern:
    * export * from './xxx';
    */
-  private async visitPELPath(path: ImplementedNode[], node: Literal): Promise<void> {
+  @selector('p > exp_a_dton > lit')
+  protected async visitPELPath(path: ImplementedNode[], node: Literal): Promise<void> {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
@@ -196,7 +171,9 @@ export class SelectorFileDependency extends Selector {
    * export const foo = ...;
    * export function foo () {}
    */
-  private async visitEVVPath(path: ImplementedNode[], node: Identifier): Promise<void> {
+  @selector('exp_n_dton > f_dton > idt')
+  @selector('exp_n_dton > v_dton > v_dtor > idt')
+  protected async visitEVVPath(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
     const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
@@ -208,7 +185,8 @@ export class SelectorFileDependency extends Selector {
    * handle pattern:
    * export default foo;
    */
-  private async visitPEIPath(path: ImplementedNode[], node: Identifier): Promise<void> {
+  @selector('p > exp_d_dton > idt')
+  protected async visitPEIPath(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope = this.program.localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {

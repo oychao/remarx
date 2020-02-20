@@ -14,41 +14,13 @@ import {
 import { startWithCapitalLetter } from '../../utils';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../node/logicTopScope';
-import { Selector, SelectorHandlerMap } from './selector';
+import { selector, Selector } from './selector';
 
 export class SelectorTopScopeImports extends Selector {
-  protected selectorHandlerMap: SelectorHandlerMap[];
-
   private currWorkingScope: LogicTopScope | undefined;
 
   constructor(program: LogicProgramCommon) {
     super(program);
-    this.selectorHandlerMap = [
-      {
-        selector: 'f_dton > blk',
-        handler: this.visitFBPath,
-      },
-      {
-        selector: 'v_dtor > f_exp > blk',
-        handler: this.visitFBPath,
-      },
-      {
-        selector: 'v_dtor > af_exp > blk',
-        handler: this.visitFBPath,
-      },
-      {
-        selector: 'cl',
-        handler: this.handleCPath,
-      },
-      {
-        selector: 'jsx_ele > jsx_o_ele > jsx_idt',
-        handler: this.handleJJJPath,
-      },
-      {
-        selector: 'jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt',
-        handler: this.handleJJJJPath,
-      },
-    ];
   }
 
   /**
@@ -57,7 +29,10 @@ export class SelectorTopScopeImports extends Selector {
    * const foo = function () {};
    * function foo () {}
    */
-  private async visitFBPath(
+  @selector('f_dton > blk')
+  @selector('v_dtor > f_exp > blk')
+  @selector('v_dtor > af_exp > blk')
+  protected async visitFBPath(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -101,7 +76,8 @@ export class SelectorTopScopeImports extends Selector {
    * useFoo();
    * Foo.useFoo();
    */
-  private async handleCPath(path: any[], node: CallExpression): Promise<void> {
+  @selector('cl')
+  protected async handleCPath(path: any[], node: CallExpression): Promise<void> {
     const nodes: MemberExpression[] = [];
     let currCallee = node.callee as MemberExpression | Identifier;
     while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
@@ -134,7 +110,8 @@ export class SelectorTopScopeImports extends Selector {
    * handle pattern:
    * <MyComp />
    */
-  private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
+  @selector('jsx_ele > jsx_o_ele > jsx_idt')
+  protected async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
       this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
@@ -145,7 +122,8 @@ export class SelectorTopScopeImports extends Selector {
    * handle pattern:
    * <Common.MyComp />
    */
-  private async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
+  protected async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }

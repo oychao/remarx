@@ -3,28 +3,17 @@ import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescrip
 
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { TopScopeMap } from '../node/logicTopScope';
-import { Selector, SelectorHandlerMap } from './selector';
+import { selector, Selector } from './selector';
 
 export class SelectorReactDom extends Selector {
-  protected selectorHandlerMap: SelectorHandlerMap[];
-
   public scopeDepMap: TopScopeMap = {};
 
   constructor(program: LogicProgramCommon) {
     super(program);
-    this.selectorHandlerMap = [
-      {
-        selector: 'jsx_ele > jsx_o_ele > jsx_idt',
-        handler: this.handleJJJPath,
-      },
-      {
-        selector: 'jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt',
-        handler: this.handleJJJJPath,
-      },
-    ];
   }
 
-  private async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
+  @selector('jsx_ele > jsx_o_ele > jsx_idt')
+  protected async handleJJJPath(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
     if (depScope) {
@@ -32,7 +21,8 @@ export class SelectorReactDom extends Selector {
     }
   }
 
-  private async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
+  protected async handleJJJJPath(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }

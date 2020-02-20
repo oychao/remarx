@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "jsx": "react",
     "target": "ES2015",
     "outDir": "out",
@@ -9,7 +9,9 @@
     "rootDirs": ["src"],
     "strict": true /* enable all strict type-checking options */,
     "typeRoots": ["./typings"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
