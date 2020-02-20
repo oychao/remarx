@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as request from 'request-promise';
 import * as vscode from 'vscode';
 
 import { config, readConf } from './config';
@@ -8,7 +7,7 @@ import { __projectRoot } from './constants';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { LogicProgramCommon } from './parser/node/logicProgramCommon';
 
-export async function parseProject(): Promise<
+async function parseProject(): Promise<
   | {
       topScopeGraphData: GraphView;
       fileGraphData: GraphView;
@@ -41,15 +40,18 @@ export async function parseProject(): Promise<
   }
 }
 
-let panel: vscode.WebviewPanel | undefined;
+async function startViewServer(): Promise<void> {}
 
+let panel: vscode.WebviewPanel | undefined;
 export async function main(): Promise<void> {
   await readConf();
+  await startViewServer();
 
   if (!panel) {
     // open panel
     panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
       enableScripts: true,
+      localResourceRoots: [vscode.Uri.file(path.resolve(__projectRoot, 'view', 'dist'))],
     });
 
     panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
@@ -65,6 +67,7 @@ export async function main(): Promise<void> {
       panel = undefined;
     });
   }
+
   if (panel) {
     const graphData = await parseProject();
 
@@ -74,7 +77,14 @@ export async function main(): Promise<void> {
     );
 
     // update panel view
-    const viewSource = await request('http://localhost:9551/');
+    const viewSource = (await fs.promises.readFile(path.resolve(__projectRoot, 'view', 'dist', 'index.html')))
+      .toString()
+      .replace('VSCODE_RESOURCE_BASE', `${path.resolve(__projectRoot, 'view', 'dist')}/`)
+      .replace(
+        'VSCODE_DATA_DEF',
+        `<script type="text/javascript">window.graphData = ${JSON.stringify(graphData)}</script>`
+      );
+
     panel.webview.html = viewSource;
   }
 

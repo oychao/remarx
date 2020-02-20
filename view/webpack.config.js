@@ -55,7 +55,7 @@ const config = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'Hello World',
+      title: 'Remarx',
       template: path.resolve(__dirname, 'index.html')
     }),
     new ScriptExtHtmlWebpackPlugin({
