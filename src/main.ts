@@ -7,6 +7,9 @@ import { __projectRoot } from './constants';
 import { DependencyGraph } from './parser/dependencyGraph';
 import { LogicProgramCommon } from './parser/node/logicProgramCommon';
 
+let initialized: boolean = false;
+let panel: vscode.WebviewPanel | undefined;
+
 async function parseProject(): Promise<
   | {
       topScopeGraphData: GraphView;
@@ -40,12 +43,46 @@ async function parseProject(): Promise<
   }
 }
 
-async function startViewServer(): Promise<void> {}
+async function parseViewSource(): Promise<void> {
+  if (!panel) {
+    return;
+  }
 
-let panel: vscode.WebviewPanel | undefined;
+  const viewSourceTemplate = (await fs.promises.readFile(path.resolve(__projectRoot, 'view', 'dist', 'index.html')))
+    .toString()
+    .replace('VSCODE_RESOURCE_BASE', `${path.resolve(__projectRoot, 'view', 'dist')}/`);
+
+  const graphData = await parseProject();
+  const viewSource = viewSourceTemplate.replace(
+    'VSCODE_DATA_DEF',
+    `<script type="text/javascript">window.graphData = ${JSON.stringify(graphData)}</script>`
+  );
+
+  // update panel view
+  panel.webview.html = viewSource;
+
+  await fs.promises.writeFile(
+    path.resolve(__projectRoot, 'view', 'src', 'store', 'data.json'),
+    JSON.stringify(graphData, null, 2)
+  );
+
+  // purge all cached programs
+  LogicProgramCommon.purge();
+}
+
+async function init(): Promise<void> {
+  if (!initialized) {
+    vscode.workspace.onDidSaveTextDocument(async (doc: vscode.TextDocument) => {
+      console.log(doc.fileName);
+      await parseViewSource();
+    });
+  }
+  initialized = true;
+}
+
 export async function main(): Promise<void> {
   await readConf();
-  await startViewServer();
+  await init();
 
   if (!panel) {
     // open panel
@@ -68,26 +105,5 @@ export async function main(): Promise<void> {
     });
   }
 
-  if (panel) {
-    const graphData = await parseProject();
-
-    await fs.promises.writeFile(
-      path.resolve(__projectRoot, 'view', 'src', 'store', 'data.json'),
-      JSON.stringify(graphData, null, 2)
-    );
-
-    // update panel view
-    const viewSource = (await fs.promises.readFile(path.resolve(__projectRoot, 'view', 'dist', 'index.html')))
-      .toString()
-      .replace('VSCODE_RESOURCE_BASE', `${path.resolve(__projectRoot, 'view', 'dist')}/`)
-      .replace(
-        'VSCODE_DATA_DEF',
-        `<script type="text/javascript">window.graphData = ${JSON.stringify(graphData)}</script>`
-      );
-
-    panel.webview.html = viewSource;
-  }
-
-  // purge all cached programs
-  LogicProgramCommon.purge();
+  await parseViewSource();
 }
