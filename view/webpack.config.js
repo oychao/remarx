@@ -17,6 +17,11 @@ const {
 const config = {
   mode: process.env.NODE_ENV,
   entry: './index.tsx',
+  watch: true,
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000
+  },
   output: {
     filename: 'js/[name].[chunkhash:8].js',
     path: path.resolve(__dirname, 'dist')
