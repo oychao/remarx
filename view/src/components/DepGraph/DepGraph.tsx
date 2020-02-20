@@ -7,15 +7,16 @@ import { DepNode, NodeStyle } from './DepNode';
 interface DepGraphProps {
   graphModel: GraphView;
   determineStyle?: (node: dagre.Node) => NodeStyle;
+  onNodeClick?: (path: string) => void;
 }
 
-export function DepGraph({ graphModel, determineStyle }: DepGraphProps) {
+export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphProps) {
   const daGraph = calcGraph(graphModel);
 
   return (
     <svg style={{ display: 'block', height: '50%', width: '100%' }}>
       {daGraph.nodes.map(node => (
-        <DepNode key={node.label} node={node} determineStyle={determineStyle} />
+        <DepNode key={node.label} node={node} determineStyle={determineStyle} onNodeClick={onNodeClick} />
       ))}
       {daGraph.edges.map((edge, idx) => (
         <DepEdge key={idx} edge={edge} />

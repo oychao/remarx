@@ -48,8 +48,15 @@ export async function main(): Promise<void> {
   const panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
     enableScripts: true,
   });
-  panel.webview.onDidReceiveMessage(e => {
-    console.log(e);
+
+  panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
+    switch (action) {
+      case 'OpenFile':
+        vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
+        break;
+      default:
+        break;
+    }
   });
 
   const graphData = await parseProject();

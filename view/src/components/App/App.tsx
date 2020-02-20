@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { DepGraph } from 'comps/DepGraph';
 import { NodeStyle } from 'comps/DepGraph/DepNode';
+import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
 
@@ -37,9 +38,17 @@ function determineFileStyle(node: dagre.Node): NodeStyle {
 }
 
 export function App() {
+  const handleFileDepNodeClick = React.useCallback((path: string) => {
+    openFile(path);
+  }, []);
+
   return (
     <div className='app'>
-      <DepGraph graphModel={data.default.fileGraphData} determineStyle={determineFileStyle} />
+      <DepGraph
+        graphModel={data.default.fileGraphData}
+        determineStyle={determineFileStyle}
+        onNodeClick={handleFileDepNodeClick}
+      />
       <DepGraph graphModel={data.default.topScopeGraphData} determineStyle={determineTopScopeStyle} />
     </div>
   );

@@ -9,3 +9,8 @@ declare namespace JSX {
     div: any;
   }
 }
+
+declare interface ViewAction {
+  action: string;
+  payload: any;
+}
