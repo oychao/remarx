@@ -5,12 +5,13 @@ import * as path from 'path';
 import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
-import { SelectorFileDependency } from '../selector/selectorFileDependency';
-import { SelectorTopScopeImports } from '../selector/selectorTopScopeImports';
-import { SelectorTopScopeLocal } from '../selector/selectorTopScopeLocal';
+import { DepFilePlugin } from '../plugin/depFilePlugin';
+import { ExportScopeProvider } from '../plugin/exportScopeProvider';
+import { ImportScopeProvider } from '../plugin/importScopeProvider';
+import { LocalScopeProvider } from '../plugin/localScopeProvider';
+import { TopScopeDepPlugin } from '../plugin/topScopeDepPlugin';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
-import { LogicTopScope, TopScopeMap } from './logicTopScope';
 import { parseAstToImplementedNode } from './nodeFactory';
 
 export type ProgramDepend = LogicProgramCommon | string | undefined;
@@ -20,10 +21,11 @@ export type ProgramMap = { [key: string]: ProgramDepend };
 export class LogicProgramCommon extends LogicAbstractProgram {
   public static pool: { [key: string]: LogicProgramCommon } = {};
 
-  public static produce(fullPath: string) {
+  public static async produce(fullPath: string) {
     let ret: LogicProgramCommon | undefined = LogicProgramCommon.pool[fullPath];
     if (!ret) {
       ret = new LogicProgramCommon(fullPath);
+      await ret.parse();
       LogicProgramCommon.pool[fullPath] = ret;
     }
     return ret;
@@ -40,21 +42,11 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   public fullPath: string;
 
   // selectors
-  public selectorTopScopeLocal: SelectorTopScopeLocal = new SelectorTopScopeLocal(this);
-  public selectorFileDependency: SelectorFileDependency = new SelectorFileDependency(this, this.dirPath);
-  public selectorTopScopeImports: SelectorTopScopeImports = new SelectorTopScopeImports(this);
-
-  // import scopes
-  public imports: TopScopeMap = {};
-
-  // local scopes
-  public localScopes: TopScopeMap = {};
-
-  // export scopes
-  public exports: TopScopeMap = {};
-
-  // default export scope
-  public defaultExport: LogicTopScope | undefined;
+  public depFilePlugin: DepFilePlugin = new DepFilePlugin(this);
+  public localScopeProvider: LocalScopeProvider = new LocalScopeProvider(this);
+  public exportScopeProvider: ExportScopeProvider = new ExportScopeProvider(this);
+  public importScopeProvider: ImportScopeProvider = new ImportScopeProvider(this);
+  public topScopeDepPlugin: TopScopeDepPlugin = new TopScopeDepPlugin(this);
 
   // file dependencies
   public fileDepMap: ProgramMap = {};
@@ -88,14 +80,14 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // set `this` as logicNode of current ast node
     this.astNode.logicNode = this;
 
-    // parse local top block scope
-    await this.astNode.accept(this.selectorTopScopeLocal);
-
     // parse file dependencies
-    await this.astNode.accept(this.selectorFileDependency);
-
-    // parse top block scope dependencies
-    await this.astNode.accept(this.selectorTopScopeImports);
+    await this.astNode.accept(this.depFilePlugin);
+    // parse scopes
+    await this.astNode.accept(this.localScopeProvider);
+    await this.astNode.accept(this.exportScopeProvider);
+    await this.astNode.accept(this.importScopeProvider);
+    // parse scope dependencies
+    await this.astNode.accept(this.topScopeDepPlugin);
 
     // mark as initialized
     this.initialized = true;

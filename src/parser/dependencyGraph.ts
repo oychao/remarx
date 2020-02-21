@@ -1,4 +1,3 @@
-import { config } from '../config';
 import { ImplementedNode } from './node/implementedNode';
 import { LogicAbstractProgram } from './node/logicAbstractProgram';
 import { LogicProgramCommon } from './node/logicProgramCommon';

@@ -1,5 +1,7 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import * as path from 'path';
 
+import { fileExists } from '../../utils';
 import { BaseNodeDescendant, ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 
@@ -10,15 +12,15 @@ export type NodeHandler = (
   grantParent: BaseNodeDescendant
 ) => Promise<void>;
 
-export type SelectorExpression = Array<AST_NODE_TYPES | SelectorToken> | string;
+export type DepPluginExpression = Array<AST_NODE_TYPES | DepPluginToken> | string;
 
-export type SelectorHandlerMap = {
-  selector: SelectorExpression;
+export type DepPluginHandlerMap = {
+  selector: DepPluginExpression;
   handlerName: string;
 };
 
 // must start with two underscores
-export enum SelectorToken {
+export enum DepPluginToken {
   KwChild = '__KwChild',
   KwDescent = '__KwDescent',
   KwLoopStart = '__KwLoopStart',
@@ -26,38 +28,40 @@ export enum SelectorToken {
 }
 
 /**
- * abstract selector, supply a common visit method, every concrete ast node which accept selector instance
- * would be visited by specific method of corresponding decent concrete selector.
+ * abstract plugin, supply a common visit method, every concrete ast node which accept plugin instance
+ * would be visited by specific method of corresponding decent concrete plugin.
  */
-export abstract class Selector {
-  public static parseSelectorString(selector: string): Array<AST_NODE_TYPES | SelectorToken> {
-    return [...selector.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
+export abstract class DepPlugin {
+  public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
+
+  public static parseDepPluginString(plugin: string): Array<AST_NODE_TYPES | DepPluginToken> {
+    return [...plugin.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
       .map(m => {
         const strToken = m[0].replace(/\s{1,}/, ' ');
-        return Selector.abbrs[strToken] || Selector.selectorKwKws[strToken];
+        return DepPlugin.abbrs[strToken] || DepPlugin.pluginKwKws[strToken];
       })
-      .filter((token: AST_NODE_TYPES | SelectorToken, idx, arr) => {
+      .filter((token: AST_NODE_TYPES | DepPluginToken, idx, arr) => {
         if (!token) {
           return false;
         }
-        if (SelectorToken.KwDescent !== token) {
+        if (DepPluginToken.KwDescent !== token) {
           return true;
         }
         const prevToken = arr[idx - 1] || '';
         const nextToken = arr[idx + 1] || '';
-        return !Selector.isSelectorToken(prevToken) && !Selector.isSelectorToken(nextToken);
+        return !DepPlugin.isDepPluginToken(prevToken) && !DepPlugin.isDepPluginToken(nextToken);
       });
   }
 
-  private static isSelectorToken(token: string) {
+  private static isDepPluginToken(token: string) {
     return token.slice(0, 2) === '__';
   }
 
-  public static readonly selectorKwKws: { [key: string]: SelectorToken } = {
-    '>': SelectorToken.KwChild,
-    'L:(': SelectorToken.KwLoopStart,
-    ')': SelectorToken.KwLoopEnd,
-    ' ': SelectorToken.KwDescent,
+  public static readonly pluginKwKws: { [key: string]: DepPluginToken } = {
+    '>': DepPluginToken.KwChild,
+    'L:(': DepPluginToken.KwLoopStart,
+    ')': DepPluginToken.KwLoopEnd,
+    ' ': DepPluginToken.KwDescent,
   };
 
   private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
@@ -87,17 +91,47 @@ export abstract class Selector {
     this.program = program;
   }
 
-  private matchSelectors(path: ImplementedNode[]): NodeHandler | undefined {
-    const selectorHandlerMap = (this as any).getSelectorHandlerMap ? (this as any).getSelectorHandlerMap() : [];
+  protected async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgramCommon | undefined> {
+    if (sourceValue && typeof sourceValue === 'string') {
+      if (sourceValue.charAt(0) !== '.') {
+        this.program.fileDepMap[sourceValue] = sourceValue;
+        return undefined;
+      }
+
+      const originPath = path.resolve(this.program.dirPath, sourceValue);
+      let possiblePath = originPath;
+      let isFile = await fileExists(possiblePath);
+      let i = 0;
+
+      // determine readable target module full path;
+      while (!isFile && i < DepPlugin.POSSIBLE_FILE_SUFFIXES.length) {
+        possiblePath = `${originPath}${DepPlugin.POSSIBLE_FILE_SUFFIXES[i++]}`;
+        isFile = await fileExists(possiblePath);
+      }
+
+      const suffix = possiblePath.split('.').pop();
+      if (suffix !== 'ts' && suffix !== 'tsx') {
+        return undefined;
+      }
+
+      const dep = await LogicProgramCommon.produce(possiblePath);
+      this.program.fileDepMap[possiblePath] = dep;
+      return dep;
+    }
+    return undefined;
+  }
+
+  private matchDepPlugins(path: ImplementedNode[]): NodeHandler | undefined {
+    const selectorHandlerMap = (this as any).getDepPluginHandlerMap ? (this as any).getDepPluginHandlerMap() : [];
 
     for (let i = 0; i < selectorHandlerMap.length; i++) {
       const { selector, handlerName } = selectorHandlerMap[i];
       const handler = (this as any)[handlerName];
-      const selectorTokens = typeof selector === 'string' ? Selector.parseSelectorString(selector) : [...selector];
+      const selectorTokens = typeof selector === 'string' ? DepPlugin.parseDepPluginString(selector) : [...selector];
       let j = selectorTokens.length - 1;
       let k = path.length - 1;
       let currNodeToken = selectorTokens[j];
-      let upLevelSelectorToken = selectorTokens[--j];
+      let upLevelDepPluginToken = selectorTokens[--j];
       let currPathNode = path[k];
       let jumpToEnd = false;
       while (currNodeToken && currPathNode) {
@@ -106,14 +140,14 @@ export abstract class Selector {
           break;
         }
         currNodeToken = selectorTokens[--j];
-        upLevelSelectorToken = selectorTokens[--j];
+        upLevelDepPluginToken = selectorTokens[--j];
         currPathNode = path[--k];
 
-        // TODO implement selector token logic
-        switch (upLevelSelectorToken) {
-          case SelectorToken.KwChild:
+        // TODO implement plugin token logic
+        switch (upLevelDepPluginToken) {
+          case DepPluginToken.KwChild:
             break;
-          case SelectorToken.KwDescent:
+          case DepPluginToken.KwDescent:
             break;
           default:
             break;
@@ -131,7 +165,7 @@ export abstract class Selector {
 
   public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
     path.push(node);
-    const handler = this.matchSelectors(path);
+    const handler = this.matchDepPlugins(path);
 
     if (handler) {
       await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
@@ -156,24 +190,22 @@ export abstract class Selector {
   }
 }
 
-const classSelectorMap: { [key: string]: SelectorHandlerMap[] } = {};
+const classDepPluginMap: { [key: string]: DepPluginHandlerMap[] } = {};
 export const selector = function(selectorString: string) {
   return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    if (!classSelectorMap[target.constructor.name]) {
-      classSelectorMap[target.constructor.name] = [];
+    if (!classDepPluginMap[target.constructor.name]) {
+      classDepPluginMap[target.constructor.name] = [];
     }
 
-    if (!target.getSelectorHandlerMap) {
-      target.getSelectorHandlerMap = function() {
-        return classSelectorMap[target.constructor.name];
+    if (!target.getDepPluginHandlerMap) {
+      target.getDepPluginHandlerMap = function() {
+        return classDepPluginMap[target.constructor.name];
       };
     }
 
-    classSelectorMap[target.constructor.name].push({
+    classDepPluginMap[target.constructor.name].push({
       selector: selectorString,
       handlerName: propertyKey,
     });
   };
 };
-
-// console.log(Selector.parseSelectorString('p p > p L:(p > p)'));

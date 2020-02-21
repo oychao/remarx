@@ -1,11 +1,10 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { TopScopeMap } from '../node/logicTopScope';
-import { selector, Selector } from './selector';
+import { DepPlugin, selector } from './depPlugin';
 
-export class SelectorReactDom extends Selector {
+export class ReactDomPlugin extends DepPlugin {
   public scopeDepMap: TopScopeMap = {};
 
   constructor(program: LogicProgramCommon) {
@@ -15,7 +14,8 @@ export class SelectorReactDom extends Selector {
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
   protected async visitPath1(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
-    const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
+    const depScope =
+      this.program.localScopeProvider.localScopes[scopeName] || this.program.importScopeProvider.imports[scopeName];
     if (depScope) {
       this.scopeDepMap[scopeName] = depScope;
     }
@@ -27,7 +27,8 @@ export class SelectorReactDom extends Selector {
       return;
     }
     const scopeName: string = node.name as string;
-    const depScope = this.program.localScopes[scopeName] || this.program.imports[scopeName];
+    const depScope =
+      this.program.localScopeProvider.localScopes[scopeName] || this.program.importScopeProvider.imports[scopeName];
     if (depScope) {
       this.scopeDepMap[scopeName] = depScope;
     }

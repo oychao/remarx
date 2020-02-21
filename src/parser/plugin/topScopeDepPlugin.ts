@@ -3,20 +3,24 @@ import {
   ArrowFunctionExpression,
   BlockStatement,
   CallExpression,
+  ExportNamedDeclaration,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
+  ImportDeclaration,
   JSXIdentifier,
   JSXMemberExpression,
+  Literal,
   MemberExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
+import { BaseNodeDescendant, ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../node/logicTopScope';
-import { selector, Selector } from './selector';
+import { DepPlugin, selector } from './depPlugin';
 
-export class SelectorTopScopeImports extends Selector {
+export class TopScopeDepPlugin extends DepPlugin {
   private currWorkingScope: LogicTopScope | undefined;
 
   constructor(program: LogicProgramCommon) {
@@ -32,7 +36,7 @@ export class SelectorTopScopeImports extends Selector {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async visitPath1(
+  protected async scanLocalScope(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -60,14 +64,11 @@ export class SelectorTopScopeImports extends Selector {
       functionName = grantParent?.id?.name as string;
     }
 
-    // console.log(path.map(node => node.type).join('->'));
-    // console.log(functionName);
-
     if (
       (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') &&
-      this.program.localScopes[functionName] instanceof LogicTopScope
+      this.program.localScopeProvider.localScopes[functionName] instanceof LogicTopScope
     ) {
-      this.currWorkingScope = this.program.localScopes[functionName] as LogicTopScope;
+      this.currWorkingScope = this.program.localScopeProvider.localScopes[functionName] as LogicTopScope;
     }
   }
 
@@ -77,7 +78,7 @@ export class SelectorTopScopeImports extends Selector {
    * Foo.useFoo();
    */
   @selector('cl')
-  protected async visitPath2(path: any[], node: CallExpression): Promise<void> {
+  protected async visitPath7(path: any[], node: CallExpression): Promise<void> {
     const nodes: MemberExpression[] = [];
     let currCallee = node.callee as MemberExpression | Identifier;
     while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
@@ -91,16 +92,16 @@ export class SelectorTopScopeImports extends Selector {
         const callerName: string = (parent.object as Identifier).name as string;
         const scopeName: string = (parent.property as Identifier).name as string;
         if (scopeName.slice(0, 3) === 'use') {
-          const targetProgram: TopScopeDepend = this.program.imports[callerName] as TopScopeDepend;
+          const targetProgram: TopScopeDepend = this.program.importScopeProvider.imports[callerName] as TopScopeDepend;
           this.currWorkingScope.scopeDepMap[scopeName] =
             typeof targetProgram === 'object'
-              ? (this.program.imports[callerName] as TopScopeMap)[scopeName]
+              ? (this.program.importScopeProvider.imports[callerName] as TopScopeMap)[scopeName]
               : `${targetProgram}#${scopeName}`;
         }
       } else {
         const scopeName: string = currCallee.name as string;
         if (scopeName.slice(0, 3) === 'use') {
-          this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+          this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
         }
       }
     }
@@ -111,10 +112,10 @@ export class SelectorTopScopeImports extends Selector {
    * <MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async visitPath3(path: any[], node: JSXIdentifier): Promise<void> {
+  protected async visitPath8(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
     }
   }
 
@@ -123,13 +124,13 @@ export class SelectorTopScopeImports extends Selector {
    * <Common.MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async visitPath4(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async visitPath9(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.imports[scopeName];
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
     }
   }
 }

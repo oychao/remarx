@@ -9,10 +9,13 @@ import {
 import { startWithCapitalLetter } from '../../utils';
 import { BaseNodeDescendant } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope } from '../node/logicTopScope';
-import { selector, Selector } from './selector';
+import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { DepPlugin, selector } from './depPlugin';
 
-export class SelectorTopScopeLocal extends Selector {
+export class LocalScopeProvider extends DepPlugin {
+  // local scopes
+  public localScopes: TopScopeMap = {};
+
   constructor(program: LogicProgramCommon) {
     super(program);
   }
@@ -26,7 +29,7 @@ export class SelectorTopScopeLocal extends Selector {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async visitPath1(
+  protected async scanLocalScope(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -55,11 +58,7 @@ export class SelectorTopScopeLocal extends Selector {
     }
 
     if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.program.localScopes[functionName] = new LogicTopScope(
-        functionName,
-        node as BaseNodeDescendant,
-        this.program
-      );
+      this.localScopes[functionName] = new LogicTopScope(functionName, node as BaseNodeDescendant, this.program);
     }
   }
 }

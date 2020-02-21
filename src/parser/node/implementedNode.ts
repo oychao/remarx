@@ -1,6 +1,6 @@
 import { Node, Range, SourceLocation } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { Selector } from '../selector/selector';
+import { DepPlugin } from '../plugin/depPlugin';
 import { LogicAbstractNode } from './logicAbstractNode';
 
 export type BaseNodeDescendant = any;
@@ -23,7 +23,7 @@ export class ImplementedNode<T extends LogicAbstractNode = LogicAbstractNode> {
     }
   }
 
-  public async accept(selector: Selector, path: ImplementedNode[] = []): Promise<void> {
-    await selector.visit(this, path);
+  public async accept(plugin: DepPlugin, path: ImplementedNode[] = []): Promise<void> {
+    await plugin.visit(this, path);
   }
 }
