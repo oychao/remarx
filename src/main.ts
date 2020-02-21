@@ -4,8 +4,8 @@ import * as vscode from 'vscode';
 
 import { config, readConf } from './config';
 import { __projectRoot } from './constants';
-import { DependencyGraph } from './parser/dependencyGraph';
-import { LogicProgramCommon } from './parser/node/logicProgramCommon';
+import { DependencyGraph } from './core/dependencyGraph';
+import { LogicProgramCommon } from './core/parser/logicProgramCommon';
 
 let initialized: boolean = false;
 let panel: vscode.WebviewPanel | undefined;

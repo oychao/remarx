@@ -4,8 +4,8 @@ import {
   Literal,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedNode } from '../node/implementedNode';
-import { LogicProgramCommon } from '../node/logicProgramCommon';
+import { ImplementedNode } from '../parser/implementedNode';
+import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { DepPlugin } from './depPlugin';
 import { selector } from './depPlugin';
 

@@ -1,8 +1,8 @@
-import { ImplementedNode } from './node/implementedNode';
-import { LogicAbstractProgram } from './node/logicAbstractProgram';
-import { LogicProgramCommon } from './node/logicProgramCommon';
-import { LogicProgramEntrance } from './node/logicProgramEntrance';
-import { LogicTopScope, TopScopeDepend } from './node/logicTopScope';
+import { ImplementedNode } from './parser/implementedNode';
+import { LogicAbstractProgram } from './parser/logicAbstractProgram';
+import { LogicProgramCommon } from './parser/logicProgramCommon';
+import { LogicProgramEntrance } from './parser/logicProgramEntrance';
+import { LogicTopScope, TopScopeDepend } from './parser/logicTopScope';
 
 export class DependencyGraph extends LogicAbstractProgram {
   protected astNode: ImplementedNode | undefined;

@@ -7,9 +7,9 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { BaseNodeDescendant } from '../node/implementedNode';
-import { LogicProgramCommon } from '../node/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
+import { BaseNodeDescendant } from '../parser/implementedNode';
+import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { LogicTopScope, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 
 export class LocalScopeProvider extends DepPlugin {
