@@ -5,12 +5,7 @@ import * as path from 'path';
 import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
-import { DepFilePlugin } from '../plugin/depFilePlugin';
 import { DepPlugin } from '../plugin/depPlugin';
-import { ExportScopeProvider } from '../plugin/exportScopeProvider';
-import { ImportScopeProvider } from '../plugin/importScopeProvider';
-import { LocalScopeProvider } from '../plugin/localScopeProvider';
-import { TopScopeDepPlugin } from '../plugin/topScopeDepPlugin';
 import { ImplementedNode } from './implementedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
 import { parseAstToImplementedNode } from './nodeFactory';
@@ -20,13 +15,7 @@ export type ProgramDepend = LogicProgramCommon | string | undefined;
 export type ProgramMap = { [key: string]: ProgramDepend };
 
 export class LogicProgramCommon extends LogicAbstractProgram {
-  private static PluginClasses: Array<Type<DepPlugin>> = [
-    DepFilePlugin,
-    LocalScopeProvider,
-    ExportScopeProvider,
-    ImportScopeProvider,
-    TopScopeDepPlugin,
-  ];
+  private static PluginClasses: Array<Type<DepPlugin>> = [];
 
   public static install<T extends DepPlugin>(pluginClass: { new (): T }): void {
     LogicProgramCommon.PluginClasses.push(pluginClass);
@@ -58,12 +47,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   // plugins
   private pluginMap: { [key: string]: DepPlugin } = {};
   private pluginList: DepPlugin[] = [];
-
-  // public depFilePlugin: DepFilePlugin = new DepFilePlugin(this);
-  // public localScopeProvider: LocalScopeProvider = new LocalScopeProvider(this);
-  // public exportScopeProvider: ExportScopeProvider = new ExportScopeProvider(this);
-  // public importScopeProvider: ImportScopeProvider = new ImportScopeProvider(this);
-  // public topScopeDepPlugin: TopScopeDepPlugin = new TopScopeDepPlugin(this);
 
   // file dependencies
   public fileDepMap: ProgramMap = {};
@@ -112,15 +95,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       const plugin = this.pluginList[i];
       await this.astNode.accept(plugin);
     }
-
-    // parse file dependencies
-    // await this.astNode.accept(this.depFilePlugin);
-    // parse scopes
-    // await this.astNode.accept(this.localScopeProvider);
-    // await this.astNode.accept(this.exportScopeProvider);
-    // await this.astNode.accept(this.importScopeProvider);
-    // parse scope dependencies
-    // await this.astNode.accept(this.topScopeDepPlugin);
 
     // mark as initialized
     this.initialized = true;

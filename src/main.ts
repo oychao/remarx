@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { config, readConf } from './config';
 import { __projectRoot } from './constants';
-import { DependencyGraph } from './core/dependencyGraph';
+import { Remarx } from './core';
 import { LogicProgramCommon } from './core/parser/logicProgramCommon';
 
 let initialized: boolean = false;
@@ -23,7 +23,7 @@ async function parseProject(): Promise<
     // entrance file
     const enterPath = path.resolve(projectSourceRootDir, config.entranceFile);
 
-    const depGraph = new DependencyGraph(enterPath);
+    const depGraph = new Remarx(enterPath);
     await depGraph.parse();
 
     const [fileGraphData, topScopeGraphData] = await Promise.all([

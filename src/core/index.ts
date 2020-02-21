@@ -3,8 +3,25 @@ import { LogicAbstractProgram } from './parser/logicAbstractProgram';
 import { LogicProgramCommon } from './parser/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './parser/logicTopScope';
+import { DepFilePlugin } from './plugin/depFilePlugin';
+import { DepPlugin } from './plugin/depPlugin';
+import { ExportScopeProvider } from './plugin/exportScopeProvider';
+import { ImportScopeProvider } from './plugin/importScopeProvider';
+import { LocalScopeProvider } from './plugin/localScopeProvider';
+import { TopScopeDepPlugin } from './plugin/topScopeDepPlugin';
 
-export class DependencyGraph extends LogicAbstractProgram {
+// install program parser plugins
+[
+  DepFilePlugin,
+  LocalScopeProvider,
+  ExportScopeProvider,
+  ImportScopeProvider,
+  TopScopeDepPlugin,
+].forEach((PluginClass: Type<DepPlugin>) => LogicProgramCommon.install(PluginClass));
+
+export class Remarx extends LogicAbstractProgram {
+  public static install = LogicProgramCommon.install;
+
   protected astNode: ImplementedNode | undefined;
 
   protected fullPath: string;
