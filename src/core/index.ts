@@ -10,7 +10,7 @@ import { ImportScopeProvider } from './plugin/importScopeProvider';
 import { LocalScopeProvider } from './plugin/localScopeProvider';
 import { TopScopeDepPlugin } from './plugin/topScopeDepPlugin';
 
-// install program parser plugins
+// install intrinsic program parser plugins
 [
   DepFilePlugin,
   LocalScopeProvider,
