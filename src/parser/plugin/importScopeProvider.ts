@@ -5,6 +5,7 @@ import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { TopScopeMap } from '../node/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
+import { ExportScopeProvider } from './exportScopeProvider';
 
 export class ImportScopeProvider extends DepPlugin {
   // import scopes
@@ -31,18 +32,18 @@ export class ImportScopeProvider extends DepPlugin {
         }
 
         if (AST_NODE_TYPES.ImportSpecifier === specifier.type) {
-          const exportOfDep = dep?.exportScopeProvider.exports[specifierName];
+          const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).exports[specifierName];
           if (exportOfDep) {
             this.imports[specifierName] = exportOfDep;
           }
         } else if (AST_NODE_TYPES.ImportDefaultSpecifier === specifier.type) {
-          const exportOfDep = dep?.exportScopeProvider.defaultExport;
+          const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
           if (exportOfDep) {
             this.imports[specifierName] = exportOfDep;
           }
         } else if (AST_NODE_TYPES.ImportNamespaceSpecifier === specifier.type) {
           if ((node.source.value as string).charAt(0) === '.') {
-            this.imports[specifierName] = dep?.exportScopeProvider.exports;
+            this.imports[specifierName] = dep?.getPluginInstance(ExportScopeProvider).exports;
           } else {
             this.imports[specifierName] = node.source.value as string;
           }

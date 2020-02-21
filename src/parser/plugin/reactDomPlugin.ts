@@ -3,6 +3,8 @@ import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescrip
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { TopScopeMap } from '../node/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
+import { ImportScopeProvider } from './importScopeProvider';
+import { LocalScopeProvider } from './localScopeProvider';
 
 export class ReactDomPlugin extends DepPlugin {
   public scopeDepMap: TopScopeMap = {};
@@ -15,7 +17,8 @@ export class ReactDomPlugin extends DepPlugin {
   protected async visitPath1(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     const depScope =
-      this.program.localScopeProvider.localScopes[scopeName] || this.program.importScopeProvider.imports[scopeName];
+      this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] ||
+      this.program.getPluginInstance(ImportScopeProvider).imports[scopeName];
     if (depScope) {
       this.scopeDepMap[scopeName] = depScope;
     }
@@ -28,7 +31,8 @@ export class ReactDomPlugin extends DepPlugin {
     }
     const scopeName: string = node.name as string;
     const depScope =
-      this.program.localScopeProvider.localScopes[scopeName] || this.program.importScopeProvider.imports[scopeName];
+      this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] ||
+      this.program.getPluginInstance(ImportScopeProvider).imports[scopeName];
     if (depScope) {
       this.scopeDepMap[scopeName] = depScope;
     }

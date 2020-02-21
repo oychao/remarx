@@ -9,8 +9,3 @@ declare interface DAGraphView {
   nodes: dagre.Node[];
   edges: dagre.GraphEdge[];
 }
-
-// const vscode = acquireVsCodeApi();
-// vscode.postMessage({
-//   foo: 'test',
-// });

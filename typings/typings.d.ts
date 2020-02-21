@@ -14,3 +14,7 @@ declare interface ViewAction {
   action: string;
   payload: any;
 }
+
+declare interface Type<T> extends Function {
+  new (...args: any[]): T;
+}

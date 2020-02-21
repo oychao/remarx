@@ -8,6 +8,7 @@ import { ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope, TopScopeMap } from '../node/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
+import { LocalScopeProvider } from './localScopeProvider';
 
 export class ExportScopeProvider extends DepPlugin {
   // export scopes
@@ -36,8 +37,8 @@ export class ExportScopeProvider extends DepPlugin {
         parent.specifiers.forEach(specifier => {
           const targetScope =
             specifier.local.name === 'default'
-              ? dep.exportScopeProvider.defaultExport
-              : dep.exportScopeProvider.exports[specifier.local.name];
+              ? dep.getPluginInstance(ExportScopeProvider).defaultExport
+              : dep.getPluginInstance(ExportScopeProvider).exports[specifier.local.name];
           if (targetScope && targetScope instanceof LogicTopScope) {
             if (specifier.exported.name === 'default') {
               this.defaultExport = targetScope;
@@ -59,9 +60,9 @@ export class ExportScopeProvider extends DepPlugin {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
-        for (const key in dep.exportScopeProvider.exports) {
-          if (dep.exportScopeProvider.exports.hasOwnProperty(key)) {
-            const scope = dep.exportScopeProvider.exports[key];
+        for (const key in dep.getPluginInstance(ExportScopeProvider).exports) {
+          if (dep.getPluginInstance(ExportScopeProvider).exports.hasOwnProperty(key)) {
+            const scope = dep.getPluginInstance(ExportScopeProvider).exports[key];
             if (scope instanceof LogicTopScope) {
               this.exports[key] = scope;
             }
@@ -80,7 +81,7 @@ export class ExportScopeProvider extends DepPlugin {
   @selector('exp_n_dton > v_dton > v_dtor > idt')
   protected async visitPath4(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
-    const exportScope = this.program.localScopeProvider.localScopes[scopeName];
+    const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
       this.exports[scopeName] = exportScope;
     }
@@ -93,7 +94,7 @@ export class ExportScopeProvider extends DepPlugin {
   @selector('p > exp_d_dton > idt')
   protected async visitPath5(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
-    const exportScope = this.program.localScopeProvider.localScopes[scopeName];
+    const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
       this.defaultExport = exportScope;
     }

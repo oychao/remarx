@@ -6,6 +6,7 @@ import { config } from '../../config';
 import { PARSE_CONFIG } from '../../constants';
 import { simplifyAst } from '../../utils';
 import { DepFilePlugin } from '../plugin/depFilePlugin';
+import { DepPlugin } from '../plugin/depPlugin';
 import { ExportScopeProvider } from '../plugin/exportScopeProvider';
 import { ImportScopeProvider } from '../plugin/importScopeProvider';
 import { LocalScopeProvider } from '../plugin/localScopeProvider';
@@ -19,6 +20,19 @@ export type ProgramDepend = LogicProgramCommon | string | undefined;
 export type ProgramMap = { [key: string]: ProgramDepend };
 
 export class LogicProgramCommon extends LogicAbstractProgram {
+  private static PluginClasses: Array<Type<DepPlugin>> = [
+    DepFilePlugin,
+    LocalScopeProvider,
+    ExportScopeProvider,
+    ImportScopeProvider,
+    TopScopeDepPlugin,
+  ];
+
+  public static install<T extends DepPlugin>(pluginClass: { new (): T }): void {
+    LogicProgramCommon.PluginClasses.push(pluginClass);
+  }
+
+  // program node pool
   public static pool: { [key: string]: LogicProgramCommon } = {};
 
   public static async produce(fullPath: string) {
@@ -41,12 +55,15 @@ export class LogicProgramCommon extends LogicAbstractProgram {
 
   public fullPath: string;
 
-  // selectors
-  public depFilePlugin: DepFilePlugin = new DepFilePlugin(this);
-  public localScopeProvider: LocalScopeProvider = new LocalScopeProvider(this);
-  public exportScopeProvider: ExportScopeProvider = new ExportScopeProvider(this);
-  public importScopeProvider: ImportScopeProvider = new ImportScopeProvider(this);
-  public topScopeDepPlugin: TopScopeDepPlugin = new TopScopeDepPlugin(this);
+  // plugins
+  private pluginMap: { [key: string]: DepPlugin } = {};
+  private pluginList: DepPlugin[] = [];
+
+  // public depFilePlugin: DepFilePlugin = new DepFilePlugin(this);
+  // public localScopeProvider: LocalScopeProvider = new LocalScopeProvider(this);
+  // public exportScopeProvider: ExportScopeProvider = new ExportScopeProvider(this);
+  // public importScopeProvider: ImportScopeProvider = new ImportScopeProvider(this);
+  // public topScopeDepPlugin: TopScopeDepPlugin = new TopScopeDepPlugin(this);
 
   // file dependencies
   public fileDepMap: ProgramMap = {};
@@ -54,6 +71,16 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   constructor(fullPath: string) {
     super(fullPath);
     this.fullPath = fullPath;
+
+    // initialize plugins
+    LogicProgramCommon.PluginClasses.forEach(PluginClass => {
+      this.pluginMap[PluginClass.name] = Reflect.construct(PluginClass, [this]);
+      this.pluginList.push(this.pluginMap[PluginClass.name]);
+    });
+  }
+
+  public getPluginInstance<T extends DepPlugin>(pluginClass: Type<T>): T {
+    return this.pluginMap[pluginClass.name] as T;
   }
 
   public async parse(): Promise<void> {
@@ -80,14 +107,20 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // set `this` as logicNode of current ast node
     this.astNode.logicNode = this;
 
+    // this.pluginList.forEach(plugin => this.astNode?.accept(plugin));
+    for (let i = 0; i < this.pluginList.length; i++) {
+      const plugin = this.pluginList[i];
+      await this.astNode.accept(plugin);
+    }
+
     // parse file dependencies
-    await this.astNode.accept(this.depFilePlugin);
+    // await this.astNode.accept(this.depFilePlugin);
     // parse scopes
-    await this.astNode.accept(this.localScopeProvider);
-    await this.astNode.accept(this.exportScopeProvider);
-    await this.astNode.accept(this.importScopeProvider);
+    // await this.astNode.accept(this.localScopeProvider);
+    // await this.astNode.accept(this.exportScopeProvider);
+    // await this.astNode.accept(this.importScopeProvider);
     // parse scope dependencies
-    await this.astNode.accept(this.topScopeDepPlugin);
+    // await this.astNode.accept(this.topScopeDepPlugin);
 
     // mark as initialized
     this.initialized = true;

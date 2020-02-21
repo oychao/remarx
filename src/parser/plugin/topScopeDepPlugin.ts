@@ -3,22 +3,20 @@ import {
   ArrowFunctionExpression,
   BlockStatement,
   CallExpression,
-  ExportNamedDeclaration,
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
-  ImportDeclaration,
   JSXIdentifier,
   JSXMemberExpression,
-  Literal,
   MemberExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../../utils';
-import { BaseNodeDescendant, ImplementedNode } from '../node/implementedNode';
 import { LogicProgramCommon } from '../node/logicProgramCommon';
 import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../node/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
+import { ImportScopeProvider } from './importScopeProvider';
+import { LocalScopeProvider } from './localScopeProvider';
 
 export class TopScopeDepPlugin extends DepPlugin {
   private currWorkingScope: LogicTopScope | undefined;
@@ -66,9 +64,11 @@ export class TopScopeDepPlugin extends DepPlugin {
 
     if (
       (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') &&
-      this.program.localScopeProvider.localScopes[functionName] instanceof LogicTopScope
+      this.program.getPluginInstance(LocalScopeProvider).localScopes[functionName] instanceof LogicTopScope
     ) {
-      this.currWorkingScope = this.program.localScopeProvider.localScopes[functionName] as LogicTopScope;
+      this.currWorkingScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[
+        functionName
+      ] as LogicTopScope;
     }
   }
 
@@ -92,16 +92,20 @@ export class TopScopeDepPlugin extends DepPlugin {
         const callerName: string = (parent.object as Identifier).name as string;
         const scopeName: string = (parent.property as Identifier).name as string;
         if (scopeName.slice(0, 3) === 'use') {
-          const targetProgram: TopScopeDepend = this.program.importScopeProvider.imports[callerName] as TopScopeDepend;
+          const targetProgram: TopScopeDepend = this.program.getPluginInstance(ImportScopeProvider).imports[
+            callerName
+          ] as TopScopeDepend;
           this.currWorkingScope.scopeDepMap[scopeName] =
             typeof targetProgram === 'object'
-              ? (this.program.importScopeProvider.imports[callerName] as TopScopeMap)[scopeName]
+              ? (this.program.getPluginInstance(ImportScopeProvider).imports[callerName] as TopScopeMap)[scopeName]
               : `${targetProgram}#${scopeName}`;
         }
       } else {
         const scopeName: string = currCallee.name as string;
         if (scopeName.slice(0, 3) === 'use') {
-          this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
+          this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
+            scopeName
+          ];
         }
       }
     }
@@ -115,7 +119,9 @@ export class TopScopeDepPlugin extends DepPlugin {
   protected async visitPath8(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
+        scopeName
+      ];
     }
   }
 
@@ -130,7 +136,9 @@ export class TopScopeDepPlugin extends DepPlugin {
     }
     const scopeName: string = node.name as string;
     if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
-      this.currWorkingScope.scopeDepMap[scopeName] = this.program.importScopeProvider.imports[scopeName];
+      this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
+        scopeName
+      ];
     }
   }
 }
