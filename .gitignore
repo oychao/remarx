@@ -6,3 +6,6 @@ ast
 remarx_ast
 demo/dist
 *.vsix
+.rpt2_cache
+bin
+yarn*
