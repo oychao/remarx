@@ -13,3 +13,4 @@ Describe dependency graphs for React project.
 4. [ ] support property deps
 5. [ ] state provider & consumer deps
 6. [ ] better view UI
+7. [ ] provide a cli tool
