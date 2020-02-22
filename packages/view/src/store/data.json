@@ -1,0 +1,85 @@
+{
+  "topScopeGraphData": {
+    "nodes": [
+      "/Users/ouyangchao/Code/remarx/packages/view/index.tsx#ReactDOM",
+      "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx#App",
+      "react#useCallback",
+      "react#useState",
+      "react#useMemo"
+    ],
+    "dependencies": [
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/index.tsx#ReactDOM",
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx#App"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx#App",
+        "react#useCallback"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx#App",
+        "react#useState"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx#App",
+        "react#useMemo"
+      ]
+    ]
+  },
+  "fileGraphData": {
+    "nodes": [
+      "/Users/ouyangchao/Code/remarx/packages/view/index.tsx",
+      "react",
+      "react-dom",
+      "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/index.ts",
+      "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+      "comps/DepGraph",
+      "comps/DepGraph/DepNode",
+      "src/services",
+      "src/utils",
+      "store/index"
+    ],
+    "dependencies": [
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/index.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/index.tsx",
+        "react-dom"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/index.tsx",
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/index.ts"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/index.ts",
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "react"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "comps/DepGraph"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "comps/DepGraph/DepNode"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "src/services"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "src/utils"
+      ],
+      [
+        "/Users/ouyangchao/Code/remarx/packages/view/src/components/App/App.tsx",
+        "store/index"
+      ]
+    ]
+  }
+}

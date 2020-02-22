@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM"],
+    "sourceMap": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "rootDir": "./",
+    "baseUrl": "./src",
+    "paths": {
+      // "@utils/*": ["utils/*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": false,
+    "importHelpers": true,
+    "strictNullChecks": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true
+  },
+  "exclude": ["node_modules", "build", "*.js", "src/pages/home/index.js"],
+  "typeRoots": ["node", "node_modules/@types", "./typings"]
+}
