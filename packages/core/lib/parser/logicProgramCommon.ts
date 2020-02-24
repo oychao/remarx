@@ -57,8 +57,10 @@ export class LogicProgramCommon extends LogicAbstractProgram {
 
     // initialize plugins
     LogicProgramCommon.PluginClasses.forEach(PluginClass => {
-      this.pluginMap[PluginClass.name] = Reflect.construct(PluginClass, [this]);
-      this.pluginList.push(this.pluginMap[PluginClass.name]);
+      if (!this.pluginMap[PluginClass.name]) {
+        this.pluginMap[PluginClass.name] = Reflect.construct(PluginClass, [this]);
+        this.pluginList.push(this.pluginMap[PluginClass.name]);
+      }
     });
   }
 
