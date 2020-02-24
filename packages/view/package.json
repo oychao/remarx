@@ -14,9 +14,9 @@
   "keywords": [],
   "main": "index.ts",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:debug": "cross-env WEBPACK_DEBUG=true npm run build",
-    "start": "cross-env NODE_ENV=development webpack-dev-server",
+    "watch": "node node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production webpack",
+    "build:debug": "node node_modules/cross-env/dist/bin/cross-env.js WEBPACK_DEBUG=true npm run build",
+    "start": "node node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=development webpack-dev-server",
     "test": "mocha --require intelli-espower-loader test/**/*.spec.js"
   },
   "devDependencies": {

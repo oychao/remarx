@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "Entrypoint",
     "PIII",
     "VCMI",
     "abbrs",
@@ -11,6 +12,7 @@
     "esnext",
     "espower",
     "graphlib",
+    "gulplog",
     "happypack",
     "immer",
     "intelli",

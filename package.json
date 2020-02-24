@@ -2,7 +2,15 @@
   "name": "root",
   "private": true,
   "license": "WTFPL",
+  "scripts": {
+    "dev": "gulp",
+    "start": "npm run dev"
+  },
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "chalk": "^3.0.0",
+    "gulp": "^4.0.2",
+    "gulplog": "^1.0.0",
+    "lerna": "^3.20.2",
+    "shelljs": "^0.8.3"
   }
 }

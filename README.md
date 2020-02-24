@@ -9,7 +9,7 @@ Describe dependency graphs for React project.
 2. [x] monorepos
    1. [x] publish core npm package
    2. [x] publish vscode plugin
-3. [ ] build developing environment for monorepos
+3. [x] build developing environment for monorepos
 4. [ ] support class component
 5. [ ] support property deps
 6. [ ] state provider & consumer deps
