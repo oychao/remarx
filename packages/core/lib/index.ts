@@ -4,6 +4,7 @@ import { LogicAbstractProgram } from './parser/logicAbstractProgram';
 import { LogicProgramCommon } from './parser/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './parser/logicTopScope';
+import { ClassCompProvider } from './plugin/classCompProvider';
 import { DepFilePlugin } from './plugin/depFilePlugin';
 import { DepPlugin } from './plugin/depPlugin';
 import { ExportScopeProvider } from './plugin/exportScopeProvider';
@@ -16,6 +17,7 @@ import { Config } from './types';
 [
   DepFilePlugin,
   LocalScopeProvider,
+  ClassCompProvider,
   ExportScopeProvider,
   ImportScopeProvider,
   TopScopeDepPlugin,
