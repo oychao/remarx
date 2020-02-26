@@ -83,6 +83,7 @@ export abstract class DepPlugin {
     jsx_mem_exp: AST_NODE_TYPES.JSXMemberExpression,
     jsx_idt: AST_NODE_TYPES.JSXIdentifier,
     blk: AST_NODE_TYPES.BlockStatement,
+    cls_dton: AST_NODE_TYPES.ClassDeclaration,
   };
 
   protected program: LogicProgramCommon;
