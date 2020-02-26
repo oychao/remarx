@@ -7,6 +7,7 @@ import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
 
 import './style.less';
+import { Title } from './Title';
 
 function determineTopScopeStyle(node: dagre.Node): NodeStyle {
   const lastFlag = node.label.split('#').pop();
@@ -59,6 +60,7 @@ export function App() {
   return (
     <div className='app'>
       <header className='app__header'>
+        <Title title='remarx' />
         <input
           id='select-index-1'
           type='radio'
