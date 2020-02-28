@@ -5,6 +5,8 @@ import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 
 export class ClassCompProvider extends DepPlugin {
+  public classComponents: any = [];
+
   constructor(program: LogicProgramCommon) {
     super(program);
   }
