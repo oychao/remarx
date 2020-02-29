@@ -1,6 +1,7 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { Node } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
+import { ImplementedClass } from './implementedClass';
 import { ImplementedNode } from './implementedNode';
 import { ImplementedProgram } from './implementedProgram';
 import { ImplementedScope } from './implementedScope';
@@ -11,6 +12,8 @@ function getPossibleImplementedNodeConstructor(type: AST_NODE_TYPES): typeof Imp
       return ImplementedProgram;
     case AST_NODE_TYPES.BlockStatement:
       return ImplementedScope as typeof ImplementedNode;
+    case AST_NODE_TYPES.ClassDeclaration:
+      return ImplementedClass as typeof ImplementedNode;
     default:
       return ImplementedNode;
   }

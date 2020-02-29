@@ -1,9 +1,10 @@
 import { startWithCapitalLetter } from '../utils';
 import { ImplementedScope } from './implementedScope';
+import { LogicClass } from './logicClass';
 import { LogicProgramCommon } from './logicProgramCommon';
 import { LogicScope } from './logicScope';
 
-export type TopScopeDepend = LogicTopScope | string | undefined;
+export type TopScopeDepend = LogicTopScope | LogicClass | string | undefined;
 
 export enum TOP_SCOPE_TYPE {
   Hook = 'Hook',
@@ -23,7 +24,7 @@ export class LogicTopScope extends LogicScope {
     for (const key in scopeDepMap) {
       if (scopeDepMap.hasOwnProperty(key)) {
         const dep = scopeDepMap[key];
-        if (dep instanceof LogicTopScope || typeof dep === 'string') {
+        if (dep instanceof LogicTopScope || dep instanceof LogicClass || typeof dep === 'string') {
           await cb.call(null, dep, key, scopeDepMap);
         } else if (typeof dep === 'object') {
           LogicTopScope.dfsWalkTopScopeMap(dep, cb);

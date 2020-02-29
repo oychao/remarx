@@ -1,6 +1,7 @@
 import { setConfig } from './config';
 import { ImplementedNode } from './parser/implementedNode';
 import { LogicAbstractProgram } from './parser/logicAbstractProgram';
+import { LogicClass } from './parser/logicClass';
 import { LogicProgramCommon } from './parser/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/logicProgramEntrance';
 import { LogicTopScope, TopScopeDepend } from './parser/logicTopScope';
@@ -105,13 +106,14 @@ export class Remarx extends LogicAbstractProgram {
       }
     );
 
-    let currScope: LogicTopScope = queue.pop() as LogicTopScope;
+    let currScope: TopScopeDepend = queue.pop() as TopScopeDepend;
     while (currScope) {
-      if (currScope instanceof LogicTopScope) {
+      if (currScope instanceof LogicTopScope || currScope instanceof LogicClass) {
+        console.log(currScope);
         const { depSign } = currScope;
         scopes.add(depSign);
         await currScope.forEachDepScope(async dep => {
-          if (dep instanceof LogicTopScope) {
+          if (dep instanceof LogicTopScope || dep instanceof LogicClass) {
             queue.push(dep);
             dependencies.push([depSign, dep.depSign]);
           } else if (typeof dep === 'string') {

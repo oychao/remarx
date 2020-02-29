@@ -7,7 +7,7 @@ import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
 
 import './style.less';
-import { Title } from './Title';
+import Title from './Title';
 
 function determineTopScopeStyle(node: dagre.Node): NodeStyle {
   const lastFlag = node.label.split('#').pop();

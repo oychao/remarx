@@ -5,17 +5,19 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ImplementedNode } from '../parser/implementedNode';
+import { LogicClass } from '../parser/logicClass';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { LogicTopScope, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 import { LocalScopeProvider } from './localScopeProvider';
+import { ClassCompProvider } from './classCompProvider';
 
 export class ExportScopeProvider extends DepPlugin {
   // export scopes
   public exports: TopScopeMap = {};
 
   // default export scope
-  public defaultExport: LogicTopScope | undefined;
+  public defaultExport: LogicTopScope | LogicClass | undefined;
 
   constructor(program: LogicProgramCommon) {
     super(program);
@@ -76,7 +78,9 @@ export class ExportScopeProvider extends DepPlugin {
    * handler pattern:
    * export const foo = ...;
    * export function foo () {}
+   * export class foo
    */
+  @selector('exp_n_dton > cls_dton > idt')
   @selector('exp_n_dton > f_dton > idt')
   @selector('exp_n_dton > v_dton > v_dtor > idt')
   protected async visitPath4(path: ImplementedNode[], node: Identifier): Promise<void> {
@@ -85,18 +89,28 @@ export class ExportScopeProvider extends DepPlugin {
     if (exportScope instanceof LogicTopScope) {
       this.exports[scopeName] = exportScope;
     }
+    const exportClass = this.program.getPluginInstance(ClassCompProvider).classComponents[scopeName];
+    if (exportClass instanceof LogicClass) {
+      this.exports[scopeName] = exportClass;
+    }
   }
 
   /**
    * handle pattern:
    * export default foo;
+   * export default class foo ...
    */
+  @selector('p > exp_d_dton > cls_dton > idt')
   @selector('p > exp_d_dton > idt')
   protected async visitPath5(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
     if (exportScope instanceof LogicTopScope) {
       this.defaultExport = exportScope;
+    }
+    const exportClass = this.program.getPluginInstance(ClassCompProvider).classComponents[scopeName];
+    if (exportClass instanceof LogicClass) {
+      this.defaultExport = exportClass;
     }
   }
 }
