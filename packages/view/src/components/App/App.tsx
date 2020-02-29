@@ -60,7 +60,6 @@ export function App() {
   return (
     <div className='app'>
       <header className='app__header'>
-        <Title title='remarx' />
         <input
           id='select-index-1'
           type='radio'
@@ -68,7 +67,9 @@ export function App() {
           onChange={() => setSelectedIndex(0)}
           checked={0 === selectedIndex}
         />
-        <label htmlFor='select-index-1'>File Dependencies</label>
+        <label htmlFor='select-index-1'>
+          <Title title='File Dependencies' />
+        </label>
         <br />
         <input
           id='select-index-2'
@@ -77,7 +78,9 @@ export function App() {
           onChange={() => setSelectedIndex(1)}
           checked={1 === selectedIndex}
         />
-        <label htmlFor='select-index-2'>Component & Hook Dependencies</label>
+        <label htmlFor='select-index-2'>
+          <Title title='Component & Hook Dependencies' />
+        </label>
       </header>
       <div className='app_main'>{selectedView}</div>
     </div>

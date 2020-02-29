@@ -24,8 +24,37 @@ export function calcGraph(graphView: GraphView): DAGraphView {
     rankdir: 'LR',
   });
 
-  const nodes = g.nodes().map(n => g.node(n));
-  const edges = g.edges().map(e => g.edge(e));
+  let nodes = g.nodes().map(n => g.node(n));
+  let edges = g.edges().map(e => g.edge(e));
+
+  let minX = 0;
+  let minY = 0;
+
+  nodes.forEach(node => {
+    minX = node.x < minX ? node.x : minX;
+    minY = node.y < minY ? node.y : minY;
+  });
+
+  edges.forEach(edge => {
+    edge.points.forEach(point => {
+      minX = point.x < minX ? point.x : minX;
+      minY = point.y < minY ? point.y : minY;
+    });
+  });
+
+  nodes = nodes.map(node => ({
+    ...node,
+    x: node.x - minX,
+    y: node.y - minY,
+  }));
+
+  edges = edges.map(edge => ({
+    ...edge,
+    points: edge.points.map(({ x, y }) => ({
+      x: x - minX,
+      y: y - minY,
+    })),
+  }));
 
   return { nodes, edges };
 }

@@ -12,8 +12,5 @@ export class ClassCompProvider extends DepPlugin {
   }
 
   @selector('cls_dton')
-  protected classComp(path: ImplementedNode[], node: ClassDeclaration) {
-    console.log('==============');
-    console.log(node);
-  }
+  protected classComp(path: ImplementedNode[], node: ClassDeclaration) {}
 }
