@@ -4,7 +4,7 @@ interface TitleProps {
   title: string;
 }
 
-export default class Title extends React.Component<TitleProps> {
+export class Title extends React.Component<TitleProps> {
   constructor(props: TitleProps) {
     super(props);
   }

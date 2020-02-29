@@ -5,9 +5,9 @@ import { NodeStyle } from 'comps/DepGraph/DepNode';
 import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
+import { Title } from './Title';
 
 import './style.less';
-import Title from './Title';
 
 function determineTopScopeStyle(node: dagre.Node): NodeStyle {
   const lastFlag = node.label.split('#').pop();
