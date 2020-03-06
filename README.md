@@ -16,5 +16,5 @@ Describe dependency graphs for React project.
 7. [ ] better view UI
 8. [ ] provide a cli tool
 9. [ ] code optimizations
-   1. [ ] better abstraction for hooks and class / function components
+   1. [x] better abstraction for hooks and class / function components
    2. [ ] implement descendant selectors and loop selectors
