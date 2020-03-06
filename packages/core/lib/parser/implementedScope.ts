@@ -3,9 +3,8 @@ import { BlockStatement, Statement } from '@typescript-eslint/typescript-estree/
 
 import { ImplementedNode } from './implementedNode';
 import { LogicNode } from './logicNode';
-import { LogicScope } from './logicScope';
 
-export class ImplementedScope<T extends LogicNode = LogicScope> extends ImplementedNode<T> implements BlockStatement {
+export class ImplementedScope<T extends LogicNode = LogicNode> extends ImplementedNode<T> implements BlockStatement {
   public type: AST_NODE_TYPES.BlockStatement;
 
   public body: Statement[];
