@@ -1,6 +1,6 @@
 import { ImplementedClass } from './implementedClass';
+import { LogicAbstractDepNode } from './logicAbstractDepNode';
 import { LogicProgramCommon } from './logicProgramCommon';
-import { TopScopeDepend, TopScopeMap, LogicAbstractDepNode } from './logicAbstractDepNode';
 
 export class LogicClassComponent extends LogicAbstractDepNode {
   public name: string;
@@ -15,11 +15,5 @@ export class LogicClassComponent extends LogicAbstractDepNode {
 
   public get depSign(): string {
     return `${this.program.fullPath}#${this.name}`;
-  }
-
-  public async forEachDepScope(
-    cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
-  ): Promise<void> {
-    await LogicAbstractDepNode.dfsWalkTopScopeMap(this.scopeDepMap, cb);
   }
 }
