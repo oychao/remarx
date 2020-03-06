@@ -1,6 +1,6 @@
 import { ImplementedClass } from '../parser/implementedClass';
 import { ImplementedNode } from '../parser/implementedNode';
-import { LogicClassComponent } from '../parser/logicAClassComponent';
+import { LogicClassComponent } from '../parser/logicClassComponent';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 

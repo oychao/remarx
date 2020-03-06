@@ -6,7 +6,7 @@ import {
 
 import { ImplementedNode } from '../parser/implementedNode';
 import { TopScopeMap, LogicAbstractDepNode } from '../parser/logicAbstractDepNode';
-import { LogicClassComponent } from '../parser/logicAClassComponent';
+import { LogicClassComponent } from '../parser/logicClassComponent';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { LocalScopeProvider } from './localScopeProvider';

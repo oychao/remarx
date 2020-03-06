@@ -12,13 +12,14 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../utils';
+import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
 
 export class TopScopeDepPlugin extends DepPlugin {
-  private currWorkingScope: LogicTopScope | undefined;
+  private currWorkingScope: LogicAbstractDepNode | undefined;
 
   constructor(program: LogicProgramCommon) {
     super(program);
@@ -63,11 +64,11 @@ export class TopScopeDepPlugin extends DepPlugin {
 
     if (
       (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') &&
-      this.program.getPluginInstance(LocalScopeProvider).localScopes[functionName] instanceof LogicTopScope
+      this.program.getPluginInstance(LocalScopeProvider).localScopes[functionName] instanceof LogicAbstractDepNode
     ) {
       this.currWorkingScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[
         functionName
-      ] as LogicTopScope;
+      ] as LogicAbstractDepNode;
     }
   }
 
