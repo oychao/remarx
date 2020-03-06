@@ -1,14 +1,14 @@
 import { startWithCapitalLetter } from '../utils';
-import { ImplementedScope } from './implementedScope';
-import { LogicClass } from './logicClass';
+import { ImplementedNode } from './implementedNode';
 import { LogicProgramCommon } from './logicProgramCommon';
-import { LogicScope } from './logicScope';
+import { LogicNode } from './logicNode';
 
-export type TopScopeDepend = LogicTopScope | LogicClass | string | undefined;
+export type TopScopeDepend = LogicAbstractDepNode | string | undefined;
 
 export enum TOP_SCOPE_TYPE {
   Hook = 'Hook',
-  Component = 'Component',
+  FunctionComponent = 'FunctionComponent',
+  ClassComponent = 'ClassComponent',
   Unknown = 'Unknown',
 }
 
@@ -16,7 +16,7 @@ export interface TopScopeMap {
   [key: string]: TopScopeDepend | TopScopeMap;
 }
 
-export class LogicTopScope extends LogicScope {
+export abstract class LogicAbstractDepNode extends LogicNode {
   public static async dfsWalkTopScopeMap(
     scopeDepMap: TopScopeMap,
     cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
@@ -24,10 +24,10 @@ export class LogicTopScope extends LogicScope {
     for (const key in scopeDepMap) {
       if (scopeDepMap.hasOwnProperty(key)) {
         const dep = scopeDepMap[key];
-        if (dep instanceof LogicTopScope || dep instanceof LogicClass || typeof dep === 'string') {
+        if (dep instanceof LogicAbstractDepNode || typeof dep === 'string') {
           await cb.call(null, dep, key, scopeDepMap);
         } else if (typeof dep === 'object') {
-          LogicTopScope.dfsWalkTopScopeMap(dep, cb);
+          LogicAbstractDepNode.dfsWalkTopScopeMap(dep, cb);
         }
       }
     }
@@ -41,14 +41,14 @@ export class LogicTopScope extends LogicScope {
 
   public type: TOP_SCOPE_TYPE;
 
-  constructor(name: string, astNode: ImplementedScope, program: LogicProgramCommon) {
+  constructor(name: string, astNode: ImplementedNode<LogicAbstractDepNode>, program: LogicProgramCommon) {
     super(astNode);
     this.name = name;
     this.program = program;
     if (name.slice(0, 3) === 'use') {
       this.type = TOP_SCOPE_TYPE.Hook;
     } else if (startWithCapitalLetter(name)) {
-      this.type = TOP_SCOPE_TYPE.Component;
+      this.type = TOP_SCOPE_TYPE.FunctionComponent;
     } else {
       this.type = TOP_SCOPE_TYPE.Unknown;
     }
@@ -61,6 +61,6 @@ export class LogicTopScope extends LogicScope {
   public async forEachDepScope(
     cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
   ): Promise<void> {
-    await LogicTopScope.dfsWalkTopScopeMap(this.scopeDepMap, cb);
+    await LogicAbstractDepNode.dfsWalkTopScopeMap(this.scopeDepMap, cb);
   }
 }

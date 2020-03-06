@@ -1,17 +1,14 @@
 import { ImplementedClass } from './implementedClass';
 import { LogicProgramCommon } from './logicProgramCommon';
-import { LogicNode } from './logicNode';
-import { TopScopeDepend, TopScopeMap, LogicTopScope } from './logicTopScope';
+import { TopScopeDepend, TopScopeMap, LogicAbstractDepNode } from './logicAbstractDepNode';
 
-export class LogicClass extends LogicNode {
+export class LogicClassComponent extends LogicAbstractDepNode {
   public name: string;
 
   public program: LogicProgramCommon;
 
-  public scopeDepMap: TopScopeMap = {};
-
   constructor(astNode: ImplementedClass, program: LogicProgramCommon) {
-    super(astNode);
+    super(astNode.id.name, astNode, program);
     this.name = astNode.id.name;
     this.program = program;
   }
@@ -23,6 +20,6 @@ export class LogicClass extends LogicNode {
   public async forEachDepScope(
     cb: (dep: TopScopeDepend, key: string, deps?: TopScopeMap) => Promise<void>
   ): Promise<void> {
-    await LogicTopScope.dfsWalkTopScopeMap(this.scopeDepMap, cb);
+    await LogicAbstractDepNode.dfsWalkTopScopeMap(this.scopeDepMap, cb);
   }
 }

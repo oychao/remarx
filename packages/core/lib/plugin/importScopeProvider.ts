@@ -2,8 +2,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { ImportDeclaration } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ImplementedNode } from '../parser/implementedNode';
+import { TopScopeMap } from '../parser/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
-import { TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 import { ExportScopeProvider } from './exportScopeProvider';
 

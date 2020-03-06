@@ -13,7 +13,6 @@ import {
 
 import { startWithCapitalLetter } from '../utils';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
-import { LogicTopScope, TopScopeDepend, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';

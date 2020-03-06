@@ -5,9 +5,9 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ImplementedNode } from '../parser/implementedNode';
-import { LogicClass } from '../parser/logicClass';
+import { TopScopeMap, LogicAbstractDepNode } from '../parser/logicAbstractDepNode';
+import { LogicClassComponent } from '../parser/logicAClassComponent';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 import { LocalScopeProvider } from './localScopeProvider';
 import { ClassCompProvider } from './classCompProvider';
@@ -17,7 +17,7 @@ export class ExportScopeProvider extends DepPlugin {
   public exports: TopScopeMap = {};
 
   // default export scope
-  public defaultExport: LogicTopScope | LogicClass | undefined;
+  public defaultExport: LogicAbstractDepNode | undefined;
 
   constructor(program: LogicProgramCommon) {
     super(program);
@@ -41,7 +41,7 @@ export class ExportScopeProvider extends DepPlugin {
             specifier.local.name === 'default'
               ? dep.getPluginInstance(ExportScopeProvider).defaultExport
               : dep.getPluginInstance(ExportScopeProvider).exports[specifier.local.name];
-          if (targetScope && targetScope instanceof LogicTopScope) {
+          if (targetScope && targetScope instanceof LogicAbstractDepNode) {
             if (specifier.exported.name === 'default') {
               this.defaultExport = targetScope;
             } else {
@@ -65,7 +65,7 @@ export class ExportScopeProvider extends DepPlugin {
         for (const key in dep.getPluginInstance(ExportScopeProvider).exports) {
           if (dep.getPluginInstance(ExportScopeProvider).exports.hasOwnProperty(key)) {
             const scope = dep.getPluginInstance(ExportScopeProvider).exports[key];
-            if (scope instanceof LogicTopScope) {
+            if (scope instanceof LogicAbstractDepNode) {
               this.exports[key] = scope;
             }
           }
@@ -86,11 +86,11 @@ export class ExportScopeProvider extends DepPlugin {
   protected async visitPath4(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
     const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
-    if (exportScope instanceof LogicTopScope) {
+    if (exportScope instanceof LogicAbstractDepNode) {
       this.exports[scopeName] = exportScope;
     }
     const exportClass = this.program.getPluginInstance(ClassCompProvider).classComponents[scopeName];
-    if (exportClass instanceof LogicClass) {
+    if (exportClass instanceof LogicClassComponent) {
       this.exports[scopeName] = exportClass;
     }
   }
@@ -105,11 +105,11 @@ export class ExportScopeProvider extends DepPlugin {
   protected async visitPath5(path: ImplementedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
-    if (exportScope instanceof LogicTopScope) {
+    if (exportScope instanceof LogicAbstractDepNode) {
       this.defaultExport = exportScope;
     }
     const exportClass = this.program.getPluginInstance(ClassCompProvider).classComponents[scopeName];
-    if (exportClass instanceof LogicClass) {
+    if (exportClass instanceof LogicClassComponent) {
       this.defaultExport = exportClass;
     }
   }

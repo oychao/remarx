@@ -7,10 +7,10 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ImplementedNode } from './implementedNode';
-import { LogicClass } from './logicClass';
+import { LogicClassComponent } from './logicAClassComponent';
 import { LogicNode } from './logicNode';
 
-export class ImplementedClass<T extends LogicNode = LogicClass> extends ImplementedNode<T>
+export class ImplementedClass<T extends LogicNode = LogicClassComponent> extends ImplementedNode<T>
   implements ImplementedNode<T> {
   public id: Identifier;
 

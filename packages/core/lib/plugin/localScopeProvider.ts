@@ -8,8 +8,10 @@ import {
 
 import { startWithCapitalLetter } from '../utils';
 import { BaseNodeDescendant } from '../parser/implementedNode';
+import { TopScopeMap } from '../parser/logicAbstractDepNode';
+import { LogicFunctionComponent } from '../parser/logicFunctionComponent';
+import { LogicHook } from '../parser/logicHook';
 import { LogicProgramCommon } from '../parser/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 
 export class LocalScopeProvider extends DepPlugin {
@@ -57,8 +59,17 @@ export class LocalScopeProvider extends DepPlugin {
       functionName = grantParent?.id?.name as string;
     }
 
-    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.localScopes[functionName] = new LogicTopScope(functionName, node as BaseNodeDescendant, this.program);
+    if (startWithCapitalLetter(functionName)) {
+      this.localScopes[functionName] = new LogicFunctionComponent(
+        functionName,
+        node as BaseNodeDescendant,
+        this.program
+      );
+    } else if (functionName.slice(0, 3) === 'use') {
+      this.localScopes[functionName] = new LogicHook(functionName, node as BaseNodeDescendant, this.program);
     }
+
+    // if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
+    // }
   }
 }

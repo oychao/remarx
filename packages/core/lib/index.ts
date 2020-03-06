@@ -1,10 +1,10 @@
 import { setConfig } from './config';
 import { ImplementedNode } from './parser/implementedNode';
+import { LogicAbstractDepNode, TopScopeDepend } from './parser/logicAbstractDepNode';
 import { LogicAbstractProgram } from './parser/logicAbstractProgram';
-import { LogicClass } from './parser/logicClass';
 import { LogicProgramCommon } from './parser/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/logicProgramEntrance';
-import { LogicTopScope, TopScopeDepend } from './parser/logicTopScope';
+// import { TopScopeDepend } from './parser/logicTopScope';
 import { ClassCompProvider } from './plugin/classCompProvider';
 import { DepFilePlugin } from './plugin/depFilePlugin';
 import { DepPlugin } from './plugin/depPlugin';
@@ -92,10 +92,10 @@ export class Remarx extends LogicAbstractProgram {
 
     const queue: TopScopeDepend[] = [];
 
-    await LogicTopScope.dfsWalkTopScopeMap(
+    await LogicAbstractDepNode.dfsWalkTopScopeMap(
       this.program.selectorReactDom.scopeDepMap,
       async (dep: TopScopeDepend): Promise<void> => {
-        if (dep instanceof LogicTopScope) {
+        if (dep instanceof LogicAbstractDepNode) {
           queue.push(dep);
           const { depSign } = dep;
           dependencies.push([entrance, depSign]);
@@ -108,12 +108,11 @@ export class Remarx extends LogicAbstractProgram {
 
     let currScope: TopScopeDepend = queue.pop() as TopScopeDepend;
     while (currScope) {
-      if (currScope instanceof LogicTopScope || currScope instanceof LogicClass) {
-        console.log(currScope);
+      if (currScope instanceof LogicAbstractDepNode) {
         const { depSign } = currScope;
         scopes.add(depSign);
         await currScope.forEachDepScope(async dep => {
-          if (dep instanceof LogicTopScope || dep instanceof LogicClass) {
+          if (dep instanceof LogicAbstractDepNode) {
             queue.push(dep);
             dependencies.push([depSign, dep.depSign]);
           } else if (typeof dep === 'string') {
@@ -123,7 +122,7 @@ export class Remarx extends LogicAbstractProgram {
         });
       }
 
-      currScope = queue.pop() as LogicTopScope;
+      currScope = queue.pop() as LogicAbstractDepNode;
     }
 
     return {
