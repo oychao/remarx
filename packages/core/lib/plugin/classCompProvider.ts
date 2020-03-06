@@ -14,6 +14,6 @@ export class ClassCompProvider extends DepPlugin {
   @selector('cls_dton')
   protected classComp(path: ImplementedNode[], node: ImplementedClass) {
     const logicClassComponent = new LogicClassComponent(node, this.program);
-    this.classComponents[LogicClassComponent.name] = logicClassComponent;
+    this.classComponents[logicClassComponent.name] = logicClassComponent;
   }
 }
