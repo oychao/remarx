@@ -18,7 +18,7 @@ import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
 
-export class TopScopeDepPlugin extends DepPlugin {
+export class ComponentDepPlugin extends DepPlugin {
   private currWorkingScope: LogicAbstractDepNode | undefined;
 
   constructor(program: LogicProgramCommon) {

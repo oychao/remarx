@@ -11,7 +11,7 @@ import { DepPlugin } from './plugin/depPlugin';
 import { ExportScopeProvider } from './plugin/exportScopeProvider';
 import { ImportScopeProvider } from './plugin/importScopeProvider';
 import { LocalScopeProvider } from './plugin/localScopeProvider';
-import { TopScopeDepPlugin } from './plugin/topScopeDepPlugin';
+import { ComponentDepPlugin } from './plugin/componentDepPlugin';
 import { Config } from './types';
 
 // install intrinsic program parser plugins
@@ -21,7 +21,7 @@ import { Config } from './types';
   ClassCompProvider,
   ExportScopeProvider,
   ImportScopeProvider,
-  TopScopeDepPlugin,
+  ComponentDepPlugin,
 ].forEach((PluginClass: Type<DepPlugin>) => LogicProgramCommon.install(PluginClass));
 
 export class Remarx extends LogicAbstractProgram {
