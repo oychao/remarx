@@ -1,4 +1,4 @@
-import { LogicAbstractNode } from './logicAbstractNode';
+import { LogicAbstractNode } from '../logicAbstractNode';
 
 export abstract class LogicAbstractProgram extends LogicAbstractNode {
   public abstract async parse(): Promise<void>;

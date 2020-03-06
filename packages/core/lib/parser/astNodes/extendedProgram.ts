@@ -1,10 +1,10 @@
 import { Comment, Program, Statement, Token } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedNode } from './implementedNode';
-import { LogicAbstractNode } from './logicAbstractNode';
-import { LogicProgramCommon } from './logicProgramCommon';
+import { ExtendedNode } from './extendedNode';
+import { LogicAbstractNode } from '../logicAbstractNode';
+import { LogicProgramCommon } from '../programs/logicProgramCommon';
 
-export class ImplementedProgram<T extends LogicAbstractNode = LogicProgramCommon> extends ImplementedNode<T>
+export class ExtendedProgram<T extends LogicAbstractNode = LogicProgramCommon> extends ExtendedNode<T>
   implements Program {
   public body: Statement[];
   public sourceType: 'module' | 'script' = 'module';

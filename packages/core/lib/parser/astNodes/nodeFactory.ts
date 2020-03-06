@@ -1,37 +1,37 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { Node } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedClass } from './implementedClass';
-import { ImplementedNode } from './implementedNode';
-import { ImplementedProgram } from './implementedProgram';
-import { ImplementedScope } from './implementedScope';
+import { ExtendedClass } from './extendedClass';
+import { ExtendedNode } from './extendedNode';
+import { ExtendedProgram } from './extendedProgram';
+import { ExtendedScope } from './extendedScope';
 
-function getPossibleImplementedNodeConstructor(type: AST_NODE_TYPES): typeof ImplementedNode {
+function getPossibleExtendedNodeConstructor(type: AST_NODE_TYPES): typeof ExtendedNode {
   switch (type) {
     case AST_NODE_TYPES.Program:
-      return ImplementedProgram;
+      return ExtendedProgram;
     case AST_NODE_TYPES.BlockStatement:
-      return ImplementedScope as typeof ImplementedNode;
+      return ExtendedScope as typeof ExtendedNode;
     case AST_NODE_TYPES.ClassDeclaration:
-      return ImplementedClass as typeof ImplementedNode;
+      return ExtendedClass as typeof ExtendedNode;
     default:
-      return ImplementedNode;
+      return ExtendedNode;
   }
 }
 
-export function parseAstToImplementedNode<R extends ImplementedProgram>(astNode: Node & any): R {
-  const ClassConstructor = getPossibleImplementedNodeConstructor(astNode.type);
+export function parseAstToExtendedNode<R extends ExtendedProgram>(astNode: Node & any): R {
+  const ClassConstructor = getPossibleExtendedNodeConstructor(astNode.type);
   const node = Reflect.construct(ClassConstructor, [astNode]);
 
   for (const key in astNode) {
     if (astNode.hasOwnProperty(key)) {
       if (astNode[key] && typeof astNode[key] === 'object') {
         if (astNode[key].type) {
-          node[key] = parseAstToImplementedNode(astNode[key]);
+          node[key] = parseAstToExtendedNode(astNode[key]);
         } else if (Array.isArray(astNode[key])) {
           node[key] = astNode[key].map((subNode: Node) => {
             if (subNode.type) {
-              return parseAstToImplementedNode(subNode);
+              return parseAstToExtendedNode(subNode);
             } else {
               return subNode;
             }

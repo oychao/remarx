@@ -1,7 +1,7 @@
-import { ImplementedClass } from '../parser/implementedClass';
-import { ImplementedNode } from '../parser/implementedNode';
-import { LogicClassComponent } from '../parser/logicClassComponent';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { ExtendedClass } from '../parser/astNodes/extendedClass';
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
+import { LogicClassComponent } from '../parser/compDeps/logicClassComponent';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 
 export class ClassCompProvider extends DepPlugin {
@@ -12,7 +12,7 @@ export class ClassCompProvider extends DepPlugin {
   }
 
   @selector('cls_dton')
-  protected classComp(path: ImplementedNode[], node: ImplementedClass) {
+  protected classComp(path: ExtendedNode[], node: ExtendedClass) {
     const logicClassComponent = new LogicClassComponent(node, this.program);
     this.classComponents[logicClassComponent.name] = logicClassComponent;
   }

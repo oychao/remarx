@@ -6,12 +6,12 @@ import {
   Statement,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedNode } from './implementedNode';
-import { LogicClassComponent } from './logicClassComponent';
-import { LogicNode } from './logicNode';
+import { LogicClassComponent } from '../compDeps/logicClassComponent';
+import { LogicNode } from '../logicNode';
+import { ExtendedNode } from './extendedNode';
 
-export class ImplementedClass<T extends LogicNode = LogicClassComponent> extends ImplementedNode<T>
-  implements ImplementedNode<T> {
+export class ExtendedClass<T extends LogicNode = LogicClassComponent> extends ExtendedNode<T>
+  implements ExtendedNode<T> {
   public id: Identifier;
 
   public type: AST_NODE_TYPES.ClassDeclaration;

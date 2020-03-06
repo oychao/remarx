@@ -1,7 +1,7 @@
-import { startWithCapitalLetter } from '../utils';
-import { ImplementedNode } from './implementedNode';
-import { LogicProgramCommon } from './logicProgramCommon';
-import { LogicNode } from './logicNode';
+import { startWithCapitalLetter } from '../../utils';
+import { ExtendedNode } from '../astNodes/extendedNode';
+import { LogicProgramCommon } from '../programs/logicProgramCommon';
+import { LogicNode } from '../logicNode';
 
 export type TopScopeDepend = LogicAbstractDepNode | string | undefined;
 
@@ -41,7 +41,7 @@ export abstract class LogicAbstractDepNode extends LogicNode {
 
   public type: TOP_SCOPE_TYPE;
 
-  constructor(name: string, astNode: ImplementedNode<LogicAbstractDepNode>, program: LogicProgramCommon) {
+  constructor(name: string, astNode: ExtendedNode<LogicAbstractDepNode>, program: LogicProgramCommon) {
     super(astNode);
     this.name = name;
     this.program = program;

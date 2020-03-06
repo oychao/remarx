@@ -1,13 +1,13 @@
-import { ImplementedClass } from './implementedClass';
+import { ExtendedClass } from '../astNodes/extendedClass';
+import { LogicProgramCommon } from '../programs/logicProgramCommon';
 import { LogicAbstractDepNode } from './logicAbstractDepNode';
-import { LogicProgramCommon } from './logicProgramCommon';
 
 export class LogicClassComponent extends LogicAbstractDepNode {
   public name: string;
 
   public program: LogicProgramCommon;
 
-  constructor(astNode: ImplementedClass, program: LogicProgramCommon) {
+  constructor(astNode: ExtendedClass, program: LogicProgramCommon) {
     super(astNode.id.name, astNode, program);
     this.name = astNode.id.name;
     this.program = program;

@@ -12,8 +12,8 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { startWithCapitalLetter } from '../utils';
-import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/logicAbstractDepNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';

@@ -2,13 +2,13 @@ import * as parser from '@typescript-eslint/typescript-estree';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { getConfig } from '../config';
-import { PARSE_CONFIG } from '../constant';
-import { simplifyAst } from '../utils';
-import { DepPlugin } from '../plugin/depPlugin';
-import { ImplementedNode } from './implementedNode';
+import { getConfig } from '../../config';
+import { PARSE_CONFIG } from '../../constant';
+import { simplifyAst } from '../../utils';
+import { DepPlugin } from '../../plugin/depPlugin';
+import { ExtendedNode } from '../astNodes/extendedNode';
 import { LogicAbstractProgram } from './logicAbstractProgram';
-import { parseAstToImplementedNode } from './nodeFactory';
+import { parseAstToExtendedNode } from '../astNodes/nodeFactory';
 
 export type ProgramDepend = LogicProgramCommon | string | undefined;
 
@@ -38,7 +38,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     LogicProgramCommon.pool = {};
   }
 
-  protected astNode: ImplementedNode<LogicProgramCommon> | undefined;
+  protected astNode: ExtendedNode<LogicProgramCommon> | undefined;
 
   private initialized: boolean = false;
 
@@ -87,7 +87,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       const astFullPath = path.resolve(astDir, `${this.filename}.json`);
       await fs.promises.writeFile(astFullPath, astStr);
     }
-    this.astNode = parseAstToImplementedNode(astObj);
+    this.astNode = parseAstToExtendedNode(astObj);
 
     // set `this` as logicNode of current ast node
     this.astNode.logicNode = this;

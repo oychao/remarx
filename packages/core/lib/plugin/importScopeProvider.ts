@@ -1,9 +1,9 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { ImportDeclaration } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedNode } from '../parser/implementedNode';
-import { TopScopeMap } from '../parser/logicAbstractDepNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
+import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { ExportScopeProvider } from './exportScopeProvider';
 
@@ -22,7 +22,7 @@ export class ImportScopeProvider extends DepPlugin {
    * import * as Foo from './foo';
    */
   @selector('p > imp_dton')
-  protected async visitPath1(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
+  protected async visitPath1(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {

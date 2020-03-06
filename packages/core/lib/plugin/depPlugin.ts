@@ -2,11 +2,11 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import * as path from 'path';
 
 import { fileExists } from '../utils';
-import { BaseNodeDescendant, ImplementedNode } from '../parser/implementedNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { BaseNodeDescendant, ExtendedNode } from '../parser/astNodes/extendedNode';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 
 export type NodeHandler = (
-  path: ImplementedNode[],
+  path: ExtendedNode[],
   node: BaseNodeDescendant,
   parent: BaseNodeDescendant,
   grantParent: BaseNodeDescendant
@@ -122,7 +122,7 @@ export abstract class DepPlugin {
     return undefined;
   }
 
-  private matchDepPlugins(path: ImplementedNode[]): NodeHandler | undefined {
+  private matchDepPlugins(path: ExtendedNode[]): NodeHandler | undefined {
     const selectorHandlerMap = (this as any).getDepPluginHandlerMap ? (this as any).getDepPluginHandlerMap() : [];
 
     for (let i = 0; i < selectorHandlerMap.length; i++) {
@@ -164,7 +164,7 @@ export abstract class DepPlugin {
     return undefined;
   }
 
-  public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
+  public async visit(node: ExtendedNode, path: ExtendedNode[] = []): Promise<void> {
     path.push(node);
     const handler = this.matchDepPlugins(path);
 
@@ -175,12 +175,12 @@ export abstract class DepPlugin {
     for (const key in node) {
       if (node.hasOwnProperty(key)) {
         const value = (node as any)[key];
-        if (value instanceof ImplementedNode) {
+        if (value instanceof ExtendedNode) {
           await value.accept(this, [...path]);
         } else if (Array.isArray(value)) {
           for (let i = 0; i < value.length; i++) {
             const subValue = value[i];
-            if (subValue instanceof ImplementedNode) {
+            if (subValue instanceof ExtendedNode) {
               await subValue.accept(this, [...path]);
             }
           }

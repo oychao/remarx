@@ -1,4 +1,4 @@
-import { ReactDomPlugin } from '../plugin/reactDomPlugin';
+import { ReactDomPlugin } from '../../plugin/reactDomPlugin';
 import { LogicProgramCommon } from './logicProgramCommon';
 
 export class LogicProgramEntrance extends LogicProgramCommon {

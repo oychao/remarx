@@ -1,9 +1,9 @@
 import { setConfig } from './config';
-import { ImplementedNode } from './parser/implementedNode';
-import { LogicAbstractDepNode, TopScopeDepend } from './parser/logicAbstractDepNode';
-import { LogicAbstractProgram } from './parser/logicAbstractProgram';
-import { LogicProgramCommon } from './parser/logicProgramCommon';
-import { LogicProgramEntrance } from './parser/logicProgramEntrance';
+import { ExtendedNode } from './parser/astNodes/extendedNode';
+import { LogicAbstractDepNode, TopScopeDepend } from './parser/compDeps/logicAbstractDepNode';
+import { LogicAbstractProgram } from './parser/programs/logicAbstractProgram';
+import { LogicProgramCommon } from './parser/programs/logicProgramCommon';
+import { LogicProgramEntrance } from './parser/programs/logicProgramEntrance';
 // import { TopScopeDepend } from './parser/logicTopScope';
 import { ClassCompProvider } from './plugin/classCompProvider';
 import { DepFilePlugin } from './plugin/depFilePlugin';
@@ -29,7 +29,7 @@ export class Remarx extends LogicAbstractProgram {
 
   public static purgeCache = LogicProgramCommon.purge;
 
-  protected astNode: ImplementedNode | undefined;
+  protected astNode: ExtendedNode | undefined;
 
   protected fullPath: string;
   private program: LogicProgramEntrance;

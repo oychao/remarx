@@ -4,8 +4,8 @@ import {
   Literal,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { ImplementedNode } from '../parser/implementedNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin } from './depPlugin';
 import { selector } from './depPlugin';
 
@@ -23,7 +23,7 @@ export class DepFilePlugin extends DepPlugin {
    * import * as Foo from './foo';
    */
   @selector('p > imp_dton')
-  protected async visitPath1(path: ImplementedNode[], node: ImportDeclaration): Promise<void> {
+  protected async visitPath1(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       await this.asyncImportLiteralSource(node.source.value as string);
     }
@@ -36,7 +36,7 @@ export class DepFilePlugin extends DepPlugin {
    */
   @selector('p > exp_a_dton > lit')
   @selector('exp_n_dton > lit')
-  protected async visitPath2(path: ImplementedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
+  protected async visitPath2(path: ExtendedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
     if (node.value) {
       await this.asyncImportLiteralSource(node.value as string);
     }
