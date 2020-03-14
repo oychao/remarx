@@ -1,3 +1,3 @@
-import { LogicAbstractDepNode } from './logicAbstractDepNode';
+import { LogicHookUsableClass } from './logicHookUsable';
 
-export class LogicHook extends LogicAbstractDepNode {}
+export class LogicHook extends LogicHookUsableClass {}
