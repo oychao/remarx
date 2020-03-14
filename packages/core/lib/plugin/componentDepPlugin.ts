@@ -9,6 +9,7 @@ import {
   JSXIdentifier,
   JSXMemberExpression,
   MemberExpression,
+  VariableDeclarator,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
@@ -17,6 +18,7 @@ import { startWithCapitalLetter } from '../utils';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
+import { LogicHookUsableClass } from '../parser/compDeps/logicHookUsable';
 
 export class ComponentDepPlugin extends DepPlugin {
   private currWorkingScope: LogicAbstractDepNode | undefined;
@@ -78,21 +80,24 @@ export class ComponentDepPlugin extends DepPlugin {
    * Foo.useFoo();
    */
   @selector('cl')
-  protected async visitPath7(path: any[], node: CallExpression): Promise<void> {
+  protected async visitPath7(path: any[], node: CallExpression, parent: VariableDeclarator): Promise<void> {
     const nodes: MemberExpression[] = [];
     let currCallee = node.callee as MemberExpression | Identifier;
     while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
       nodes.push(currCallee);
       currCallee = currCallee.object as MemberExpression | Identifier;
     }
-    const parent = nodes.pop();
+    const calleeParent = nodes.pop();
+
+    let targetProgram: TopScopeDepend;
+    let scopeName: string;
 
     if (this.currWorkingScope) {
-      if (parent) {
-        const callerName: string = (parent.object as Identifier).name as string;
-        const scopeName: string = (parent.property as Identifier).name as string;
+      if (calleeParent) {
+        const callerName: string = (calleeParent.object as Identifier).name as string;
+        scopeName = (calleeParent.property as Identifier).name as string;
         if ('use' === scopeName.slice(0, 3)) {
-          const targetProgram: TopScopeDepend =
+          targetProgram =
             (this.program.getPluginInstance(LocalScopeProvider).localScopes[callerName] as TopScopeDepend) ||
             (this.program.getPluginInstance(ImportScopeProvider).imports[callerName] as TopScopeDepend);
           this.currWorkingScope.scopeDepMap[scopeName] =
@@ -101,11 +106,25 @@ export class ComponentDepPlugin extends DepPlugin {
               : `${targetProgram}#${scopeName}`;
         }
       } else {
-        const scopeName: string = currCallee.name as string;
+        scopeName = currCallee.name as string;
         if ('use' === scopeName.slice(0, 3)) {
-          this.currWorkingScope.scopeDepMap[scopeName] =
+          targetProgram = this.currWorkingScope.scopeDepMap[scopeName] =
             (this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] as TopScopeDepend) ||
-            this.program.getPluginInstance(ImportScopeProvider).imports[scopeName];
+            (this.program.getPluginInstance(ImportScopeProvider).imports[scopeName] as TopScopeDepend);
+        }
+      }
+
+      if (scopeName && 'use' === scopeName.slice(0, 3)) {
+        if (this.currWorkingScope instanceof LogicHookUsableClass) {
+          if ('react' === targetProgram && 'useState' === scopeName) {
+            // array destruction
+            if (AST_NODE_TYPES.VariableDeclarator === parent.type && AST_NODE_TYPES.ArrayPattern === parent.id.type) {
+              this.currWorkingScope.useStateStore.register([
+                (parent.id.elements[0] as Identifier)?.name,
+                (parent.id.elements[1] as Identifier)?.name,
+              ]);
+            }
+          }
         }
       }
     }

@@ -17,9 +17,16 @@ class UseStateStruct {
     if (this.stateMap[useStateRetType[0]] || this.setterMap[useStateRetType[1]]) {
       return;
     }
+    if (null === useStateRetType[0] && null === useStateRetType[1]) {
+      return;
+    }
     this.list.push(useStateRetType);
-    this.stateMap[useStateRetType[0]] = useStateRetType[1];
-    this.setterMap[useStateRetType[1]] = useStateRetType[0];
+    if (useStateRetType[0]) {
+      this.stateMap[useStateRetType[0]] = useStateRetType[1] || null;
+    }
+    if (useStateRetType[1]) {
+      this.setterMap[useStateRetType[1]] = useStateRetType[0] || null;
+    }
   }
 
   public getSetter(state: string): string {

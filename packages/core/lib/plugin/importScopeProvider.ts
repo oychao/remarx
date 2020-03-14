@@ -33,8 +33,12 @@ export class ImportScopeProvider extends DepPlugin {
 
         if (AST_NODE_TYPES.ImportSpecifier === specifier.type) {
           const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).exports[specifierName];
-          if (exportOfDep) {
-            this.imports[specifierName] = exportOfDep;
+          if ((node.source.value as string).charAt(0) === '.') {
+            if (exportOfDep) {
+              this.imports[specifierName] = exportOfDep;
+            }
+          } else {
+            this.imports[specifierName] = node.source.value as string;
           }
         } else if (AST_NODE_TYPES.ImportDefaultSpecifier === specifier.type) {
           const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
