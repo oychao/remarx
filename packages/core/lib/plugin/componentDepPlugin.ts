@@ -11,9 +11,9 @@ import {
   MemberExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { startWithCapitalLetter } from '../utils';
 import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
+import { startWithCapitalLetter } from '../utils';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
@@ -91,21 +91,21 @@ export class ComponentDepPlugin extends DepPlugin {
       if (parent) {
         const callerName: string = (parent.object as Identifier).name as string;
         const scopeName: string = (parent.property as Identifier).name as string;
-        if (scopeName.slice(0, 3) === 'use') {
-          const targetProgram: TopScopeDepend = this.program.getPluginInstance(ImportScopeProvider).imports[
-            callerName
-          ] as TopScopeDepend;
+        if ('use' === scopeName.slice(0, 3)) {
+          const targetProgram: TopScopeDepend =
+            (this.program.getPluginInstance(LocalScopeProvider).localScopes[callerName] as TopScopeDepend) ||
+            (this.program.getPluginInstance(ImportScopeProvider).imports[callerName] as TopScopeDepend);
           this.currWorkingScope.scopeDepMap[scopeName] =
-            typeof targetProgram === 'object'
+            'object' === typeof targetProgram
               ? (this.program.getPluginInstance(ImportScopeProvider).imports[callerName] as TopScopeMap)[scopeName]
               : `${targetProgram}#${scopeName}`;
         }
       } else {
         const scopeName: string = currCallee.name as string;
-        if (scopeName.slice(0, 3) === 'use') {
-          this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
-            scopeName
-          ];
+        if ('use' === scopeName.slice(0, 3)) {
+          this.currWorkingScope.scopeDepMap[scopeName] =
+            (this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] as TopScopeDepend) ||
+            this.program.getPluginInstance(ImportScopeProvider).imports[scopeName];
         }
       }
     }
