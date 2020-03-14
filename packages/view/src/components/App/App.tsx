@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import { DepGraph } from 'comps/DepGraph';
-import { NodeStyle } from 'comps/DepGraph/DepNode';
+import { DepGraph } from '../DepGraph';
+import { NodeStyle } from '../DepGraph/DepNode';
 import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
 import { Title } from './Title';
 import { Counter } from './Counter';
+import { useFoo } from './useFoo';
 
 import './style.less';
 
@@ -39,10 +40,16 @@ function determineFileStyle(node: dagre.Node): NodeStyle {
   }
 }
 
+const useBar = function() {
+  React.useState();
+};
+
 export function App() {
   const handleFileDepNodeClick = React.useCallback((path: string) => {
     openFile(path);
   }, []);
+  useFoo();
+  useBar();
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
