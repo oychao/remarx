@@ -25,12 +25,12 @@ export function parseAstToExtendedNode<R extends ExtendedProgram>(astNode: Node 
 
   for (const key in astNode) {
     if (astNode.hasOwnProperty(key)) {
-      if (astNode[key] && typeof astNode[key] === 'object') {
+      if (astNode[key] && 'object' === typeof astNode[key]) {
         if (astNode[key].type) {
           node[key] = parseAstToExtendedNode(astNode[key]);
         } else if (Array.isArray(astNode[key])) {
           node[key] = astNode[key].map((subNode: Node) => {
-            if (subNode.type) {
+            if (subNode?.type) {
               return parseAstToExtendedNode(subNode);
             } else {
               return subNode;
