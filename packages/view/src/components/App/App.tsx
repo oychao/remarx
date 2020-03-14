@@ -6,6 +6,7 @@ import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
 import { Title } from './Title';
+import { Counter } from './Counter';
 
 import './style.less';
 
