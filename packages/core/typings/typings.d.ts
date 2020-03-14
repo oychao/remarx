@@ -18,3 +18,10 @@ declare interface ViewAction {
 declare interface Type<T> extends Function {
   new (...args: any[]): T;
 }
+
+/**
+ * react typings
+ */
+declare type Dispatch<A> = (value: A) => void;
+
+declare type SetStateAction<S> = S | ((prevState: S) => S);
