@@ -1,5 +1,5 @@
-declare interface GraphView {
-  nodes: string[];
+declare interface GraphView<T = any> {
+  nodes: { [key: string]: T };
   dependencies: [string, string][];
 }
 

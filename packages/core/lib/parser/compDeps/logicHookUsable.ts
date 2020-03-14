@@ -2,7 +2,7 @@ import { ExtendedNode } from '../astNodes/extendedNode';
 import { LogicProgramCommon } from '../programs/logicProgramCommon';
 import { LogicAbstractDepNode } from './logicAbstractDepNode';
 
-class UseStateStruct {
+export class UseStateStruct {
   private list: Array<[string, string]>;
   private stateMap: { [key: string]: string };
   private setterMap: { [key: string]: string };

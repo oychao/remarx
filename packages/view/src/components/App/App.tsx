@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import { DepGraph } from '../DepGraph';
-import { NodeStyle } from '../DepGraph/DepNode';
 import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
 import { data } from 'store/index';
+import { DepGraph } from '../DepGraph';
+import { NodeStyle } from '../DepGraph/DepNode';
+import { Detail } from '../Detail';
 import { Title } from './Title';
 import { Counter } from './Counter';
 import { useFoo } from './useFoo';
@@ -45,11 +46,17 @@ const useBar = function() {
 };
 
 export function App() {
-  const handleFileDepNodeClick = React.useCallback((path: string) => {
-    openFile(path);
-  }, []);
   useFoo();
   useBar();
+
+  const handleFileDepNodeClick = React.useCallback((node: dagre.Node) => {
+    openFile(node.label.split('#')[0]);
+  }, []);
+
+  const [curNode, setCurNode] = React.useState<dagre.Node>(null);
+  const handleCompNodeClick = React.useCallback((node: dagre.Node) => {
+    setCurNode(node);
+  }, []);
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
@@ -60,7 +67,11 @@ export function App() {
         determineStyle={determineFileStyle}
         onNodeClick={handleFileDepNodeClick}
       />,
-      <DepGraph graphModel={data.default.topScopeGraphData} determineStyle={determineTopScopeStyle} />,
+      <DepGraph
+        graphModel={data.default.topScopeGraphData}
+        determineStyle={determineTopScopeStyle}
+        onNodeClick={handleCompNodeClick}
+      />,
     ];
     return options[selectedIndex];
   }, [selectedIndex]);
@@ -90,7 +101,10 @@ export function App() {
           <Title title='Component & Hook Dependencies' />
         </label>
       </header>
-      <div className='app_main'>{selectedView}</div>
+      <main className='app_main'>{selectedView}</main>
+      <footer className='app_footer'>
+        <Detail node={curNode} />
+      </footer>
     </div>
   );
 }

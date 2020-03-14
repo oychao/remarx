@@ -1,6 +1,7 @@
 import { setConfig } from './config';
 import { ExtendedNode } from './parser/astNodes/extendedNode';
 import { LogicAbstractDepNode, TopScopeDepend } from './parser/compDeps/logicAbstractDepNode';
+import { LogicHookUsableClass, UseStateStruct } from './parser/compDeps/logicHookUsable';
 import { LogicAbstractProgram } from './parser/programs/logicAbstractProgram';
 import { LogicProgramCommon } from './parser/programs/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/programs/logicProgramEntrance';
@@ -51,7 +52,7 @@ export class Remarx extends LogicAbstractProgram {
    * output file dependency dag
    */
   public async getFileDepDag(): Promise<GraphView> {
-    const files = new Set<string>();
+    const files: { [key: string]: boolean } = {};
     const dependencies: [string, string][] = [];
 
     const queue: LogicProgramCommon[] = [this.program];
@@ -59,13 +60,13 @@ export class Remarx extends LogicAbstractProgram {
 
     while (currProgram) {
       if (currProgram instanceof LogicProgramCommon) {
-        files.add(currProgram.fullPath);
+        files[currProgram.fullPath] = true;
         await currProgram.forEachDepFile(async dep => {
           if (dep instanceof LogicProgramCommon) {
             queue.push(dep);
             dependencies.push([currProgram.fullPath, dep.fullPath]);
           } else if (typeof dep === 'string') {
-            files.add(dep);
+            files[dep] = true;
             dependencies.push([currProgram.fullPath, dep]);
           }
         });
@@ -74,7 +75,7 @@ export class Remarx extends LogicAbstractProgram {
     }
 
     return {
-      nodes: Array.from(files),
+      nodes: files,
       dependencies,
     };
   }
@@ -83,12 +84,12 @@ export class Remarx extends LogicAbstractProgram {
    * output hook & component dependency dag
    */
   public async getTopScopeDag(): Promise<GraphView> {
-    const scopes = new Set<string>();
+    const scopes: { [key: string]: UseStateStruct } = {};
     const dependencies: [string, string][] = [];
 
     const entrance: string = `${this.program.fullPath}#ReactDOM`;
 
-    scopes.add(entrance);
+    scopes[entrance] = null;
 
     const queue: TopScopeDepend[] = [];
 
@@ -99,9 +100,13 @@ export class Remarx extends LogicAbstractProgram {
           queue.push(dep);
           const { depSign } = dep;
           dependencies.push([entrance, depSign]);
-          scopes.add(depSign);
+          if (dep instanceof LogicHookUsableClass) {
+            scopes[depSign] = dep.useStateStore;
+          } else {
+            scopes[depSign] = null;
+          }
         } else if (typeof dep === 'string') {
-          scopes.add(dep);
+          scopes[dep] = null;
         }
       }
     );
@@ -110,13 +115,17 @@ export class Remarx extends LogicAbstractProgram {
     while (currScope) {
       if (currScope instanceof LogicAbstractDepNode) {
         const { depSign } = currScope;
-        scopes.add(depSign);
+        if (currScope instanceof LogicHookUsableClass) {
+          scopes[depSign] = currScope.useStateStore;
+        } else {
+          scopes[depSign] = null;
+        }
         await currScope.forEachDepScope(async dep => {
           if (dep instanceof LogicAbstractDepNode) {
             queue.push(dep);
             dependencies.push([depSign, dep.depSign]);
           } else if (typeof dep === 'string') {
-            scopes.add(dep);
+            scopes[dep] = null;
             dependencies.push([depSign, dep]);
           }
         });
@@ -126,7 +135,7 @@ export class Remarx extends LogicAbstractProgram {
     }
 
     return {
-      nodes: Array.from(scopes),
+      nodes: scopes,
       dependencies,
     };
   }

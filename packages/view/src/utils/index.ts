@@ -13,8 +13,8 @@ export function calcGraph(graphView: GraphView): DAGraphView {
   g.setGraph({ rankdir: 'LR' });
   g.setDefaultEdgeLabel(() => ({}));
 
-  rawNodes.forEach(node => {
-    g.setNode(node, { label: node, width: 120, height: 40 });
+  Object.entries(rawNodes).forEach(([node, detail]) => {
+    g.setNode(node, { label: node, width: 120, height: 40, detail });
   });
   dependencies.forEach(([from, to]) => {
     g.setEdge(from, to);

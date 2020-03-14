@@ -7,7 +7,7 @@ import { DepNode, NodeStyle } from './DepNode';
 interface DepGraphProps {
   graphModel: GraphView;
   determineStyle?: (node: dagre.Node) => NodeStyle;
-  onNodeClick?: (path: string) => void;
+  onNodeClick?: (node: dagre.Node) => void;
 }
 
 export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphProps) {

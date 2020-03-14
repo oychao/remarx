@@ -11,7 +11,7 @@ export interface NodeStyle {
 interface DepNodeProps {
   node: dagre.Node;
   determineStyle?: (node: dagre.Node) => NodeStyle;
-  onNodeClick?: (path: string) => void;
+  onNodeClick?: (node: dagre.Node) => void;
 }
 
 /**
@@ -36,7 +36,7 @@ export const DepNode = ({
   }, [label]);
 
   const handleClick: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void = React.useCallback(() => {
-    onNodeClick(label.split('#')[0]);
+    onNodeClick(node);
   }, [label]);
 
   return (

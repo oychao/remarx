@@ -1,7 +1,7 @@
 declare function acquireVsCodeApi(): { postMessage: (message: object) => void };
 
-declare interface GraphView {
-  nodes: string[];
+declare interface GraphView<T = any> {
+  nodes: T;
   dependencies: [string, string][];
 }
 
