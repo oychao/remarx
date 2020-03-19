@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { openFile } from 'src/services';
 import { startWithCapitalLetter } from 'src/utils';
-import { data } from 'store/index';
+import { useDepGraph } from 'store/index';
 import { DepGraph } from '../DepGraph';
 import { NodeStyle } from '../DepGraph/DepNode';
 import { Detail } from '../Detail';
@@ -49,6 +49,8 @@ export function App() {
   useFoo();
   useBar();
 
+  const data = useDepGraph();
+
   const handleFileDepNodeClick = React.useCallback((node: dagre.Node) => {
     openFile(node.label.split('#')[0]);
   }, []);
@@ -63,12 +65,12 @@ export function App() {
   const selectedView = React.useMemo(() => {
     const options = [
       <DepGraph
-        graphModel={data.default.fileGraphData}
+        graphModel={data.fileGraphData}
         determineStyle={determineFileStyle}
         onNodeClick={handleFileDepNodeClick}
       />,
       <DepGraph
-        graphModel={data.default.topScopeGraphData}
+        graphModel={data.topScopeGraphData}
         determineStyle={determineTopScopeStyle}
         onNodeClick={handleCompNodeClick}
       />,
