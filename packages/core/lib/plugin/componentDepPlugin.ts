@@ -116,13 +116,33 @@ export class ComponentDepPlugin extends DepPlugin {
 
       if (scopeName && 'use' === scopeName.slice(0, 3)) {
         if (this.currWorkingScope instanceof LogicHookUsableClass) {
-          if ('react' === targetProgram && 'useState' === scopeName) {
-            // array destruction
-            if (AST_NODE_TYPES.VariableDeclarator === parent.type && AST_NODE_TYPES.ArrayPattern === parent.id.type) {
-              this.currWorkingScope.useStateStore.register([
-                (parent.id.elements[0] as Identifier)?.name,
-                (parent.id.elements[1] as Identifier)?.name,
-              ]);
+          if ('react' === targetProgram) {
+            if ('useState' === scopeName) {
+              // array destruction
+              if (AST_NODE_TYPES.VariableDeclarator === parent.type && AST_NODE_TYPES.ArrayPattern === parent.id.type) {
+                this.currWorkingScope.useStateStore.register([
+                  (parent.id.elements[0] as Identifier)?.name,
+                  (parent.id.elements[1] as Identifier)?.name,
+                ]);
+              }
+            } else if ('useEffect' === scopeName) {
+              // TODO do sth. with useEffect
+            } else if ('useContext' === scopeName) {
+              // TODO do sth. with useContext
+            } else if ('useMemo' === scopeName) {
+              // TODO do sth. with useMemo
+            } else if ('useCallback' === scopeName) {
+              // TODO do sth. with useCallback
+            } else if ('useReducer' === scopeName) {
+              // TODO do sth. with useReducer
+            } else if ('useRef' === scopeName) {
+              // TODO do sth. with useRef
+            } else if ('useLayoutEffect' === scopeName) {
+              // TODO do sth. with useLayoutEffect
+            } else if ('useImperativeHandle' === scopeName) {
+              // TODO do sth. with useImperativeHandle
+            } else if ('useDebugValue' === scopeName) {
+              // TODO do sth. with useDebugValue
             }
           }
         }
