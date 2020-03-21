@@ -1,13 +1,14 @@
 import * as React from 'react';
 
-interface DetailProps {
-  node: dagre.Node;
-}
+import { useStore } from '../../store/index';
 
-export function Detail({ node }: DetailProps) {
+interface DetailProps {}
+
+export function Detail({}: DetailProps) {
+  const { curNode } = useStore();
   return (
     <div>
-      <pre>{JSON.stringify(node?.detail, null, 2)}</pre>
+      <pre>{JSON.stringify(curNode?.detail, null, 2)}</pre>
     </div>
   );
 }

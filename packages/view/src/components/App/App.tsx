@@ -1,45 +1,13 @@
 import * as React from 'react';
 
-import { openFile } from 'src/services';
-import { startWithCapitalLetter } from 'src/utils';
-import { useDepGraph } from 'store/index';
-import { DepGraph } from '../DepGraph';
-import { NodeStyle } from '../DepGraph/DepNode';
 import { Detail } from '../Detail';
 import { Title } from './Title';
-import { Counter } from './Counter';
 import { useFoo } from './useFoo';
 
+import { CompDepGraph } from '../DepGraph/CompDepGraph';
+import { FileDepGraph } from '../DepGraph/FileDepGraph';
+
 import './style.less';
-
-function determineTopScopeStyle(node: dagre.Node): NodeStyle {
-  const lastFlag = node.label.split('#').pop();
-  if (startWithCapitalLetter(lastFlag)) {
-    return {
-      rectFill: 'lightblue',
-      textFill: '#555',
-    };
-  } else {
-    return {
-      rectFill: 'lightgreen',
-      textFill: '#555',
-    };
-  }
-}
-
-function determineFileStyle(node: dagre.Node): NodeStyle {
-  if (node.label.charAt(0) === '/') {
-    return {
-      rectFill: 'orange',
-      textFill: '#555',
-    };
-  } else {
-    return {
-      rectFill: 'pink',
-      textFill: '#555',
-    };
-  }
-}
 
 const useBar = function() {
   React.useState();
@@ -49,32 +17,10 @@ export function App() {
   useFoo();
   useBar();
 
-  const data = useDepGraph();
-
-  const handleFileDepNodeClick = React.useCallback((node: dagre.Node) => {
-    openFile(node.label.split('#')[0]);
-  }, []);
-
-  const [curNode, setCurNode] = React.useState<dagre.Node>(null);
-  const handleCompNodeClick = React.useCallback((node: dagre.Node) => {
-    setCurNode(node);
-  }, []);
-
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const selectedView = React.useMemo(() => {
-    const options = [
-      <DepGraph
-        graphModel={data.fileGraphData}
-        determineStyle={determineFileStyle}
-        onNodeClick={handleFileDepNodeClick}
-      />,
-      <DepGraph
-        graphModel={data.topScopeGraphData}
-        determineStyle={determineTopScopeStyle}
-        onNodeClick={handleCompNodeClick}
-      />,
-    ];
+    const options = [<FileDepGraph />, <CompDepGraph />];
     return options[selectedIndex];
   }, [selectedIndex]);
 
@@ -105,7 +51,7 @@ export function App() {
       </header>
       <main className='app_main'>{selectedView}</main>
       <footer className='app_footer'>
-        <Detail node={curNode} />
+        <Detail />
       </footer>
     </div>
   );
