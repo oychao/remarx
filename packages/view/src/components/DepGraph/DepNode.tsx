@@ -25,9 +25,17 @@ export const DepNode = ({
   const { x, y, height, width, label } = node;
   const nodeStyle = determineStyle(node);
 
-  const showName = React.useMemo(() => {
-    const parts = label.split('/');
-    const lastPart = parts.pop();
+  const displayName = React.useMemo(() => {
+    const parts = (label as string).split('/');
+    let lastPart = parts.pop();
+
+    if (lastPart.includes('#')) {
+      const atomParts = lastPart.split(/#|\./);
+      if (atomParts[atomParts.length - 1] === atomParts[0]) {
+        lastPart = `#${atomParts[0]}`;
+      }
+    }
+
     if (lastPart.slice(0, 5) === 'index') {
       return `${parts.pop()}/${lastPart}`;
     } else {
@@ -43,7 +51,7 @@ export const DepNode = ({
     <g onClick={handleClick} style={{ cursor: 'pointer' }}>
       <rect x={x} y={y} height={height} width={width} style={{ fill: nodeStyle.rectFill }} />
       <text x={x} y={y + NODE_HALF_HEIGHT * 2} style={{ fill: nodeStyle.textFill }}>
-        {showName}
+        {displayName}
       </text>
     </g>
   );
