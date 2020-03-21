@@ -8,6 +8,8 @@ export const StoreContext = React.createContext<{
   data: typeof window.graphData;
   curNode: dagre.Node;
   setCurNode: (node: dagre.Node) => void;
+  mainView: number;
+  setMainView: (num: number) => void;
 }>(null);
 
 interface ProviderProps {
@@ -20,6 +22,7 @@ export function useStore() {
 
 export function Provider({ children }: ProviderProps): JSX.Element {
   const [curNode, setCurNode] = React.useState<dagre.Node>(null);
+  const [mainView, setMainView] = React.useState(0);
 
   return (
     <StoreContext.Provider
@@ -27,6 +30,8 @@ export function Provider({ children }: ProviderProps): JSX.Element {
         data: window.graphData,
         curNode,
         setCurNode,
+        mainView,
+        setMainView,
       }}
     >
       {children}
