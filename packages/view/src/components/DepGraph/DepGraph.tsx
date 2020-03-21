@@ -15,11 +15,11 @@ export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphPr
 
   return (
     <svg style={{ display: 'block', height: '100%', width: '100%' }}>
-      {daGraph.nodes.map(node => (
-        <DepNode key={node.label} node={node} determineStyle={determineStyle} onNodeClick={onNodeClick} />
-      ))}
       {daGraph.edges.map((edge, idx) => (
         <DepEdge key={idx} edge={edge} />
+      ))}
+      {daGraph.nodes.map(node => (
+        <DepNode key={node.label} node={node} determineStyle={determineStyle} onNodeClick={onNodeClick} />
       ))}
     </svg>
   );
