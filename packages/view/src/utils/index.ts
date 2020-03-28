@@ -1,5 +1,8 @@
 import * as dagre from 'dagre';
 
+export const NODE_HALF_WIDTH = 40;
+export const NODE_HALF_HEIGHT = 8;
+
 export function startWithCapitalLetter(str: string): boolean {
   const charCode = str.charCodeAt(0);
   return charCode > 64 && charCode < 91;
@@ -14,7 +17,7 @@ export function calcGraph(graphView: GraphView): DAGraphView {
   g.setDefaultEdgeLabel(() => ({}));
 
   Object.entries(rawNodes).forEach(([node, detail]) => {
-    g.setNode(node, { label: node, width: 120, height: 40, detail });
+    g.setNode(node, { label: node, width: NODE_HALF_WIDTH * 2, height: NODE_HALF_HEIGHT * 2, detail });
   });
   dependencies.forEach(([from, to]) => {
     g.setEdge(from, to);

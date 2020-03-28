@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-export const NODE_HALF_WIDTH = 60;
-export const NODE_HALF_HEIGHT = 20;
+import { NODE_HALF_HEIGHT } from 'utils/index';
 
 export interface NodeStyle {
   rectFill: string;

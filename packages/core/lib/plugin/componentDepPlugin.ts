@@ -96,6 +96,9 @@ export class ComponentDepPlugin extends DepPlugin {
       if (calleeParent) {
         const callerName: string = (calleeParent.object as Identifier).name as string;
         scopeName = (calleeParent.property as Identifier).name as string;
+        if (!scopeName) {
+          return;
+        }
         if ('use' === scopeName.slice(0, 3)) {
           targetProgram =
             (this.program.getPluginInstance(LocalScopeProvider).localScopes[callerName] as TopScopeDepend) ||
@@ -107,6 +110,9 @@ export class ComponentDepPlugin extends DepPlugin {
         }
       } else {
         scopeName = currCallee.name as string;
+        if (!scopeName) {
+          return;
+        }
         if ('use' === scopeName.slice(0, 3)) {
           targetProgram = this.currWorkingScope.scopeDepMap[scopeName] =
             (this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] as TopScopeDepend) ||

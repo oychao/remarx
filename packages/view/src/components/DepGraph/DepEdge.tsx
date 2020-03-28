@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NODE_HALF_HEIGHT, NODE_HALF_WIDTH } from './DepNode';
+import { NODE_HALF_HEIGHT, NODE_HALF_WIDTH } from 'utils/index';
 
 interface DepEdgeProps {
   edge: dagre.GraphEdge;
