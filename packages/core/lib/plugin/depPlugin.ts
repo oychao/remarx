@@ -1,9 +1,11 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import * as path from 'path';
 
-import { fileExists } from '../utils';
+import { getConfig } from '../config';
 import { BaseNodeDescendant, ExtendedNode } from '../parser/astNodes/extendedNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
+import { fileExists } from '../utils';
+import { TOP_SCOPE_TYPE } from '../parser/compDeps/logicAbstractDepNode';
 
 export type NodeHandler = (
   path: ExtendedNode[],
@@ -32,6 +34,13 @@ export enum DepPluginToken {
  * would be visited by specific method of corresponding decent concrete plugin.
  */
 export abstract class DepPlugin {
+  // effective dependency types
+  public static EFFECTIVE_DEP_TYPES = [
+    TOP_SCOPE_TYPE.Hook,
+    TOP_SCOPE_TYPE.ClassComponent,
+    TOP_SCOPE_TYPE.FunctionComponent,
+  ];
+
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
   public static parseDepPluginString(plugin: string): Array<AST_NODE_TYPES | DepPluginToken> {
@@ -92,14 +101,35 @@ export abstract class DepPlugin {
     this.program = program;
   }
 
+  protected rectifyAbsolutePath(sourceValue: string): string {
+    if ('.' === sourceValue.charAt(0)) {
+      return path.resolve(this.program.dirPath, sourceValue);
+    } else {
+      this.program.fileDepMap[sourceValue] = sourceValue;
+      const { alias, sourceFolder, rootDir } = getConfig();
+      if (!alias) {
+        return undefined;
+      }
+      const keys = Object.keys(alias);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const value = alias[key];
+        if (sourceValue.startsWith(key)) {
+          return path.resolve(rootDir, sourceFolder, sourceValue.replace(key, value));
+        }
+      }
+    }
+    return null;
+  }
+
   protected async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgramCommon | undefined> {
     if (sourceValue && typeof sourceValue === 'string') {
-      if (sourceValue.charAt(0) !== '.') {
-        this.program.fileDepMap[sourceValue] = sourceValue;
+      const originPath: string = this.rectifyAbsolutePath(sourceValue);
+
+      if (!originPath) {
         return undefined;
       }
 
-      const originPath = path.resolve(this.program.dirPath, sourceValue);
       let possiblePath = originPath;
       let isFile = await fileExists(possiblePath);
       let i = 0;

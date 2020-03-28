@@ -68,10 +68,10 @@ async function parseViewSource(): Promise<void> {
 
 async function init(): Promise<void> {
   if (!initialized) {
-    vscode.workspace.onDidSaveTextDocument(async (doc: vscode.TextDocument) => {
-      console.log(doc.fileName);
-      await parseViewSource();
-    });
+    // vscode.workspace.onDidSaveTextDocument(async (doc: vscode.TextDocument) => {
+    //   console.log(doc.fileName);
+    //   await parseViewSource();
+    // });
   }
   initialized = true;
 }

@@ -2,7 +2,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import { ImportDeclaration } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
-import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
+import { TopScopeMap, LogicAbstractDepNode } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { ExportScopeProvider } from './exportScopeProvider';
@@ -32,10 +32,17 @@ export class ImportScopeProvider extends DepPlugin {
         }
 
         if (AST_NODE_TYPES.ImportSpecifier === specifier.type) {
-          const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).exports[specifierName];
-          if ((node.source.value as string).charAt(0) === '.') {
+          const pluginInst = dep?.getPluginInstance(ExportScopeProvider);
+          const exportOfDep = pluginInst?.exports[specifierName];
+          if (this.rectifyAbsolutePath(node.source.value as string)) {
             if (exportOfDep) {
-              this.imports[specifierName] = exportOfDep;
+              if (
+                exportOfDep instanceof LogicAbstractDepNode &&
+                DepPlugin.EFFECTIVE_DEP_TYPES.includes(exportOfDep.type)
+              ) {
+                this.imports[specifierName] = exportOfDep;
+                this.program.fileDepMapEffective[dep.fullPath] = dep;
+              }
             }
           } else {
             this.imports[specifierName] = node.source.value as string;
@@ -43,11 +50,26 @@ export class ImportScopeProvider extends DepPlugin {
         } else if (AST_NODE_TYPES.ImportDefaultSpecifier === specifier.type) {
           const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
           if (exportOfDep) {
+            if (
+              exportOfDep instanceof LogicAbstractDepNode &&
+              DepPlugin.EFFECTIVE_DEP_TYPES.includes(exportOfDep.type)
+            ) {
+              this.imports[specifierName] = exportOfDep;
+              this.program.fileDepMapEffective[dep.fullPath] = dep;
+            }
             this.imports[specifierName] = exportOfDep;
           }
         } else if (AST_NODE_TYPES.ImportNamespaceSpecifier === specifier.type) {
-          if ((node.source.value as string).charAt(0) === '.') {
-            this.imports[specifierName] = dep?.getPluginInstance(ExportScopeProvider).exports;
+          if (this.rectifyAbsolutePath(node.source.value as string)) {
+            const exportOfDep = dep?.getPluginInstance(ExportScopeProvider).exports;
+            if (
+              exportOfDep instanceof LogicAbstractDepNode &&
+              DepPlugin.EFFECTIVE_DEP_TYPES.includes(exportOfDep.type)
+            ) {
+              this.imports[specifierName] = exportOfDep;
+              this.program.fileDepMapEffective[dep.fullPath] = dep;
+            }
+            this.imports[specifierName] = exportOfDep;
           } else {
             this.imports[specifierName] = node.source.value as string;
           }

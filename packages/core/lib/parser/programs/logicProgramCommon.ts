@@ -28,8 +28,8 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     let ret: LogicProgramCommon | undefined = LogicProgramCommon.pool[fullPath];
     if (!ret) {
       ret = new LogicProgramCommon(fullPath);
-      await ret.parse();
       LogicProgramCommon.pool[fullPath] = ret;
+      await ret.parse();
     }
     return ret;
   }
@@ -50,6 +50,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
 
   // file dependencies
   public fileDepMap: ProgramMap = {};
+  public fileDepMapEffective: ProgramMap = {};
 
   constructor(fullPath: string) {
     super(fullPath);
@@ -97,16 +98,15 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       const plugin = this.pluginList[i];
       await this.astNode.accept(plugin);
     }
-
     // mark as initialized
     this.initialized = true;
   }
 
   public async forEachDepFile(cb: (dep: ProgramDepend, key: string, deps?: ProgramMap) => Promise<void>) {
-    for (const key in this.fileDepMap) {
-      if (this.fileDepMap.hasOwnProperty(key)) {
-        const fileDep = this.fileDepMap[key];
-        cb.call(null, fileDep, key, this.fileDepMap);
+    for (const key in this.fileDepMapEffective) {
+      if (this.fileDepMapEffective.hasOwnProperty(key)) {
+        const fileDep = this.fileDepMapEffective[key];
+        cb.call(null, fileDep, key, this.fileDepMapEffective);
       }
     }
   }

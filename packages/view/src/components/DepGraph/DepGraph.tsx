@@ -12,9 +12,8 @@ interface DepGraphProps {
 
 export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphProps) {
   const daGraph = calcGraph(graphModel);
-
   return (
-    <svg style={{ display: 'block', height: '100%', width: '100%' }}>
+    <svg height={daGraph.maxY} width={daGraph.maxX}>
       {daGraph.edges.map((edge, idx) => (
         <DepEdge key={idx} edge={edge} />
       ))}

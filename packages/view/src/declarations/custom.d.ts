@@ -8,4 +8,6 @@ declare interface GraphView<T = any> {
 declare interface DAGraphView {
   nodes: dagre.Node[];
   edges: dagre.GraphEdge[];
+  maxX?: number;
+  maxY?: number;
 }
