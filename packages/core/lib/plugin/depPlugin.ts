@@ -1,4 +1,5 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import { CallExpression, Identifier } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import * as path from 'path';
 
 import { getConfig } from '../config';
@@ -198,11 +199,22 @@ export abstract class DepPlugin {
   }
 
   public async visit(node: ExtendedNode, path: ExtendedNode[] = []): Promise<void> {
-    path.push(node);
-    const handler = this.matchDepPlugins(path);
+    const config = getConfig();
+    let ignored: boolean = false;
+    if (
+      AST_NODE_TYPES.CallExpression === node.type &&
+      config?.hof?.ignore.includes((((node as unknown) as CallExpression).callee as Identifier).name)
+    ) {
+      ignored = true;
+    }
 
-    if (handler) {
-      await handler.call(this, [...path], node, path[path.length - 2], path[path.length - 3]);
+    if (!ignored) {
+      path.push(node);
+      const handler = this.matchDepPlugins(path);
+
+      if (handler) {
+        await handler.call(this, [...path], node, path[path.length - 2], path[path.length - 3]);
+      }
     }
 
     for (const key in node) {
