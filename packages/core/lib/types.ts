@@ -1,7 +1,3 @@
-export enum HofAction {
-  IGNORE = 'ignore',
-}
-
 export interface Config {
   rootDir: string;
   sourceFolder: string;
@@ -14,9 +10,7 @@ export interface Config {
   alias?: {
     [key: string]: string;
   };
-  hof?: Array<{
-    module?: string;
-    name: string;
-    action: HofAction;
-  }>;
+  hof?: {
+    ignore: Array<string>;
+  };
 }
