@@ -27,6 +27,7 @@ export enum DepPluginToken {
   KwDescent = '__KwDescent',
   KwLoopStart = '__KwLoopStart',
   KwLoopEnd = '__KwLoopEnd',
+  KwOr = '__KwOr',
 }
 
 /**
@@ -71,11 +72,13 @@ export abstract class DepPlugin {
     'L:(': DepPluginToken.KwLoopStart,
     ')': DepPluginToken.KwLoopEnd,
     ' ': DepPluginToken.KwDescent,
+    '|': DepPluginToken.KwOr,
   };
 
   private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
     p: AST_NODE_TYPES.Program,
     imp_dton: AST_NODE_TYPES.ImportDeclaration,
+    imp: AST_NODE_TYPES.Import,
     exp_n_dton: AST_NODE_TYPES.ExportNamedDeclaration,
     exp_a_dton: AST_NODE_TYPES.ExportAllDeclaration,
     exp_d_dton: AST_NODE_TYPES.ExportDefaultDeclaration,
@@ -199,7 +202,7 @@ export abstract class DepPlugin {
     const handler = this.matchDepPlugins(path);
 
     if (handler) {
-      await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
+      await handler.call(this, [...path], node, path[path.length - 2], path[path.length - 3]);
     }
 
     for (const key in node) {

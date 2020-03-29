@@ -1,5 +1,11 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
-import { ImportDeclaration } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import {
+  ImportDeclaration,
+  CallExpression,
+  Identifier,
+  Literal,
+  VariableDeclarator,
+} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { TopScopeMap, LogicAbstractDepNode } from '../parser/compDeps/logicAbstractDepNode';
@@ -75,6 +81,51 @@ export class ImportScopeProvider extends DepPlugin {
           }
         }
       });
+    }
+  }
+
+  /**
+   * handle pattern:
+   * React.lazy(() => import('foo'))
+   */
+  @selector('cl > imp')
+  protected async lazyComp(
+    path: ExtendedNode[],
+    node: ImportDeclaration,
+    parent: CallExpression,
+    grantParent: CallExpression
+  ) {
+    path.pop(); // node
+    path.pop(); // parent
+    path.pop(); // grantParent
+    const grantGrantParent = (path.pop() as unknown) as CallExpression;
+    if (
+      grantGrantParent &&
+      AST_NODE_TYPES.MemberExpression === grantGrantParent.callee.type &&
+      'React' === (grantGrantParent.callee.object as Identifier).name &&
+      'lazy' === (grantGrantParent.callee.property as Identifier).name
+    ) {
+      let specifierName: string = null;
+      let curNode = path.pop();
+      while (curNode) {
+        if (AST_NODE_TYPES.VariableDeclarator === curNode.type) {
+          specifierName = (((curNode as unknown) as VariableDeclarator).id as Identifier).name;
+          break;
+        }
+        curNode = path.pop();
+      }
+
+      let exportOfDep: LogicAbstractDepNode = null;
+      if (this.rectifyAbsolutePath((parent?.arguments[0] as Literal)?.value as string)) {
+        const dep = await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
+        exportOfDep = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
+      }
+
+      if (!specifierName || !exportOfDep || !(exportOfDep instanceof LogicAbstractDepNode)) {
+        console.error('dependency of import error');
+      } else {
+        this.imports[specifierName] = exportOfDep;
+      }
     }
   }
 }

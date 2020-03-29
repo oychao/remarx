@@ -1,4 +1,5 @@
 import {
+  CallExpression,
   ExportNamedDeclaration,
   ImportDeclaration,
   Literal,
@@ -39,6 +40,17 @@ export class DepFilePlugin extends DepPlugin {
   protected async visitPath2(path: ExtendedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
     if (node.value) {
       await this.asyncImportLiteralSource(node.value as string);
+    }
+  }
+
+  /**
+   * handle pattern:
+   * import('foo');
+   */
+  @selector('cl > imp')
+  protected async asyncImport(path: ExtendedNode[], node: Literal, parent: CallExpression): Promise<void> {
+    if ((parent?.arguments[0] as Literal)?.value) {
+      await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
     }
   }
 }
