@@ -1,7 +1,11 @@
-import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import {
+  JSXIdentifier,
+  JSXMemberExpression,
+} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
@@ -13,8 +17,12 @@ export class ReactDomPlugin extends DepPlugin {
     super(program);
   }
 
+  /**
+   * handle pattern:
+   * <Foo />
+   */
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async visitPath1(path: any[], node: JSXIdentifier): Promise<void> {
+  protected async visitPath1(path: ExtendedNode[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     const depScope =
       this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] ||
@@ -24,8 +32,12 @@ export class ReactDomPlugin extends DepPlugin {
     }
   }
 
+  /**
+   * handle pattern:
+   * <Foo.bar />
+   */
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async visitPath2(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async visitPath2(path: ExtendedNode[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
     if (node === parent.object) {
       return;
     }

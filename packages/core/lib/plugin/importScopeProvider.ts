@@ -5,6 +5,8 @@ import {
   Identifier,
   Literal,
   VariableDeclarator,
+  ExportAllDeclaration,
+  ExportNamedDeclaration,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
@@ -115,17 +117,43 @@ export class ImportScopeProvider extends DepPlugin {
         curNode = path.pop();
       }
 
-      let exportOfDep: LogicAbstractDepNode = null;
-      if (this.rectifyAbsolutePath((parent?.arguments[0] as Literal)?.value as string)) {
-        const dep = await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
-        exportOfDep = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
-      }
+      const dep = await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
+      const exportOfDep: LogicAbstractDepNode = dep?.getPluginInstance(ExportScopeProvider).defaultExport;
 
       if (!specifierName || !exportOfDep || !(exportOfDep instanceof LogicAbstractDepNode)) {
         console.error('dependency of import error');
       } else {
         this.imports[specifierName] = exportOfDep;
+        this.program.fileDepMapEffective[dep.fullPath] = dep;
       }
+    }
+  }
+
+  /**
+   * handle pattern:
+   * export * from './foo';
+   */
+  @selector('exp_a_dton')
+  protected async exportAll(path: ExtendedNode[], node: ExportAllDeclaration) {
+    const dep = await this.asyncImportLiteralSource((node.source as Literal).value as string);
+    if (dep) {
+      this.program.fileDepMapEffective[dep.fullPath] = dep;
+    }
+  }
+
+  /**
+   * handle pattern:
+   * export { Foo } from './foo';
+   */
+  @selector('exp_n_dton')
+  protected async exportSpecifier(path: ExtendedNode[], node: ExportNamedDeclaration) {
+    const importPathValue = (node?.source as Literal)?.value as string;
+    if (!importPathValue) {
+      return;
+    }
+    const dep = await this.asyncImportLiteralSource(importPathValue);
+    if (dep) {
+      this.program.fileDepMapEffective[dep.fullPath] = dep;
     }
   }
 }

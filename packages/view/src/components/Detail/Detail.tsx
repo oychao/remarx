@@ -8,7 +8,7 @@ export function Detail({}: DetailProps) {
   const { curNode } = useStore();
   return (
     <div>
-      <pre>{JSON.stringify(curNode?.detail, null, 2)}</pre>
+      <pre>{JSON.stringify(curNode?.detail)}</pre>
     </div>
   );
 }

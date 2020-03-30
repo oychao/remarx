@@ -12,6 +12,7 @@ import {
   VariableDeclarator,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { startWithCapitalLetter } from '../utils';
@@ -163,7 +164,7 @@ export class ComponentDepPlugin extends DepPlugin {
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
   protected async visitPath8(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+    if (startWithCapitalLetter(scopeName) && this.currWorkingScope) {
       this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
         scopeName
       ];
@@ -180,10 +181,31 @@ export class ComponentDepPlugin extends DepPlugin {
       return;
     }
     const scopeName: string = node.name as string;
-    if (this.currWorkingScope && startWithCapitalLetter(scopeName)) {
+    if (startWithCapitalLetter(scopeName) && this.currWorkingScope) {
       this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
         scopeName
       ];
+    }
+  }
+
+  /**
+   * handle pattern:
+   * <Route component={Foo} />
+   */
+  @selector('idt')
+  protected async handleJsxExpression(path: ExtendedNode[], node: Identifier) {
+    path.pop();
+    let curNode = path.pop();
+    while (curNode) {
+      if (AST_NODE_TYPES.JSXExpressionContainer === curNode.type) {
+        if (startWithCapitalLetter(node.name) && this.currWorkingScope) {
+          this.currWorkingScope.scopeDepMap[node.name] = this.program.getPluginInstance(ImportScopeProvider).imports[
+            node.name
+          ];
+        }
+        break;
+      }
+      curNode = path.pop();
     }
   }
 }

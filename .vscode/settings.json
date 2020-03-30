@@ -17,6 +17,7 @@
     "happypack",
     "immer",
     "intelli",
-    "rankdir"
+    "rankdir",
+    "spcf"
   ]
 }
