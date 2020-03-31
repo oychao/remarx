@@ -65,6 +65,9 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     });
   }
 
+  // TODO do sth. after specific plugin done executing
+  protected afterPluginExecuted<T extends DepPlugin>(): void {}
+
   public getPluginInstance<T extends DepPlugin>(pluginClass: Type<T>): T {
     return this.pluginMap[pluginClass.name] as T;
   }

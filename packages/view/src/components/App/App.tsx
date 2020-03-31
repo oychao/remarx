@@ -5,19 +5,11 @@ import { CompDepGraph } from '../DepGraph/CompDepGraph';
 import { FileDepGraph } from '../DepGraph/FileDepGraph';
 import { Detail } from '../Detail';
 import { Header } from './Header';
-import { useFoo } from './useFoo';
 
 import './style.less';
 
-const useBar = function() {
-  React.useState();
-};
-
 export function App() {
-  useFoo();
-  useBar();
-
-  const { mainView } = useStore();
+  const { analyzing, mainView } = useStore();
 
   const selectedView = React.useMemo(() => {
     const options = [<FileDepGraph />, <CompDepGraph />];
@@ -27,7 +19,7 @@ export function App() {
   return (
     <div className='app'>
       <Header />
-      <main className='app_main'>{selectedView}</main>
+      <main className='app_main'>{analyzing ? 'analyzing' : selectedView}</main>
       <footer className='app_footer'>
         <Detail />
       </footer>

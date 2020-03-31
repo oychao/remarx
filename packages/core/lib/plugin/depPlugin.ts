@@ -182,6 +182,8 @@ export abstract class DepPlugin {
 
         // TODO implement plugin token logic
         switch (upLevelDepPluginToken) {
+          case DepPluginToken.KwOr:
+            break;
           case DepPluginToken.KwChild:
             break;
           case DepPluginToken.KwDescent:
