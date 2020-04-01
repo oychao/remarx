@@ -6,7 +6,7 @@ declare interface GraphView<T = any> {
 }
 
 declare interface DAGraphView {
-  nodes: dagre.Node[];
+  nodes: dagre.Node<{ label: string; detail: any }>[];
   edges: dagre.GraphEdge[];
   maxX?: number;
   maxY?: number;

@@ -8,7 +8,7 @@ export interface NodeStyle {
 }
 
 interface DepNodeProps {
-  node: dagre.Node;
+  node: dagre.Node<{ label: string }>;
   determineStyle?: (node: dagre.Node) => NodeStyle;
   onNodeClick?: (node: dagre.Node) => void;
 }

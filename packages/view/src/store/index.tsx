@@ -8,8 +8,8 @@ export const StoreContext = React.createContext<{
   data: typeof window.graphData;
   analyzing: boolean;
 
-  curNode: dagre.Node;
-  setCurNode: (node: dagre.Node) => void;
+  curNode: dagre.Node<{ label: string; detail: any }>;
+  setCurNode: (node: dagre.Node<{ label: string; detail: any }>) => void;
   mainView: number;
   setMainView: (num: number) => void;
 }>(null);
@@ -52,7 +52,7 @@ export function Provider({ children }: ProviderProps): JSX.Element {
   const [data, setData] = React.useState<GraphData>(null);
   const [analyzing, setAnalyzing] = React.useState<boolean>(true);
 
-  const [curNode, setCurNode] = React.useState<dagre.Node>(null);
+  const [curNode, setCurNode] = React.useState<dagre.Node<{ label: string; detail: any }>>(null);
   const [mainView, setMainView] = React.useState(0);
 
   globalSetAnalyzing = setAnalyzing;

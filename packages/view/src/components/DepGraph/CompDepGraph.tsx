@@ -5,7 +5,7 @@ import { useStore } from '../../store/index';
 import { DepGraph } from './DepGraph';
 import { NodeStyle } from './DepNode';
 
-function determineTopScopeStyle(node: dagre.Node): NodeStyle {
+function determineTopScopeStyle(node: dagre.Node<{ label: string }>): NodeStyle {
   const lastFlag = node.label.split('#').pop();
   if (startWithCapitalLetter(lastFlag)) {
     return {
@@ -26,7 +26,7 @@ export function CompDepGraph(): JSX.Element {
     setCurNode,
   } = useStore();
 
-  const handleCompNodeClick = React.useCallback((node: dagre.Node) => {
+  const handleCompNodeClick = React.useCallback((node: dagre.Node<{ label: string; detail: any }>) => {
     setCurNode(node);
   }, []);
 

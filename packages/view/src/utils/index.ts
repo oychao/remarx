@@ -11,7 +11,7 @@ export function startWithCapitalLetter(str: string): boolean {
 export function calcGraph(graphView: GraphView): DAGraphView {
   const { nodes: rawNodes, dependencies } = graphView;
 
-  const g = new dagre.graphlib.Graph();
+  const g = new dagre.graphlib.Graph<{ label: string; detail: any }>();
 
   g.setGraph({ rankdir: 'LR' });
   g.setDefaultEdgeLabel(() => ({}));
