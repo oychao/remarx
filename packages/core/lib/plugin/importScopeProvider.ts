@@ -1,16 +1,16 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 import {
-  ImportDeclaration,
   CallExpression,
-  Identifier,
-  Literal,
-  VariableDeclarator,
   ExportAllDeclaration,
   ExportNamedDeclaration,
+  Identifier,
+  ImportDeclaration,
+  Literal,
+  VariableDeclarator,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
-import { TopScopeMap, LogicAbstractDepNode } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicAbstractDepNode, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { DepPlugin, selector } from './depPlugin';
 import { ExportScopeProvider } from './exportScopeProvider';

@@ -6,12 +6,12 @@ import {
   FunctionExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
-import { startWithCapitalLetter } from '../utils';
 import { BaseNodeDescendant } from '../parser/astNodes/extendedNode';
 import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicFunctionComponent } from '../parser/compDeps/logicFunctionComponent';
 import { LogicHook } from '../parser/compDeps/logicHook';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
+import { startWithCapitalLetter } from '../utils';
 import { DepPlugin, selector } from './depPlugin';
 
 export class LocalScopeProvider extends DepPlugin {

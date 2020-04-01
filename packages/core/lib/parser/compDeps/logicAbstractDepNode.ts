@@ -1,7 +1,7 @@
 import { startWithCapitalLetter } from '../../utils';
 import { ExtendedNode } from '../astNodes/extendedNode';
-import { LogicProgramCommon } from '../programs/logicProgramCommon';
 import { LogicNode } from '../logicNode';
+import { LogicProgramCommon } from '../programs/logicProgramCommon';
 
 export type TopScopeDepend = LogicAbstractDepNode | string | undefined;
 

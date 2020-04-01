@@ -14,12 +14,12 @@ import {
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { LogicAbstractDepNode, TopScopeDepend, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicHookUsableClass } from '../parser/compDeps/logicHookUsable';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { startWithCapitalLetter } from '../utils';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';
-import { LogicHookUsableClass } from '../parser/compDeps/logicHookUsable';
 
 export class ComponentDepPlugin extends DepPlugin {
   private currWorkingScope: LogicAbstractDepNode | undefined;

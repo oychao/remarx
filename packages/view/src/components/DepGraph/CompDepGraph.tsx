@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { useStore } from '../../store/index';
 import { startWithCapitalLetter } from 'utils/index';
+import { useStore } from '../../store/index';
 import { DepGraph } from './DepGraph';
 import { NodeStyle } from './DepNode';
 

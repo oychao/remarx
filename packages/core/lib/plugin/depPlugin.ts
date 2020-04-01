@@ -4,9 +4,9 @@ import * as path from 'path';
 
 import { getConfig } from '../config';
 import { BaseNodeDescendant, ExtendedNode } from '../parser/astNodes/extendedNode';
+import { TOP_SCOPE_TYPE } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { fileExists } from '../utils';
-import { TOP_SCOPE_TYPE } from '../parser/compDeps/logicAbstractDepNode';
 
 export type NodeHandler = (
   path: ExtendedNode[],

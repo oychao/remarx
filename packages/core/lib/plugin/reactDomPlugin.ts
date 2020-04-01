@@ -1,11 +1,8 @@
-import {
-  JSXIdentifier,
-  JSXMemberExpression,
-} from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
+import { JSXIdentifier, JSXMemberExpression } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
+import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
-import { ExtendedNode } from '../parser/astNodes/extendedNode';
 import { DepPlugin, selector } from './depPlugin';
 import { ImportScopeProvider } from './importScopeProvider';
 import { LocalScopeProvider } from './localScopeProvider';

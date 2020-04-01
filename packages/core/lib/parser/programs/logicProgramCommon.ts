@@ -4,11 +4,11 @@ import * as path from 'path';
 
 import { getConfig } from '../../config';
 import { PARSE_CONFIG } from '../../constant';
-import { simplifyAst } from '../../utils';
 import { DepPlugin } from '../../plugin/depPlugin';
+import { simplifyAst } from '../../utils';
 import { ExtendedNode } from '../astNodes/extendedNode';
-import { LogicAbstractProgram } from './logicAbstractProgram';
 import { parseAstToExtendedNode } from '../astNodes/nodeFactory';
+import { LogicAbstractProgram } from './logicAbstractProgram';
 
 export type ProgramDepend = LogicProgramCommon | string | undefined;
 

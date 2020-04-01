@@ -5,12 +5,12 @@ import {
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
 import { ExtendedNode } from '../parser/astNodes/extendedNode';
-import { TopScopeMap, LogicAbstractDepNode } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicAbstractDepNode, TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
 import { LogicClassComponent } from '../parser/compDeps/logicClassComponent';
 import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
+import { ClassCompProvider } from './classCompProvider';
 import { DepPlugin, selector } from './depPlugin';
 import { LocalScopeProvider } from './localScopeProvider';
-import { ClassCompProvider } from './classCompProvider';
 
 export class ExportScopeProvider extends DepPlugin {
   // export scopes

@@ -5,14 +5,13 @@ import { LogicHookUsableClass, UseStateStruct } from './parser/compDeps/logicHoo
 import { LogicAbstractProgram } from './parser/programs/logicAbstractProgram';
 import { LogicProgramCommon } from './parser/programs/logicProgramCommon';
 import { LogicProgramEntrance } from './parser/programs/logicProgramEntrance';
-// import { TopScopeDepend } from './parser/logicTopScope';
 import { ClassCompProvider } from './plugin/classCompProvider';
+import { ComponentDepPlugin } from './plugin/componentDepPlugin';
 import { DepFilePlugin } from './plugin/depFilePlugin';
 import { DepPlugin } from './plugin/depPlugin';
 import { ExportScopeProvider } from './plugin/exportScopeProvider';
 import { ImportScopeProvider } from './plugin/importScopeProvider';
 import { LocalScopeProvider } from './plugin/localScopeProvider';
-import { ComponentDepPlugin } from './plugin/componentDepPlugin';
 import { Config } from './types';
 
 // install intrinsic program parser plugins
