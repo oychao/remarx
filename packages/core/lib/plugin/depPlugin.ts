@@ -107,6 +107,50 @@ export abstract class DepPlugin {
     this.program = program;
   }
 
+  private matchDepPlugins(path: ExtendedNode[]): NodeHandler | undefined {
+    const selectorHandlerMap = (this as any).getDepPluginHandlerMap ? (this as any).getDepPluginHandlerMap() : [];
+
+    for (let i = 0; i < selectorHandlerMap.length; i++) {
+      const { selector, handlerName } = selectorHandlerMap[i];
+      const handler = (this as any)[handlerName];
+      const selectorTokens = typeof selector === 'string' ? DepPlugin.parseDepPluginString(selector) : [...selector];
+      let j = selectorTokens.length - 1;
+      let k = path.length - 1;
+      let currNodeToken = selectorTokens[j];
+      let upLevelDepPluginToken = selectorTokens[--j];
+      let currPathNode = path[k];
+      let jumpToEnd = false;
+      while (currNodeToken && currPathNode) {
+        if (currNodeToken !== currPathNode.type) {
+          jumpToEnd = true;
+          break;
+        }
+        currNodeToken = selectorTokens[--j];
+        upLevelDepPluginToken = selectorTokens[--j];
+        currPathNode = path[--k];
+
+        // TODO implement plugin token logic
+        switch (upLevelDepPluginToken) {
+          case DepPluginToken.KwOr:
+            break;
+          case DepPluginToken.KwChild:
+            break;
+          case DepPluginToken.KwDescent:
+            break;
+          default:
+            break;
+        }
+      }
+      if (jumpToEnd) {
+        continue;
+      }
+      if (j < 0) {
+        return handler as NodeHandler;
+      }
+    }
+    return undefined;
+  }
+
   protected rectifyAbsolutePath(sourceValue: string): string {
     if ('.' === sourceValue.charAt(0)) {
       return path.resolve(this.program.dirPath, sourceValue);
@@ -154,50 +198,6 @@ export abstract class DepPlugin {
       const dep = await LogicProgramCommon.produce(possiblePath);
       this.program.fileDepMap[possiblePath] = dep;
       return dep;
-    }
-    return undefined;
-  }
-
-  private matchDepPlugins(path: ExtendedNode[]): NodeHandler | undefined {
-    const selectorHandlerMap = (this as any).getDepPluginHandlerMap ? (this as any).getDepPluginHandlerMap() : [];
-
-    for (let i = 0; i < selectorHandlerMap.length; i++) {
-      const { selector, handlerName } = selectorHandlerMap[i];
-      const handler = (this as any)[handlerName];
-      const selectorTokens = typeof selector === 'string' ? DepPlugin.parseDepPluginString(selector) : [...selector];
-      let j = selectorTokens.length - 1;
-      let k = path.length - 1;
-      let currNodeToken = selectorTokens[j];
-      let upLevelDepPluginToken = selectorTokens[--j];
-      let currPathNode = path[k];
-      let jumpToEnd = false;
-      while (currNodeToken && currPathNode) {
-        if (currNodeToken !== currPathNode.type) {
-          jumpToEnd = true;
-          break;
-        }
-        currNodeToken = selectorTokens[--j];
-        upLevelDepPluginToken = selectorTokens[--j];
-        currPathNode = path[--k];
-
-        // TODO implement plugin token logic
-        switch (upLevelDepPluginToken) {
-          case DepPluginToken.KwOr:
-            break;
-          case DepPluginToken.KwChild:
-            break;
-          case DepPluginToken.KwDescent:
-            break;
-          default:
-            break;
-        }
-      }
-      if (jumpToEnd) {
-        continue;
-      }
-      if (j < 0) {
-        return handler as NodeHandler;
-      }
     }
     return undefined;
   }
