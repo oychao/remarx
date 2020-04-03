@@ -202,6 +202,14 @@ export abstract class DepPlugin {
     return undefined;
   }
 
+  public beforeVisit(): void {
+    console.log(`before visit`);
+  }
+
+  public afterVisit(): void {
+    console.log(`after visit`);
+  }
+
   public async visit(node: ExtendedNode, path: ExtendedNode[] = []): Promise<void> {
     const config = getConfig();
     let ignored: boolean = false;

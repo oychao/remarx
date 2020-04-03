@@ -99,7 +99,9 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // this.pluginList.forEach(plugin => this.astNode?.accept(plugin));
     for (let i = 0; i < this.pluginList.length; i++) {
       const plugin = this.pluginList[i];
+      plugin.beforeVisit();
       await this.astNode.accept(plugin);
+      plugin.afterVisit();
     }
     // mark as initialized
     this.initialized = true;
