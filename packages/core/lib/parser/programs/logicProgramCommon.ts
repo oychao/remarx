@@ -38,6 +38,9 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     LogicProgramCommon.pool = {};
   }
 
+  // will be set to true in LogicProgramEntrance
+  protected readonly isEntrance: boolean = false;
+
   protected astNode: ExtendedNode<LogicProgramCommon> | undefined;
 
   private initialized: boolean = false;
@@ -99,9 +102,13 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // this.pluginList.forEach(plugin => this.astNode?.accept(plugin));
     for (let i = 0; i < this.pluginList.length; i++) {
       const plugin = this.pluginList[i];
-      plugin.beforeVisit();
+      if (this.isEntrance) {
+        plugin.beforeVisit();
+      }
       await this.astNode.accept(plugin);
-      plugin.afterVisit();
+      if (this.isEntrance) {
+        plugin.afterVisit();
+      }
     }
     // mark as initialized
     this.initialized = true;

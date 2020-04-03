@@ -4,6 +4,8 @@ import { LogicProgramCommon } from './logicProgramCommon';
 export class LogicProgramEntrance extends LogicProgramCommon {
   public selectorReactDom: ReactDomPlugin = new ReactDomPlugin(this);
 
+  protected readonly isEntrance: boolean = true;
+
   constructor(fullPath: string) {
     super(fullPath);
   }
