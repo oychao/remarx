@@ -1,7 +1,7 @@
 {
   "name": "remarx-code",
   "description": "Remarx Code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "WTFPL",
   "author": {
     "name": "ouyang-chao",
@@ -56,7 +56,7 @@
     "@typescript-eslint/typescript-estree": "^2.26.0",
     "dagre": "^0.8.5",
     "deep-extend": "^0.6.0",
-    "remarx": "^0.0.1",
+    "remarx": "^0.0.2",
     "request": "^2.88.2",
     "toml": "^3.0.0"
   }
