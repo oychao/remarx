@@ -6,10 +6,12 @@ import {
   FunctionExpression,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 
+import { BaseNodeDescendant } from '../parser/astNodes/extendedNode';
+import { TopScopeMap } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicFunctionComponent } from '../parser/compDeps/logicFunctionComponent';
+import { LogicHook } from '../parser/compDeps/logicHook';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { startWithCapitalLetter } from '../utils';
-import { BaseNodeDescendant } from '../parser/implementedNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
-import { LogicTopScope, TopScopeMap } from '../parser/logicTopScope';
 import { DepPlugin, selector } from './depPlugin';
 
 export class LocalScopeProvider extends DepPlugin {
@@ -29,7 +31,7 @@ export class LocalScopeProvider extends DepPlugin {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async scanLocalScope(
+  protected async localScopeHandler(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -57,8 +59,17 @@ export class LocalScopeProvider extends DepPlugin {
       functionName = grantParent?.id?.name as string;
     }
 
-    if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
-      this.localScopes[functionName] = new LogicTopScope(functionName, node as BaseNodeDescendant, this.program);
+    if (startWithCapitalLetter(functionName)) {
+      this.localScopes[functionName] = new LogicFunctionComponent(
+        functionName,
+        node as BaseNodeDescendant,
+        this.program
+      );
+    } else if (functionName.slice(0, 3) === 'use') {
+      this.localScopes[functionName] = new LogicHook(functionName, node as BaseNodeDescendant, this.program);
     }
+
+    // if (startWithCapitalLetter(functionName) || functionName.slice(0, 3) === 'use') {
+    // }
   }
 }

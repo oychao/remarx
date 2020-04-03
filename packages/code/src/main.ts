@@ -11,6 +11,9 @@ const __viewRoot = path.resolve(__projectRoot, 'view');
 let initialized: boolean = false;
 let panel: vscode.WebviewPanel | undefined;
 
+/**
+ * parse typescript project
+ */
 async function parseProject(): Promise<
   | {
       topScopeGraphData: GraphView;
@@ -44,38 +47,37 @@ async function parseProject(): Promise<
   }
 }
 
-async function parseViewSource(): Promise<void> {
+/**
+ * parse view source for webview
+ */
+async function parseViewSource(): Promise<string> {
   if (!panel) {
-    return;
+    return '';
   }
 
-  const viewSourceTemplate = (await fs.promises.readFile(path.resolve(__viewRoot, 'index.html')))
+  const viewSource = (await fs.promises.readFile(path.resolve(__viewRoot, 'index.html')))
     .toString()
     .replace('VSCODE_RESOURCE_BASE', `${path.resolve(__viewRoot)}/`);
 
-  const graphData = await parseProject();
-  const viewSource = viewSourceTemplate.replace(
-    'VSCODE_DATA_DEF',
-    `<script type="text/javascript">window.graphData = ${JSON.stringify(graphData)}</script>`
-  );
-
-  // update panel view
-  panel.webview.html = viewSource;
-
-  // purge all cached programs
-  Remarx.purgeCache();
+  return viewSource;
 }
 
+/**
+ * initialize plugin
+ */
 async function init(): Promise<void> {
   if (!initialized) {
-    vscode.workspace.onDidSaveTextDocument(async (doc: vscode.TextDocument) => {
-      console.log(doc.fileName);
-      await parseViewSource();
-    });
+    // vscode.workspace.onDidSaveTextDocument(async (doc: vscode.TextDocument) => {
+    //   console.log(doc.fileName);
+    //   await parseViewSource();
+    // });
   }
   initialized = true;
 }
 
+/**
+ * main function, entrance of everything
+ */
 export async function main(): Promise<void> {
   await readConf();
   await init();
@@ -85,19 +87,39 @@ export async function main(): Promise<void> {
     panel = vscode.window.createWebviewPanel('remarx', 'Remarx', vscode.ViewColumn.One, {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.file(path.resolve(__projectRoot, 'view'))],
+      retainContextWhenHidden: true,
     });
 
     panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
       switch (action) {
         case 'OpenFile':
-          vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
+          vscode.workspace.openTextDocument(payload.path).then((doc) => vscode.window.showTextDocument(doc));
           break;
         default:
           break;
       }
     });
+
     panel.onDidDispose(() => {
       panel = undefined;
+    });
+
+    panel.webview.html = await parseViewSource();
+
+    Remarx.setPostMessage((message) => {
+      if (panel) {
+        panel.webview.postMessage({
+          type: 'SET_INIT_MESSAGE',
+          payload: message,
+        });
+      }
+    });
+
+    const graphData = await parseProject();
+
+    panel.webview.postMessage({
+      type: 'UPDATE_GRAPH',
+      payload: graphData,
     });
   }
 

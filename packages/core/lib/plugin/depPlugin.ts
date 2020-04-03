@@ -1,12 +1,15 @@
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
+import { CallExpression, Identifier } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
 import * as path from 'path';
 
+import { getConfig } from '../config';
+import { BaseNodeDescendant, ExtendedNode } from '../parser/astNodes/extendedNode';
+import { TOP_SCOPE_TYPE } from '../parser/compDeps/logicAbstractDepNode';
+import { LogicProgramCommon } from '../parser/programs/logicProgramCommon';
 import { fileExists } from '../utils';
-import { BaseNodeDescendant, ImplementedNode } from '../parser/implementedNode';
-import { LogicProgramCommon } from '../parser/logicProgramCommon';
 
 export type NodeHandler = (
-  path: ImplementedNode[],
+  path: ExtendedNode[],
   node: BaseNodeDescendant,
   parent: BaseNodeDescendant,
   grantParent: BaseNodeDescendant
@@ -25,6 +28,7 @@ export enum DepPluginToken {
   KwDescent = '__KwDescent',
   KwLoopStart = '__KwLoopStart',
   KwLoopEnd = '__KwLoopEnd',
+  KwOr = '__KwOr',
 }
 
 /**
@@ -32,11 +36,18 @@ export enum DepPluginToken {
  * would be visited by specific method of corresponding decent concrete plugin.
  */
 export abstract class DepPlugin {
+  // effective dependency types
+  public static EFFECTIVE_DEP_TYPES = [
+    TOP_SCOPE_TYPE.Hook,
+    TOP_SCOPE_TYPE.ClassComponent,
+    TOP_SCOPE_TYPE.FunctionComponent,
+  ];
+
   public static readonly POSSIBLE_FILE_SUFFIXES = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
 
   public static parseDepPluginString(plugin: string): Array<AST_NODE_TYPES | DepPluginToken> {
     return [...plugin.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
-      .map(m => {
+      .map((m) => {
         const strToken = m[0].replace(/\s{1,}/, ' ');
         return DepPlugin.abbrs[strToken] || DepPlugin.pluginKwKws[strToken];
       })
@@ -62,14 +73,17 @@ export abstract class DepPlugin {
     'L:(': DepPluginToken.KwLoopStart,
     ')': DepPluginToken.KwLoopEnd,
     ' ': DepPluginToken.KwDescent,
+    '|': DepPluginToken.KwOr,
   };
 
   private static readonly abbrs: { [key: string]: AST_NODE_TYPES } = {
     p: AST_NODE_TYPES.Program,
     imp_dton: AST_NODE_TYPES.ImportDeclaration,
+    imp: AST_NODE_TYPES.Import,
     exp_n_dton: AST_NODE_TYPES.ExportNamedDeclaration,
     exp_a_dton: AST_NODE_TYPES.ExportAllDeclaration,
     exp_d_dton: AST_NODE_TYPES.ExportDefaultDeclaration,
+    exp_spcf: AST_NODE_TYPES.ExportSpecifier,
     lit: AST_NODE_TYPES.Literal,
     idt: AST_NODE_TYPES.Identifier,
     v_dton: AST_NODE_TYPES.VariableDeclaration,
@@ -81,8 +95,10 @@ export abstract class DepPlugin {
     jsx_ele: AST_NODE_TYPES.JSXElement,
     jsx_o_ele: AST_NODE_TYPES.JSXOpeningElement,
     jsx_mem_exp: AST_NODE_TYPES.JSXMemberExpression,
+    jsx_exp_ctn: AST_NODE_TYPES.JSXExpressionContainer,
     jsx_idt: AST_NODE_TYPES.JSXIdentifier,
     blk: AST_NODE_TYPES.BlockStatement,
+    cls_dton: AST_NODE_TYPES.ClassDeclaration,
   };
 
   protected program: LogicProgramCommon;
@@ -91,37 +107,7 @@ export abstract class DepPlugin {
     this.program = program;
   }
 
-  protected async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgramCommon | undefined> {
-    if (sourceValue && typeof sourceValue === 'string') {
-      if (sourceValue.charAt(0) !== '.') {
-        this.program.fileDepMap[sourceValue] = sourceValue;
-        return undefined;
-      }
-
-      const originPath = path.resolve(this.program.dirPath, sourceValue);
-      let possiblePath = originPath;
-      let isFile = await fileExists(possiblePath);
-      let i = 0;
-
-      // determine readable target module full path;
-      while (!isFile && i < DepPlugin.POSSIBLE_FILE_SUFFIXES.length) {
-        possiblePath = `${originPath}${DepPlugin.POSSIBLE_FILE_SUFFIXES[i++]}`;
-        isFile = await fileExists(possiblePath);
-      }
-
-      const suffix = possiblePath.split('.').pop();
-      if (suffix !== 'ts' && suffix !== 'tsx') {
-        return undefined;
-      }
-
-      const dep = await LogicProgramCommon.produce(possiblePath);
-      this.program.fileDepMap[possiblePath] = dep;
-      return dep;
-    }
-    return undefined;
-  }
-
-  private matchDepPlugins(path: ImplementedNode[]): NodeHandler | undefined {
+  private matchDepPlugins(path: ExtendedNode[]): NodeHandler | undefined {
     const selectorHandlerMap = (this as any).getDepPluginHandlerMap ? (this as any).getDepPluginHandlerMap() : [];
 
     for (let i = 0; i < selectorHandlerMap.length; i++) {
@@ -145,6 +131,8 @@ export abstract class DepPlugin {
 
         // TODO implement plugin token logic
         switch (upLevelDepPluginToken) {
+          case DepPluginToken.KwOr:
+            break;
           case DepPluginToken.KwChild:
             break;
           case DepPluginToken.KwDescent:
@@ -163,23 +151,91 @@ export abstract class DepPlugin {
     return undefined;
   }
 
-  public async visit(node: ImplementedNode, path: ImplementedNode[] = []): Promise<void> {
-    path.push(node);
-    const handler = this.matchDepPlugins(path);
+  protected rectifyAbsolutePath(sourceValue: string): string {
+    if ('.' === sourceValue.charAt(0)) {
+      return path.resolve(this.program.dirPath, sourceValue);
+    } else {
+      this.program.fileDepMap[sourceValue] = sourceValue;
+      const { alias, sourceFolder, rootDir } = getConfig();
+      if (!alias) {
+        return undefined;
+      }
+      const keys = Object.keys(alias);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const value = alias[key];
+        if (sourceValue.startsWith(key)) {
+          return path.resolve(rootDir, sourceFolder, sourceValue.replace(key, value));
+        }
+      }
+    }
+    return null;
+  }
 
-    if (handler) {
-      await handler.call(this, path, node, path[path.length - 2], path[path.length - 3]);
+  protected async asyncImportLiteralSource(sourceValue: string): Promise<LogicProgramCommon | undefined> {
+    if (sourceValue && typeof sourceValue === 'string') {
+      const originPath: string = this.rectifyAbsolutePath(sourceValue);
+
+      if (!originPath) {
+        return undefined;
+      }
+
+      let possiblePath = originPath;
+      let isFile = await fileExists(possiblePath);
+      let i = 0;
+
+      // determine readable target module full path;
+      while (!isFile && i < DepPlugin.POSSIBLE_FILE_SUFFIXES.length) {
+        possiblePath = `${originPath}${DepPlugin.POSSIBLE_FILE_SUFFIXES[i++]}`;
+        isFile = await fileExists(possiblePath);
+      }
+
+      const suffix = possiblePath.split('.').pop();
+      if (suffix !== 'ts' && suffix !== 'tsx') {
+        return undefined;
+      }
+
+      const dep = await LogicProgramCommon.produce(possiblePath);
+      this.program.fileDepMap[possiblePath] = dep;
+      return dep;
+    }
+    return undefined;
+  }
+
+  public beforeVisit(postMessage: (message: any) => void = () => undefined): void {
+    postMessage(`parsing ${this.program.fullPath} with ${Object.getPrototypeOf(this).constructor.name}`);
+  }
+
+  public afterVisit(postMessage: (message: any) => void = () => undefined): void {}
+
+  public async visit(node: ExtendedNode, path: ExtendedNode[] = []): Promise<void> {
+    const config = getConfig();
+    let ignored: boolean = false;
+    if (
+      AST_NODE_TYPES.CallExpression === node.type &&
+      config?.hof?.ignore.includes((((node as unknown) as CallExpression).callee as Identifier).name)
+    ) {
+      ignored = true;
+    }
+
+    if (!ignored) {
+      path.push(node);
+      const handler = this.matchDepPlugins(path);
+
+      if (handler) {
+        await handler.call(this, [...path], node, path[path.length - 2], path[path.length - 3]);
+      }
     }
 
     for (const key in node) {
       if (node.hasOwnProperty(key)) {
         const value = (node as any)[key];
-        if (value instanceof ImplementedNode) {
+        if (value instanceof ExtendedNode) {
           await value.accept(this, [...path]);
         } else if (Array.isArray(value)) {
           for (let i = 0; i < value.length; i++) {
             const subValue = value[i];
-            if (subValue instanceof ImplementedNode) {
+            if (subValue instanceof ExtendedNode) {
               await subValue.accept(this, [...path]);
             }
           }
@@ -191,14 +247,14 @@ export abstract class DepPlugin {
 }
 
 const classDepPluginMap: { [key: string]: DepPluginHandlerMap[] } = {};
-export const selector = function(selectorString: string) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export const selector = function (selectorString: string) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     if (!classDepPluginMap[target.constructor.name]) {
       classDepPluginMap[target.constructor.name] = [];
     }
 
     if (!target.getDepPluginHandlerMap) {
-      target.getDepPluginHandlerMap = function() {
+      target.getDepPluginHandlerMap = function () {
         return classDepPluginMap[target.constructor.name];
       };
     }

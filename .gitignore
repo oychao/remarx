@@ -9,3 +9,4 @@ demo/dist
 .rpt2_cache
 bin
 yarn*
+dist
