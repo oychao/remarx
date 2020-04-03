@@ -11,7 +11,7 @@ Describe dependency graphs for React project.
    2. [x] publish vscode plugin
 3. [x] build developing environment for monorepos
 4. [x] support class component
-5. [ ] display parsing progress
+5. [x] display parsing progress
 6. [ ] support property deps
 7. [ ] support dependency alias
 8. [ ] state provider & consumer deps
