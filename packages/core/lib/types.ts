@@ -7,4 +7,10 @@ export interface Config {
     output: string;
     rootDir: string;
   };
+  alias?: {
+    [key: string]: string;
+  };
+  hof?: {
+    ignore: Array<string>;
+  };
 }

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { NODE_HALF_HEIGHT, NODE_HALF_WIDTH } from './DepNode';
+
+import { NODE_HALF_HEIGHT, NODE_HALF_WIDTH } from 'utils/index';
 
 interface DepEdgeProps {
   edge: dagre.GraphEdge;
@@ -15,5 +16,6 @@ export const DepEdge = ({ edge }: DepEdgeProps) => {
     const point = points[i];
     d += ` L ${point.x + NODE_HALF_WIDTH} ${point.y + NODE_HALF_HEIGHT}`;
   }
+
   return <path fill='none' stroke='red' d={d} />;
 };

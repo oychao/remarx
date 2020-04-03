@@ -4,3 +4,13 @@ entranceFile="index.tsx"
 [debug]
 on=true
 output="remarx_ast"
+
+[alias]
+assets="assets"
+"common/components"="common/components"
+"common/constants"="common/constants"
+"common/services"="common/services"
+"containers/router"="containers/router"
+"containers/views"="containers/views"
+"common/utils"="common/utils"
+store="store"

@@ -21,5 +21,5 @@ export default {
     //   }]
     // })
   ],
-  external: ['fs', 'path', 'jsonfile']
+  external: ['fs', 'path', 'jsonfile', '@typescript-eslint/typescript-estree']
 };
