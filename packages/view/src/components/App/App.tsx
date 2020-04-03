@@ -9,6 +9,8 @@ import { Header } from './Header';
 import './style.less';
 
 export function App() {
+  const ref = React.useRef<HTMLDivElement>();
+
   const { initMessage, data, mainView } = useStore();
 
   const selectedView = React.useMemo(() => {
@@ -16,10 +18,20 @@ export function App() {
     return options[mainView];
   }, [mainView]);
 
+  React.useEffect(() => {
+    if (data) {
+      ref.current.scrollTop = 0;
+    } else {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [data, initMessage]);
+
   return (
     <div className='app'>
       <Header />
-      <main className='app_main'>{data ? selectedView : initMessage}</main>
+      <main className='app_main' ref={ref}>
+        {data ? selectedView : initMessage.map((msg, idx) => <div key={idx}>{msg}</div>)}
+      </main>
       <footer className='app_footer'>
         <Detail />
       </footer>

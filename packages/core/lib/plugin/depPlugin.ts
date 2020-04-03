@@ -47,7 +47,7 @@ export abstract class DepPlugin {
 
   public static parseDepPluginString(plugin: string): Array<AST_NODE_TYPES | DepPluginToken> {
     return [...plugin.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
-      .map(m => {
+      .map((m) => {
         const strToken = m[0].replace(/\s{1,}/, ' ');
         return DepPlugin.abbrs[strToken] || DepPlugin.pluginKwKws[strToken];
       })
@@ -203,7 +203,7 @@ export abstract class DepPlugin {
   }
 
   public beforeVisit(postMessage: (message: any) => void = () => undefined): void {
-    postMessage(`running ${Object.getPrototypeOf(this).constructor.name} on ${this.program.fullPath}`);
+    postMessage(`parsing ${this.program.fullPath} with ${Object.getPrototypeOf(this).constructor.name}`);
   }
 
   public afterVisit(postMessage: (message: any) => void = () => undefined): void {}
@@ -247,14 +247,14 @@ export abstract class DepPlugin {
 }
 
 const classDepPluginMap: { [key: string]: DepPluginHandlerMap[] } = {};
-export const selector = function(selectorString: string) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export const selector = function (selectorString: string) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     if (!classDepPluginMap[target.constructor.name]) {
       classDepPluginMap[target.constructor.name] = [];
     }
 
     if (!target.getDepPluginHandlerMap) {
-      target.getDepPluginHandlerMap = function() {
+      target.getDepPluginHandlerMap = function () {
         return classDepPluginMap[target.constructor.name];
       };
     }

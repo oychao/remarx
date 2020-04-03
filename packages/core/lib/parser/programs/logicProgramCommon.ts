@@ -111,7 +111,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       const plugin = this.pluginList[i];
       plugin.beforeVisit(LogicProgramCommon.postMessage);
       await this.astNode.accept(plugin);
-      await wait(10);
+      await wait(20);
       plugin.afterVisit(LogicProgramCommon.postMessage);
     }
     // mark as initialized

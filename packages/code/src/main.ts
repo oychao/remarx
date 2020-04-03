@@ -93,7 +93,7 @@ export async function main(): Promise<void> {
     panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
       switch (action) {
         case 'OpenFile':
-          vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
+          vscode.workspace.openTextDocument(payload.path).then((doc) => vscode.window.showTextDocument(doc));
           break;
         default:
           break;
@@ -106,18 +106,13 @@ export async function main(): Promise<void> {
 
     panel.webview.html = await parseViewSource();
 
-    Remarx.setPostMessage(message => {
+    Remarx.setPostMessage((message) => {
       if (panel) {
         panel.webview.postMessage({
           type: 'SET_INIT_MESSAGE',
           payload: message,
         });
       }
-    });
-
-    panel.webview.postMessage({
-      type: 'SET_INIT_MESSAGE',
-      payload: 'analyzing',
     });
 
     const graphData = await parseProject();
