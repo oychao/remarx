@@ -28,7 +28,7 @@ export class ExportScopeProvider extends DepPlugin {
    * export { default } from './xxx';
    */
   @selector('exp_n_dton > lit')
-  protected async scanDirectedNamedExport(
+  protected async directedNamedExportHandler(
     path: ExtendedNode[],
     node: Literal,
     parent: ExportNamedDeclaration
@@ -58,7 +58,7 @@ export class ExportScopeProvider extends DepPlugin {
    * export * from './xxx';
    */
   @selector('p > exp_a_dton > lit')
-  protected async visitPath3(path: ExtendedNode[], node: Literal): Promise<void> {
+  protected async allExportHandler(path: ExtendedNode[], node: Literal): Promise<void> {
     if (node.value) {
       const dep = await this.asyncImportLiteralSource(node.value as string);
       if (dep) {
@@ -83,7 +83,7 @@ export class ExportScopeProvider extends DepPlugin {
   @selector('exp_n_dton > cls_dton > idt')
   @selector('exp_n_dton > f_dton > idt')
   @selector('exp_n_dton > v_dton > v_dtor > idt')
-  protected async visitPath4(path: ExtendedNode[], node: Identifier): Promise<void> {
+  protected async namedExportHandler(path: ExtendedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name;
     const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
     if (exportScope instanceof LogicAbstractDepNode) {
@@ -102,7 +102,7 @@ export class ExportScopeProvider extends DepPlugin {
    */
   @selector('p > exp_d_dton > cls_dton > idt')
   @selector('p > exp_d_dton > idt')
-  protected async visitPath5(path: ExtendedNode[], node: Identifier): Promise<void> {
+  protected async defaultExportHandler(path: ExtendedNode[], node: Identifier): Promise<void> {
     const scopeName: string = node.name as string;
     const exportScope = this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName];
     if (exportScope instanceof LogicAbstractDepNode) {

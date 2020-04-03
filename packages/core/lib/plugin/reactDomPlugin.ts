@@ -19,7 +19,7 @@ export class ReactDomPlugin extends DepPlugin {
    * <Foo />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async visitPath1(path: ExtendedNode[], node: JSXIdentifier): Promise<void> {
+  protected async jsxTokenHandler(path: ExtendedNode[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     const depScope =
       this.program.getPluginInstance(LocalScopeProvider).localScopes[scopeName] ||
@@ -34,7 +34,11 @@ export class ReactDomPlugin extends DepPlugin {
    * <Foo.bar />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async visitPath2(path: ExtendedNode[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async jsxTokenInPropertyHandler(
+    path: ExtendedNode[],
+    node: JSXIdentifier,
+    parent: JSXMemberExpression
+  ): Promise<void> {
     if (node === parent.object) {
       return;
     }

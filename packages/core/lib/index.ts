@@ -43,8 +43,8 @@ export class Remarx extends LogicAbstractProgram {
     this.program = new LogicProgramEntrance(this.fullPath);
   }
 
-  public async parse(): Promise<void> {
-    await this.program.parse();
+  public async parse(postMessage?: (message: any) => void): Promise<void> {
+    await this.program.parse(postMessage);
   }
 
   /**

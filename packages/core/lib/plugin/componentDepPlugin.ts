@@ -37,7 +37,7 @@ export class ComponentDepPlugin extends DepPlugin {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async scanLocalScope(
+  protected async scanLocalScopeHandler(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,
@@ -81,7 +81,7 @@ export class ComponentDepPlugin extends DepPlugin {
    * Foo.useFoo();
    */
   @selector('cl')
-  protected async visitPath7(path: any[], node: CallExpression, parent: VariableDeclarator): Promise<void> {
+  protected async hookHandler(path: any[], node: CallExpression, parent: VariableDeclarator): Promise<void> {
     const nodes: MemberExpression[] = [];
     let currCallee = node.callee as MemberExpression | Identifier;
     while (AST_NODE_TYPES.MemberExpression === currCallee.type) {
@@ -162,7 +162,7 @@ export class ComponentDepPlugin extends DepPlugin {
    * <MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_idt')
-  protected async visitPath8(path: any[], node: JSXIdentifier): Promise<void> {
+  protected async jsxTokenHandler(path: any[], node: JSXIdentifier): Promise<void> {
     const scopeName: string = node.name as string;
     if (startWithCapitalLetter(scopeName) && this.currWorkingScope) {
       this.currWorkingScope.scopeDepMap[scopeName] = this.program.getPluginInstance(ImportScopeProvider).imports[
@@ -176,7 +176,11 @@ export class ComponentDepPlugin extends DepPlugin {
    * <Common.MyComp />
    */
   @selector('jsx_ele > jsx_o_ele > jsx_mem_exp > jsx_idt')
-  protected async visitPath9(path: any[], node: JSXIdentifier, parent: JSXMemberExpression): Promise<void> {
+  protected async jsxTokenInPropertyHandler(
+    path: any[],
+    node: JSXIdentifier,
+    parent: JSXMemberExpression
+  ): Promise<void> {
     if (node === parent.object) {
       return;
     }
@@ -193,7 +197,7 @@ export class ComponentDepPlugin extends DepPlugin {
    * <Route component={Foo} />
    */
   @selector('idt')
-  protected async handleJsxExpression(path: ExtendedNode[], node: Identifier) {
+  protected async jsxExpressionHandler(path: ExtendedNode[], node: Identifier) {
     path.pop();
     let curNode = path.pop();
     while (curNode) {

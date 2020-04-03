@@ -31,7 +31,7 @@ export class LocalScopeProvider extends DepPlugin {
   @selector('f_dton > blk')
   @selector('v_dtor > f_exp > blk')
   @selector('v_dtor > af_exp > blk')
-  protected async scanLocalScope(
+  protected async localScopeHandler(
     path: any[],
     node: BlockStatement,
     parent: FunctionExpression | ArrowFunctionExpression | FunctionDeclaration,

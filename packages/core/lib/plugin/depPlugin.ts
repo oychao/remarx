@@ -202,13 +202,9 @@ export abstract class DepPlugin {
     return undefined;
   }
 
-  public beforeVisit(): void {
-    console.log(`before ${Object.getPrototypeOf(this).constructor.name} visit`);
-  }
+  public beforeVisit(postMessage: (message: any) => void = () => undefined): void {}
 
-  public afterVisit(): void {
-    console.log(`after ${Object.getPrototypeOf(this).constructor.name} visit`);
-  }
+  public afterVisit(postMessage: (message: any) => void = () => undefined): void {}
 
   public async visit(node: ExtendedNode, path: ExtendedNode[] = []): Promise<void> {
     const config = getConfig();

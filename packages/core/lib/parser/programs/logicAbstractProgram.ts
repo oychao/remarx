@@ -1,7 +1,7 @@
 import { LogicAbstractNode } from '../logicAbstractNode';
 
 export abstract class LogicAbstractProgram extends LogicAbstractNode {
-  public abstract async parse(): Promise<void>;
+  public abstract async parse(postMessage: (message: any) => void): Promise<void>;
 
   public dirPath: string;
 

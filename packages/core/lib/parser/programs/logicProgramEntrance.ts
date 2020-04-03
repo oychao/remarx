@@ -10,8 +10,8 @@ export class LogicProgramEntrance extends LogicProgramCommon {
     super(fullPath);
   }
 
-  public async parse(): Promise<void> {
-    await super.parse();
+  public async parse(postMessage: (message: any) => void): Promise<void> {
+    await super.parse(postMessage);
     await this.astNode?.accept(this.selectorReactDom);
   }
 }

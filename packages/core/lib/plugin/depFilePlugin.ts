@@ -24,7 +24,7 @@ export class DepFilePlugin extends DepPlugin {
    * import * as Foo from './foo';
    */
   @selector('p > imp_dton')
-  protected async visitPath1(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
+  protected async importHandler(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       await this.asyncImportLiteralSource(node.source.value as string);
     }
@@ -37,7 +37,7 @@ export class DepFilePlugin extends DepPlugin {
    */
   @selector('p > exp_a_dton > lit')
   @selector('exp_n_dton > lit')
-  protected async visitPath2(path: ExtendedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
+  protected async exportHandler(path: ExtendedNode[], node: Literal, parent: ExportNamedDeclaration): Promise<void> {
     if (node.value) {
       await this.asyncImportLiteralSource(node.value as string);
     }
@@ -48,9 +48,13 @@ export class DepFilePlugin extends DepPlugin {
    * import('foo');
    */
   @selector('cl > imp')
-  protected async asyncImport(path: ExtendedNode[], node: Literal, parent: CallExpression): Promise<void> {
+  protected async asyncImportHandler(path: ExtendedNode[], node: Literal, parent: CallExpression): Promise<void> {
     if ((parent?.arguments[0] as Literal)?.value) {
       await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
     }
+  }
+
+  public afterVisit(postMessage: (message: any) => void): void {
+    postMessage(`found ${Object.keys(LogicProgramCommon.pool).length} files, start parsing`);
   }
 }

@@ -6,7 +6,7 @@ import * as React from 'react';
 
 export const StoreContext = React.createContext<{
   data: typeof window.graphData;
-  analyzing: boolean;
+  initMessage: string;
 
   curNode: dagre.Node<{ label: string; detail: any }>;
   setCurNode: (node: dagre.Node<{ label: string; detail: any }>) => void;
@@ -24,7 +24,7 @@ interface GraphData {
 }
 
 // global interfaces
-let globalSetAnalyzing: React.Dispatch<React.SetStateAction<boolean>> = null;
+let globalSetInitMessage: React.Dispatch<React.SetStateAction<string>> = null;
 let globalSetData: React.Dispatch<React.SetStateAction<GraphData>> = null;
 
 export function useStore() {
@@ -36,10 +36,10 @@ window.addEventListener('message', event => {
   switch (action.type) {
     case 'UPDATE_GRAPH':
       globalSetData(action.payload);
-      globalSetAnalyzing(false);
+      globalSetInitMessage(null);
       break;
-    case 'START_ANALYZING':
-      globalSetAnalyzing(true);
+    case 'SET_INIT_MESSAGE':
+      globalSetInitMessage(action.payload);
       globalSetData(null);
       break;
     default:
@@ -50,18 +50,18 @@ window.addEventListener('message', event => {
 export function Provider({ children }: ProviderProps): JSX.Element {
   // state will exposed to code
   const [data, setData] = React.useState<GraphData>(null);
-  const [analyzing, setAnalyzing] = React.useState<boolean>(true);
+  const [initMessage, setInitMessage] = React.useState<string>('analyzing');
 
   const [curNode, setCurNode] = React.useState<dagre.Node<{ label: string; detail: any }>>(null);
   const [mainView, setMainView] = React.useState(0);
 
-  globalSetAnalyzing = setAnalyzing;
+  globalSetInitMessage = setInitMessage;
   globalSetData = setData;
 
   return (
     <StoreContext.Provider
       value={{
-        analyzing,
+        initMessage,
         data,
         curNode,
         setCurNode,

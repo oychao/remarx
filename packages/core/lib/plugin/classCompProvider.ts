@@ -12,7 +12,7 @@ export class ClassCompProvider extends DepPlugin {
   }
 
   @selector('cls_dton')
-  protected classComp(path: ExtendedNode[], node: ExtendedClass) {
+  protected classCompHandler(path: ExtendedNode[], node: ExtendedClass) {
     const logicClassComponent = new LogicClassComponent(node, this.program);
     this.classComponents[logicClassComponent.name] = logicClassComponent;
   }

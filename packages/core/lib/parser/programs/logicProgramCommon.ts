@@ -14,6 +14,10 @@ export type ProgramDepend = LogicProgramCommon | string | undefined;
 
 export type ProgramMap = { [key: string]: ProgramDepend };
 
+const wait = async function(t: number): Promise<void> {
+  return new Promise(res => setTimeout(res, t));
+};
+
 export class LogicProgramCommon extends LogicAbstractProgram {
   private static PluginClasses: Array<Type<DepPlugin>> = [];
 
@@ -75,7 +79,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     return this.pluginMap[pluginClass.name] as T;
   }
 
-  public async parse(): Promise<void> {
+  public async parse(postMessage: (message: any) => void = () => undefined): Promise<void> {
     if (this.initialized) {
       return;
     }
@@ -103,11 +107,12 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     for (let i = 0; i < this.pluginList.length; i++) {
       const plugin = this.pluginList[i];
       if (this.isEntrance) {
-        plugin.beforeVisit();
+        plugin.beforeVisit(postMessage);
       }
       await this.astNode.accept(plugin);
       if (this.isEntrance) {
-        plugin.afterVisit();
+        plugin.afterVisit(postMessage);
+        await wait(1e3);
       }
     }
     // mark as initialized

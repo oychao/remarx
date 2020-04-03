@@ -30,7 +30,7 @@ export class ImportScopeProvider extends DepPlugin {
    * import * as Foo from './foo';
    */
   @selector('p > imp_dton')
-  protected async visitPath1(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
+  protected async importHandler(path: ExtendedNode[], node: ImportDeclaration): Promise<void> {
     if (node?.source?.value) {
       const dep = await this.asyncImportLiteralSource(node.source.value as string);
       node.specifiers?.forEach((specifier: any) => {
@@ -91,7 +91,7 @@ export class ImportScopeProvider extends DepPlugin {
    * React.lazy(() => import('foo'))
    */
   @selector('cl > imp')
-  protected async lazyComp(
+  protected async lazyCompHandler(
     path: ExtendedNode[],
     node: ImportDeclaration,
     parent: CallExpression,
@@ -134,7 +134,7 @@ export class ImportScopeProvider extends DepPlugin {
    * export * from './foo';
    */
   @selector('exp_a_dton')
-  protected async exportAll(path: ExtendedNode[], node: ExportAllDeclaration) {
+  protected async allExportHandler(path: ExtendedNode[], node: ExportAllDeclaration) {
     const dep = await this.asyncImportLiteralSource((node.source as Literal).value as string);
     if (dep) {
       this.program.fileDepMapEffective[dep.fullPath] = dep;
@@ -146,7 +146,7 @@ export class ImportScopeProvider extends DepPlugin {
    * export { Foo } from './foo';
    */
   @selector('exp_n_dton')
-  protected async exportSpecifier(path: ExtendedNode[], node: ExportNamedDeclaration) {
+  protected async namedExportHandler(path: ExtendedNode[], node: ExportNamedDeclaration) {
     const importPathValue = (node?.source as Literal)?.value as string;
     if (!importPathValue) {
       return;
