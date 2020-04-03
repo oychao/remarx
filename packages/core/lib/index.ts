@@ -29,6 +29,8 @@ export class Remarx extends LogicAbstractProgram {
 
   public static purgeCache = LogicProgramCommon.purge;
 
+  public static setPostMessage = LogicProgramCommon.setPostMessage;
+
   protected astNode: ExtendedNode | undefined;
 
   protected fullPath: string;
@@ -43,8 +45,8 @@ export class Remarx extends LogicAbstractProgram {
     this.program = new LogicProgramEntrance(this.fullPath);
   }
 
-  public async parse(postMessage?: (message: any) => void): Promise<void> {
-    await this.program.parse(postMessage);
+  public async parse(): Promise<void> {
+    await this.program.parse();
   }
 
   /**

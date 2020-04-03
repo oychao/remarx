@@ -202,7 +202,9 @@ export abstract class DepPlugin {
     return undefined;
   }
 
-  public beforeVisit(postMessage: (message: any) => void = () => undefined): void {}
+  public beforeVisit(postMessage: (message: any) => void = () => undefined): void {
+    postMessage(`running ${Object.getPrototypeOf(this).constructor.name} on ${this.program.fullPath}`);
+  }
 
   public afterVisit(postMessage: (message: any) => void = () => undefined): void {}
 

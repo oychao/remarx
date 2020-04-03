@@ -21,8 +21,14 @@ const wait = async function(t: number): Promise<void> {
 export class LogicProgramCommon extends LogicAbstractProgram {
   private static PluginClasses: Array<Type<DepPlugin>> = [];
 
+  private static postMessage: (message: any) => void = () => undefined;
+
   public static install<T extends DepPlugin>(pluginClass: { new (): T }): void {
     LogicProgramCommon.PluginClasses.push(pluginClass);
+  }
+
+  public static setPostMessage(postMessage: (message: any) => void) {
+    LogicProgramCommon.postMessage = postMessage;
   }
 
   // program node pool
@@ -41,9 +47,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
   public static purge(): void {
     LogicProgramCommon.pool = {};
   }
-
-  // will be set to true in LogicProgramEntrance
-  protected readonly isEntrance: boolean = false;
 
   protected astNode: ExtendedNode<LogicProgramCommon> | undefined;
 
@@ -79,7 +82,7 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     return this.pluginMap[pluginClass.name] as T;
   }
 
-  public async parse(postMessage: (message: any) => void = () => undefined): Promise<void> {
+  public async parse(): Promise<void> {
     if (this.initialized) {
       return;
     }
@@ -106,14 +109,10 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     // this.pluginList.forEach(plugin => this.astNode?.accept(plugin));
     for (let i = 0; i < this.pluginList.length; i++) {
       const plugin = this.pluginList[i];
-      if (this.isEntrance) {
-        plugin.beforeVisit(postMessage);
-      }
+      plugin.beforeVisit(LogicProgramCommon.postMessage);
       await this.astNode.accept(plugin);
-      if (this.isEntrance) {
-        plugin.afterVisit(postMessage);
-        await wait(1e3);
-      }
+      await wait(10);
+      plugin.afterVisit(LogicProgramCommon.postMessage);
     }
     // mark as initialized
     this.initialized = true;

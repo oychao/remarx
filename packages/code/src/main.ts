@@ -28,14 +28,7 @@ async function parseProject(): Promise<
     const enterPath = path.resolve(projectSourceRootDir, config.entranceFile);
 
     const depGraph = new Remarx(config, enterPath);
-    await depGraph.parse(message => {
-      if (panel) {
-        panel.webview.postMessage({
-          type: 'SET_INIT_MESSAGE',
-          payload: message,
-        });
-      }
-    });
+    await depGraph.parse();
 
     const [fileGraphData, topScopeGraphData] = await Promise.all([
       await depGraph.getFileDepDag(),
@@ -112,6 +105,15 @@ export async function main(): Promise<void> {
     });
 
     panel.webview.html = await parseViewSource();
+
+    Remarx.setPostMessage(message => {
+      if (panel) {
+        panel.webview.postMessage({
+          type: 'SET_INIT_MESSAGE',
+          payload: message,
+        });
+      }
+    });
 
     panel.webview.postMessage({
       type: 'SET_INIT_MESSAGE',

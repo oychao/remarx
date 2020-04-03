@@ -53,8 +53,4 @@ export class DepFilePlugin extends DepPlugin {
       await this.asyncImportLiteralSource((parent?.arguments[0] as Literal)?.value as string);
     }
   }
-
-  public afterVisit(postMessage: (message: any) => void): void {
-    postMessage(`found ${Object.keys(LogicProgramCommon.pool).length} files, start parsing`);
-  }
 }
