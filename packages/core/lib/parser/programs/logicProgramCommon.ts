@@ -14,10 +14,6 @@ export type ProgramDepend = LogicProgramCommon | string | undefined;
 
 export type ProgramMap = { [key: string]: ProgramDepend };
 
-// const wait = async function (t: number): Promise<void> {
-//   return new Promise(res => setTimeout(res, t));
-// };
-
 export class LogicProgramCommon extends LogicAbstractProgram {
   private static PluginClasses: Array<Type<DepPlugin>> = [];
 

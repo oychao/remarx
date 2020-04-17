@@ -47,7 +47,7 @@ export const DepNode = ({
   }, [label]);
 
   return (
-    <g onClick={handleClick} style={{ cursor: 'pointer' }}>
+    <g onDoubleClick={handleClick} style={{ cursor: 'pointer', userSelect: 'none' }}>
       <rect x={x} y={y} height={height} width={width} style={{ fill: nodeStyle.rectFill }} />
       <text x={x} y={y + NODE_HALF_HEIGHT * 2} style={{ fill: nodeStyle.textFill }}>
         {displayName}

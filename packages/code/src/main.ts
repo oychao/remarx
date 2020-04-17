@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 
 import { config, readConf } from './config';
 import { __projectRoot } from './constants';
+import { wait } from './utils';
 
 const __viewRoot = path.resolve(__projectRoot, 'view');
 
@@ -93,7 +94,7 @@ export async function main(): Promise<void> {
     panel.webview.onDidReceiveMessage(({ action, payload }: ViewAction) => {
       switch (action) {
         case 'OpenFile':
-          vscode.workspace.openTextDocument(payload.path).then((doc) => vscode.window.showTextDocument(doc));
+          vscode.workspace.openTextDocument(payload.path).then(doc => vscode.window.showTextDocument(doc));
           break;
         default:
           break;
@@ -106,7 +107,7 @@ export async function main(): Promise<void> {
 
     panel.webview.html = await parseViewSource();
 
-    Remarx.setPostMessage((message) => {
+    Remarx.setPostMessage(message => {
       if (panel) {
         panel.webview.postMessage({
           type: 'SET_INIT_MESSAGE',
@@ -116,6 +117,8 @@ export async function main(): Promise<void> {
     });
 
     const graphData = await parseProject();
+
+    wait(200);
 
     panel.webview.postMessage({
       type: 'UPDATE_GRAPH',
