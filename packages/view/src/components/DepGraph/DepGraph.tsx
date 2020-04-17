@@ -8,9 +8,10 @@ interface DepGraphProps {
   graphModel: GraphView;
   determineStyle?: (node: dagre.Node) => NodeStyle;
   onNodeClick?: (node: dagre.Node) => void;
+  onNodeDoubleClick?: (node: dagre.Node) => void;
 }
 
-export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphProps) {
+export function DepGraph({ graphModel, determineStyle, onNodeClick, onNodeDoubleClick }: DepGraphProps) {
   const daGraph = calcGraph(graphModel);
   return (
     <svg height={daGraph.maxY} width={daGraph.maxX}>
@@ -18,7 +19,13 @@ export function DepGraph({ graphModel, determineStyle, onNodeClick }: DepGraphPr
         <DepEdge key={idx} edge={edge} />
       ))}
       {daGraph.nodes.map(node => (
-        <DepNode key={node.label} node={node} determineStyle={determineStyle} onNodeClick={onNodeClick} />
+        <DepNode
+          key={node.label}
+          node={node}
+          determineStyle={determineStyle}
+          onNodeClick={onNodeClick}
+          onNodeDoubleClick={onNodeDoubleClick}
+        />
       ))}
     </svg>
   );

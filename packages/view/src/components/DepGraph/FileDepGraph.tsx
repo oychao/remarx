@@ -29,6 +29,10 @@ export function FileDepGraph(): JSX.Element {
   }, []);
 
   return (
-    <DepGraph graphModel={fileGraphData} determineStyle={determineFileStyle} onNodeClick={handleFileDepNodeClick} />
+    <DepGraph
+      graphModel={fileGraphData}
+      determineStyle={determineFileStyle}
+      onNodeDoubleClick={handleFileDepNodeClick}
+    />
   );
 }

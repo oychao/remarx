@@ -11,6 +11,7 @@ interface DepNodeProps {
   node: dagre.Node<{ label: string }>;
   determineStyle?: (node: dagre.Node) => NodeStyle;
   onNodeClick?: (node: dagre.Node) => void;
+  onNodeDoubleClick?: (node: dagre.Node) => void;
 }
 
 /**
@@ -20,6 +21,7 @@ export const DepNode = ({
   node,
   determineStyle = () => ({ rectFill: 'grey', textFill: 'orange' }),
   onNodeClick = () => null,
+  onNodeDoubleClick = () => null,
 }: DepNodeProps) => {
   const { x, y, height, width, label } = node;
   const nodeStyle = determineStyle(node);
@@ -46,8 +48,12 @@ export const DepNode = ({
     onNodeClick(node);
   }, [label]);
 
+  const handleDoubleClick: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void = React.useCallback(() => {
+    onNodeDoubleClick(node);
+  }, [label]);
+
   return (
-    <g onDoubleClick={handleClick} style={{ cursor: 'pointer', userSelect: 'none' }}>
+    <g onClick={handleClick} onDoubleClick={handleDoubleClick} style={{ cursor: 'pointer', userSelect: 'none' }}>
       <rect x={x} y={y} height={height} width={width} style={{ fill: nodeStyle.rectFill }} />
       <text x={x} y={y + NODE_HALF_HEIGHT * 2} style={{ fill: nodeStyle.textFill }}>
         {displayName}
