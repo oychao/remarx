@@ -14,9 +14,9 @@ export type ProgramDepend = LogicProgramCommon | string | undefined;
 
 export type ProgramMap = { [key: string]: ProgramDepend };
 
-const wait = async function(t: number): Promise<void> {
-  return new Promise(res => setTimeout(res, t));
-};
+// const wait = async function (t: number): Promise<void> {
+//   return new Promise(res => setTimeout(res, t));
+// };
 
 export class LogicProgramCommon extends LogicAbstractProgram {
   private static PluginClasses: Array<Type<DepPlugin>> = [];
@@ -75,9 +75,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
     });
   }
 
-  // TODO do sth. after specific plugin done executing
-  protected afterPluginExecuted<T extends DepPlugin>(): void {}
-
   public getPluginInstance<T extends DepPlugin>(pluginClass: Type<T>): T {
     return this.pluginMap[pluginClass.name] as T;
   }
@@ -111,7 +108,6 @@ export class LogicProgramCommon extends LogicAbstractProgram {
       const plugin = this.pluginList[i];
       plugin.beforeVisit(LogicProgramCommon.postMessage);
       await this.astNode.accept(plugin);
-      await wait(20);
       plugin.afterVisit(LogicProgramCommon.postMessage);
     }
     // mark as initialized
