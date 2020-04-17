@@ -14,7 +14,7 @@ Describe dependency graphs for React project.
 5. [x] display parsing progress
 6. [ ] support property deps
 7. [x] support dependency alias
-8. [ ] state provider & consumer deps
+8. [ ] context provider & consumer deps
 9. [ ] better view UI
 10. [ ] provide a cli tool
 11. [ ] code optimizations
