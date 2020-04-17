@@ -13,7 +13,7 @@ export class UseStateStruct {
     this.setterMap = {};
   }
 
-  public register<T>(useStateRetType: [string, string]): void {
+  public register(useStateRetType: [string, string]): void {
     if (this.stateMap[useStateRetType[0]] || this.setterMap[useStateRetType[1]]) {
       return;
     }
