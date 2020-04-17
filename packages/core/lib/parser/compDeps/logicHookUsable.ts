@@ -41,8 +41,11 @@ export class UseStateStruct {
 export abstract class LogicHookUsableClass extends LogicAbstractDepNode {
   public useStateStore: UseStateStruct;
 
+  public propsDepStore: { [key: string]: Array<string> };
+
   constructor(name: string, astNode: ExtendedNode<LogicAbstractDepNode>, program: LogicProgramCommon) {
     super(name, astNode, program);
     this.useStateStore = new UseStateStruct();
+    this.propsDepStore = {};
   }
 }

@@ -47,7 +47,7 @@ export abstract class DepPlugin {
 
   public static parseDepPluginString(plugin: string): Array<AST_NODE_TYPES | DepPluginToken> {
     return [...plugin.trim().matchAll(/(>|L:\(|\)|[a-zA-Z_]+|\s+)/g)]
-      .map((m) => {
+      .map(m => {
         const strToken = m[0].replace(/\s{1,}/, ' ');
         return DepPlugin.abbrs[strToken] || DepPlugin.pluginKwKws[strToken];
       })
@@ -92,6 +92,7 @@ export abstract class DepPlugin {
     f_exp: AST_NODE_TYPES.FunctionExpression,
     af_exp: AST_NODE_TYPES.ArrowFunctionExpression,
     cl: AST_NODE_TYPES.CallExpression,
+    jsx_attr: AST_NODE_TYPES.JSXAttribute,
     jsx_ele: AST_NODE_TYPES.JSXElement,
     jsx_o_ele: AST_NODE_TYPES.JSXOpeningElement,
     jsx_mem_exp: AST_NODE_TYPES.JSXMemberExpression,

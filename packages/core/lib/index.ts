@@ -86,6 +86,7 @@ export class Remarx extends LogicAbstractProgram {
    */
   public async getTopScopeDag(): Promise<GraphView> {
     const scopes: { [key: string]: UseStateStruct } = {};
+    // const argDeps: { [key: string]: Array<string> } = {};
     const dependencies: [string, string][] = [];
 
     const entrance: string = `${this.program.fullPath}#ReactDOM`;

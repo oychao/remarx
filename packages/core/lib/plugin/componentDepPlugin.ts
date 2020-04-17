@@ -6,8 +6,10 @@ import {
   FunctionDeclaration,
   FunctionExpression,
   Identifier,
+  JSXAttribute,
   JSXIdentifier,
   JSXMemberExpression,
+  JSXOpeningElement,
   MemberExpression,
   VariableDeclarator,
 } from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree';
@@ -210,6 +212,16 @@ export class ComponentDepPlugin extends DepPlugin {
         break;
       }
       curNode = path.pop();
+    }
+  }
+
+  /**
+   * handle pattern:
+   * <MyComp foo={foo} />
+   */
+  @selector('jsx_attr')
+  protected async jsxAttributeHandler(path: ExtendedNode[], node: JSXAttribute, parent: JSXOpeningElement) {
+    if (startWithCapitalLetter((parent.name as JSXIdentifier).name)) {
     }
   }
 }
