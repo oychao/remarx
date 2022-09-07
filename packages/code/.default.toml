@@ -1,8 +1,0 @@
-sourceFolder="."
-entranceFile="index.tsx"
-
-# [debug]
-# on=false
-# output="remarx_ast"
-
-# [alias]
