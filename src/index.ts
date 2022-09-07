@@ -1,1 +1,1 @@
-export { RemarxWebpackPlugin as default } from './main';
+export * from './main';
