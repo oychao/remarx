@@ -1,0 +1,54 @@
+{
+  "name": "remarx",
+  "version": "0.0.1-alpha.0",
+  "main": "./bin/index.js",
+  "typings": "./bin/index.d.ts",
+  "author": {
+    "name": "ouyang chao",
+    "email": "chao@ouyang.io"
+  },
+  "license": "WTFPL",
+  "repository": "https://github.com/oychao/remarx",
+  "keywords": [],
+  "description": "remarx",
+  "files": [
+    "LICENSE.md",
+    "README.md",
+    "bin/"
+  ],
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts"
+    }
+  },
+  "type": "commonjs",
+  "scripts": {
+    "build": "npm run build:tsc",
+    "build:tsc": "rm -rf bin && tsc",
+    "test": "mocha --require babel-register --require babel-polyfill test/**/*.spec.js",
+    "prepare": "npm run build",
+    "watch": "npm-watch build"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.15",
+    "@types/webpack": "^5.28.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "mocha-sinon": "^2.1.2",
+    "npm-watch": "^0.11.0",
+    "sinon": "^14.0.0",
+    "typescript": "^4.8.2",
+    "typescript-transform-paths": "^3.3.1"
+  },
+  "dependencies": {
+    "tslib": "^2.4.0"
+  }
+}
