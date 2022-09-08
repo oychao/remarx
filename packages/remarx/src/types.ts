@@ -1,0 +1,3 @@
+interface RemarxConfig {
+  port?: number;
+}
