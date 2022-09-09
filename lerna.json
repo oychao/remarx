@@ -3,5 +3,7 @@
   "useNx": true,
   "useWorkspaces": true,
   "version": "0.0.1-alpha.1",
-  "packages": ["packages/*"]
+  "packages": [
+    "packages/*"
+  ]
 }
