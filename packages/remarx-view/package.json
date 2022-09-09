@@ -1,7 +1,7 @@
 {
   "name": "remarx-view",
   "version": "0.0.1-alpha.1",
-  "type": "module",
+  "type": "commonjs",
   "author": {
     "name": "ouyang chao",
     "email": "chao@ouyang.io"
@@ -10,6 +10,11 @@
   "repository": "https://github.com/oychao/remarx",
   "keywords": [],
   "description": "remarx",
+  "main": "./index",
+  "files": [
+    "dist",
+    "src/"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

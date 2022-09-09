@@ -56,6 +56,10 @@ export class RemarxWebpackPlugin {
       return;
     }
 
-    this.server = createServer(this);
+    try {
+      this.server = await createServer(this);
+    } catch (error) {
+      console.log('port already in use');
+    }
   }
 }

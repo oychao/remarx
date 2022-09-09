@@ -4,14 +4,13 @@ import * as path from 'path';
 import * as Router from '@koa/router';
 import type { RemarxWebpackPlugin } from './main';
 import { REMARX_NAME } from './constants';
+import { REMARX_VIEW_HOME } from 'remarx-view/index.js';
 
-const STATIC_HOME = path.resolve(
-  __dirname,
-  '..',
-  'node_modules/remarx-view/dist'
-);
+export const createServer = async function startServer(
+  plugin: RemarxWebpackPlugin
+) {
+  const STATIC_HOME = path.resolve(REMARX_VIEW_HOME(), 'dist');
 
-export const createServer = function startServer(plugin: RemarxWebpackPlugin) {
   const app = new Koa();
   const router = new Router();
 
