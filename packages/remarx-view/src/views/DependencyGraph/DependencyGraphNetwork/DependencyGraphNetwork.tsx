@@ -9,7 +9,6 @@ export const DependencyGraphNetwork: React.FunctionComponent<
   IDependencyGraphNetworkProps
 > = props => {
   const { graphModule } = DependencyGraphModel.useContainer();
-  console.log(graphModule);
 
   return (
     <div className={'DependencyGraphNetwork'}>

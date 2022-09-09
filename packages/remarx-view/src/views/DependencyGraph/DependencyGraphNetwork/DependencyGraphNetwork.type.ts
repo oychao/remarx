@@ -10,7 +10,7 @@ export interface GraphNode {
   x: number;
   y: number;
   value: number;
-  category?: number;
+  category?: string;
   label?: {
     show?: boolean;
   };
