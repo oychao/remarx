@@ -4,5 +4,5 @@ A React project visualization tool.
 
 ## todo
 
-[ ] support typescript project
-[ ] rendering typescript project tool
+[x] support typescript project  
+[x] rendering typescript project tool
