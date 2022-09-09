@@ -1,6 +1,6 @@
 {
   "name": "remarx",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.1",
   "main": "./bin/index.js",
   "typings": "./bin/index.d.ts",
   "author": {
@@ -32,7 +32,7 @@
     "prepare": "npm run build",
     "watch": "npm-watch build"
   },
-  "private": true,
+  "private": false,
   "devDependencies": {
     "@types/koa": "^2.13.5",
     "@types/koa__router": "^8.0.11",
@@ -48,7 +48,6 @@
     "mocha": "^10.0.0",
     "mocha-sinon": "^2.1.2",
     "npm-watch": "^0.11.0",
-    "remarx-view": "0.0.1-alpha.0",
     "sinon": "^14.0.0",
     "typescript": "^4.8.2",
     "typescript-transform-paths": "^3.3.1"
@@ -57,6 +56,7 @@
     "@koa/router": "^12.0.0",
     "koa": "^2.13.4",
     "koa-static": "^5.0.0",
+    "remarx-view": "0.0.1-alpha.0",
     "tslib": "^2.4.0"
   }
 }
