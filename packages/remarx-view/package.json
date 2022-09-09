@@ -13,7 +13,8 @@
   "main": "./index",
   "files": [
     "dist",
-    "src/"
+    "src/",
+    "index.js"
   ],
   "scripts": {
     "dev": "vite",
