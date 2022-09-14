@@ -1,6 +1,6 @@
 {
   "name": "remarx",
-  "version": "0.0.2-alpha.0",
+  "version": "0.0.2-alpha.1",
   "main": "./bin/index.js",
   "typings": "./bin/index.d.ts",
   "author": {
@@ -56,7 +56,7 @@
     "@koa/router": "^12.0.0",
     "koa": "^2.13.4",
     "koa-static": "^5.0.0",
-    "remarx-view": "^0.0.2-alpha.0",
+    "remarx-view": "^0.0.2-alpha.1",
     "tslib": "^2.4.0"
   }
 }
