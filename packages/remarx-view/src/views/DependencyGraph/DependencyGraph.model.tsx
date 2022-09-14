@@ -1,6 +1,8 @@
 import * as React from 'react';
+import type { FileRule } from 'remarx';
 import { createContainer } from 'unstated-next';
 import { useModuleGraph } from '../../services';
+import { parseRegExp } from '../../utils';
 import {
   FileDep,
   Graph,
@@ -13,12 +15,25 @@ function useDependencyGraphModel(initialState = 0) {
     const result: Graph = {
       nodes: [],
       edges: [],
-      cates: [{ name: 'hook' }, { name: 'store' }, { name: 'else' }],
+      cates: [],
     };
 
     const nodeMap: Record<string, boolean> = {};
 
-    (moduleGraphReqModel.data || []).forEach((fileDep: FileDep) => {
+    const fileRules = (moduleGraphReqModel.data?.config?.fileRules ||
+      []) as Array<FileRule>;
+
+    fileRules.forEach(rule => {
+      if ('string' === typeof rule.nameMatch) {
+        rule.nameMatch = parseRegExp(rule.nameMatch as string);
+      }
+      result.cates.push({ name: rule.fileType as string });
+    });
+
+    let minSymbolSize = 20;
+    let maxSymbolSize = 1;
+
+    (moduleGraphReqModel.data?.depData || []).forEach((fileDep: FileDep) => {
       if (
         nodeMap[fileDep.filePath] ||
         (!fileDep.filePath.endsWith('.ts') &&
@@ -35,13 +50,21 @@ function useDependencyGraphModel(initialState = 0) {
 
       const symbolSize =
         fileDep.depPaths.length + 1 > 20 ? 20 : fileDep.depPaths.length + 1;
+      minSymbolSize = Math.min(symbolSize, minSymbolSize);
+      maxSymbolSize = Math.max(symbolSize, maxSymbolSize);
 
-      let category: string = 'else';
-      if (fileDep.filePath.includes('Store')) {
-        category = 'store';
-      }
-      if (name.startsWith('use')) {
-        category = 'hook';
+      let category: string = fileRules.find(
+        (rule: FileRule) => !rule.nameMatch
+      )!.fileType as string;
+      for (const rule of fileRules) {
+        if (
+          rule.nameMatch &&
+          rule.nameMatch instanceof RegExp &&
+          rule.nameMatch.test(fileDep.filePath)
+        ) {
+          category = rule.fileType as string;
+          break;
+        }
       }
 
       result.nodes.push({
@@ -58,7 +81,16 @@ function useDependencyGraphModel(initialState = 0) {
       });
       nodeMap[fileDep.filePath] = true;
     });
-    (moduleGraphReqModel.data || []).forEach((fileDep: FileDep) => {
+
+    result.nodes.forEach(node => {
+      if (minSymbolSize === maxSymbolSize) {
+        node.symbolSize = 20;
+      } else {
+        node.symbolSize *= 20 / (maxSymbolSize - minSymbolSize);
+      }
+    });
+
+    (moduleGraphReqModel.data?.depData || []).forEach((fileDep: FileDep) => {
       if (!nodeMap[fileDep.filePath]) {
         return;
       }

@@ -1,6 +1,7 @@
 import * as Koa from 'koa';
 import { Compiler } from 'webpack';
 import { REMARX_NAME } from './constants';
+import { RemarxConfig } from './types';
 import { createServer } from './server';
 
 export class RemarxWebpackPlugin {
@@ -9,6 +10,19 @@ export class RemarxWebpackPlugin {
   public depData: Record<string, any> = {};
 
   public config: RemarxConfig = {
+    fileRules: [
+      {
+        nameMatch: /((store|model)\.tsx?)$/i,
+        fileType: 'store',
+      },
+      {
+        nameMatch: /((use[a-zA-Z0-9]{1,}|hooks?)\.tsx?)$/i,
+        fileType: 'hook',
+      },
+      {
+        fileType: 'else',
+      },
+    ],
     port: 5217,
   };
 
@@ -17,6 +31,12 @@ export class RemarxWebpackPlugin {
       ...this.config,
       ...config,
     };
+
+    this.config.fileRules.forEach(rule => {
+      if (rule.nameMatch && rule.nameMatch instanceof RegExp) {
+        rule.nameMatch = rule.nameMatch.toString();
+      }
+    });
   }
 
   public apply(compiler: Compiler) {

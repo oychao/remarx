@@ -15,7 +15,10 @@ export const createServer = async function startServer(
   const router = new Router();
 
   router.get('/api/graph/module', async (ctx, next) => {
-    ctx.body = JSON.stringify(plugin.depData);
+    ctx.body = JSON.stringify({
+      config: plugin.config,
+      depData: plugin.depData,
+    });
     await next();
   });
 

@@ -6,3 +6,4 @@ A React project visualization tool.
 
 [x] support typescript project  
 [x] rendering typescript project tool
+[x] config.fileRules available
